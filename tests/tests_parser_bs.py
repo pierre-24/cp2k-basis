@@ -1,4 +1,5 @@
 import unittest
+import pathlib
 
 from cp2k_basis.basis_set import BasisSetParser
 
@@ -43,3 +44,28 @@ class BaseParserTestCase(unittest.TestCase):
         self.assertEqual(params['l_max'], contraction.l_max)
         self.assertEqual(params['ngauss'], contraction.ngauss)
         self.assertEqual([params['gaussians_per_l']], contraction.gaussians_per_l)
+
+    def test_full_basis_set(self):
+        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
+            basis_sets = BasisSetParser(f.read()).basis_sets()
+
+        found_bs = ['SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
+
+        repr_C = (
+            ('(7s,7p)', '[1s,1p]'),  # "STO-7G"
+            ('(14s,14p,7d)', '[2s,2p,1d]'),  # "7-77G(p,d)"
+            ('(21s,21p,7d)', '[3s,3p,1d]'),  # "7-777G(p,d)"
+            ('(21s,21p,14d)', '[3s,3p,2d]'),  # "7-777G(2p,2d)"
+            ('(21s,21p,14d,7f)', '[3s,3p,2d,1f]')  # "7-777G(2pd,2df)"
+        )
+
+        for i, bs_name in enumerate(found_bs):
+            self.assertIn(bs_name, basis_sets)
+            self.assertIn('C', basis_sets[bs_name].atomic_bs)
+            self.assertIn('H', basis_sets[bs_name].atomic_bs)
+
+            self.assertEqual(basis_sets[bs_name].atomic_bs['H'].full_name, bs_name + '-q1')
+            self.assertEqual(basis_sets[bs_name].atomic_bs['C'].full_name, bs_name + '-q4')
+
+            self.assertEqual(repr_C[i][0], basis_sets[bs_name].atomic_bs['C'].full_representation())
+            self.assertEqual(repr_C[i][1], basis_sets[bs_name].atomic_bs['C'].contracted_representation())

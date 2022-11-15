@@ -36,7 +36,7 @@ class AtomicBasisSet:
 
         return l_max
 
-    def _representation(self, contracted: bool = False) -> str:
+    def _representation(self, contracted: bool = False, sep=',') -> str:
         l_max = self._l_max()
         repr = [0] * (l_max + 1)
 
@@ -45,7 +45,7 @@ class AtomicBasisSet:
                 repr[i] += (contraction.ngauss if not contracted else 1) * \
                     contraction.gaussians_per_l[i - contraction.l_min]
 
-        return ','.join('{}{}'.format(repr[i], L_TO_SHELL[i]) for i in range(l_max + 1))
+        return sep.join('{}{}'.format(repr[i], L_TO_SHELL[i]) for i in range(l_max + 1))
 
     def full_representation(self) -> str:
         return '({})'.format(self._representation(False))
@@ -54,7 +54,7 @@ class AtomicBasisSet:
         return '[{}]'.format(self._representation(True))
 
     def __repr__(self):
-        return '{} [{}|{}]'.format(self.symbol, self.full_representation(), self.contracted_representation())
+        return '{} [{}|{}]'.format(self.symbol, self._representation(False, ''), self._representation(True, ''))
 
 
 class BasisSet:
