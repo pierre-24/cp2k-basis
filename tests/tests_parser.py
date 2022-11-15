@@ -37,8 +37,11 @@ class BaseParserTestCase(unittest.TestCase):
 
     def test_comment_ok(self):
         parser = BaseParser('# tmp\n42')
-
         parser.comment()  # skip comment entirely
+        self.assertEqual(parser.integer(), 42)
+
+        parser = BaseParser('# tmp\n# re stuff\n \n42')
+        parser.skip()  # skip comments & blank lines
         self.assertEqual(parser.integer(), 42)
 
     def test_line_ok(self):

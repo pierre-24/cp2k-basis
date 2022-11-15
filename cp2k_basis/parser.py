@@ -84,6 +84,10 @@ class BaseParser:
         except StopIteration:
             self.current_token = Token(TokenType.EOS, '\0')
 
+    def expect(self, typ: TokenType):
+        if self.current_token.type != typ:
+            raise ParserSyntaxError('expected {}, got {}'.format(typ, self.current_token))
+
     def eat(self, typ: TokenType):
         if self.current_token.type == typ:
             self.next()
@@ -95,7 +99,9 @@ class BaseParser:
         COMMENT := '#' (WORD | SPACE)* NL?
         """
 
-        if self.current_token.type != TokenType.WORD or self.current_token.value[0] != '#':
+        self.expect(TokenType.WORD)
+
+        if self.current_token.value[0] != '#':
             raise ParserSyntaxError('expected WORD starting with `#` for COMMENT')
 
         self.eat(TokenType.WORD)
@@ -105,11 +111,25 @@ class BaseParser:
         if self.current_token.type == TokenType.NL:
             self.next()
 
+    def skip(self):
+        """Go to the next non-comment word
+        """
+
+        while True:
+            if self.current_token.type == TokenType.EOS:
+                break
+            elif self.current_token.type != TokenType.WORD:
+                self.next()
+            else:
+                if self.current_token.value[0] == '#':
+                    self.comment()
+                else:
+                    break
+
     def integer(self) -> int:
         """Parse integer
         """
-        if self.current_token.type != TokenType.WORD:
-            raise ParserSyntaxError('expected WORD for integer, got {}'.format(self.current_token.type))
+        self.expect(TokenType.WORD)
 
         try:
             number = int(self.current_token.value)
@@ -122,9 +142,7 @@ class BaseParser:
     def number(self) -> float:
         """Parser float
         """
-
-        if self.current_token.type != TokenType.WORD:
-            raise ParserSyntaxError('expected WORD for number, got {}'.format(self.current_token.type))
+        self.expect(TokenType.WORD)
 
         try:
             number = float(self.current_token.value)
@@ -146,8 +164,7 @@ class BaseParser:
             elif d == 'n':
                 result.append(self.number())
             elif d == 'w':
-                if self.current_token.type is not TokenType.WORD:
-                    raise ParserSyntaxError('expected WORD in LINE, got {}'.format(self.current_token.type))
+                self.expect(TokenType.WORD)
                 result.append(self.current_token.value)
                 self.next()
 
