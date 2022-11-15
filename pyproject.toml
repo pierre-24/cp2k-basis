@@ -1,0 +1,20 @@
+[project]
+name = "cp2k-basis"
+version = "0.1.0"
+authors = [
+    {name = "Pierre Beaujean", email = "pierre.beaujean@unamur.be"},
+]
+description = "Just a project to have an overview of the content of CP2K basis sets and potentials."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+    "Jinja2",
+]
