@@ -3,6 +3,16 @@ from typing import List, Dict
 from cp2k_basis.parser import BaseParser, TokenType
 
 
+L_TO_SHELL = {
+    0: 's',
+    1: 'p',
+    2: 'd',
+    3: 'f',
+    4: 'g',
+    5: 'h'
+}
+
+
 class Contraction:
     def __init__(self, principle_n: int, l_min: int, l_max: int, ngauss: int, gaussians_per_l: List[int]):
         self.principle_n = principle_n
@@ -19,11 +29,29 @@ class AtomicBasisSet:
         self.full_name = full_name
         self.contractions = contractions
 
-    def contracted_representation(self) -> str:
-        pass
+    def _l_max(self) -> int:
+        l_max = 0
+        for contraction in self.contractions:
+            l_max = max(l_max, contraction.l_max)
+
+        return l_max
+
+    def _representation(self, contracted: bool = False) -> str:
+        l_max = self._l_max()
+        repr = [0] * (l_max + 1)
+
+        for contraction in self.contractions:
+            for i in range(contraction.l_min, contraction.l_max + 1):
+                repr[i] += (contraction.ngauss if not contracted else 1) * \
+                    contraction.gaussians_per_l[i - contraction.l_min]
+
+        return ','.join('{}{}'.format(repr[i], L_TO_SHELL[i]) for i in range(l_max + 1))
 
     def full_representation(self) -> str:
-        pass
+        return '({})'.format(self._representation(False))
+
+    def contracted_representation(self) -> str:
+        return '[{}]'.format(self._representation(True))
 
     def __repr__(self):
         return '{} [{}|{}]'.format(self.symbol, self.full_representation(), self.contracted_representation())

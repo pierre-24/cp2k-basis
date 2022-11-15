@@ -34,6 +34,9 @@ class BaseParserTestCase(unittest.TestCase):
         self.assertEqual(params['symbol'], abs.symbol)
         self.assertEqual(1, len(abs.contractions))
 
+        self.assertEqual(abs.full_representation(), '(3s)')
+        self.assertEqual(abs.contracted_representation(), '[1s]')
+
         contraction = abs.contractions[0]
         self.assertEqual(params['principle'], contraction.principle_n)
         self.assertEqual(params['l_min'], contraction.l_min)
