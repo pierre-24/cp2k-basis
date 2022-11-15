@@ -23,9 +23,9 @@ class Contraction:
 
 
 class AtomicBasisSet:
-    def __init__(self, symbol: str, nickname: str, full_name: str, contractions: List[Contraction]):
+    def __init__(self, symbol: str, bs_name: str, full_name: str, contractions: List[Contraction]):
         self.symbol = symbol
-        self.nickname = nickname
+        self.bs_name = bs_name
         self.full_name = full_name
         self.contractions = contractions
 
@@ -85,10 +85,10 @@ class BasisSetParser(BaseParser):
         while self.current_token.type != TokenType.EOS:
             atomic_basis_set = self.atomic_basis_set()
 
-            if atomic_basis_set.nickname not in basis_sets:
-                basis_sets[atomic_basis_set.nickname] = BasisSet(atomic_basis_set.nickname)
+            if atomic_basis_set.bs_name not in basis_sets:
+                basis_sets[atomic_basis_set.bs_name] = BasisSet(atomic_basis_set.bs_name)
 
-            basis_sets[atomic_basis_set.nickname].add_atomic_basis_set(atomic_basis_set)
+            basis_sets[atomic_basis_set.bs_name].add_atomic_basis_set(atomic_basis_set)
 
             self.skip()
 
