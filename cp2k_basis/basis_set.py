@@ -1,7 +1,7 @@
 from typing import List
 
 
-class ABSSets:
+class Contraction:
     def __init__(self, principle_n: int, l_min: int, l_max: int, gaussian_per_l: List[int]):
         self.principle_n = principle_n
         self.l_min = l_min
@@ -10,10 +10,10 @@ class ABSSets:
 
 
 class AtomicBasisSet:
-    def __init__(self, Z: int, full_name: str, sets: List[ABSSets]):
+    def __init__(self, Z: int, full_name: str, contractions: List[Contraction]):
         self.Z = Z
         self.full_name = full_name
-        self.sets = sets
+        self.contractions = contractions
 
     def contracted_representation(self) -> str:
         pass
