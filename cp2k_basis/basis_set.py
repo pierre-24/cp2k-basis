@@ -101,13 +101,13 @@ class BasisSetParser(BaseParser):
         """
 
         self.expect(TokenType.WORD)
-
         symbol = self.current_token.value
         self.next()
         self.eat(TokenType.SPACE)
 
+        self.expect(TokenType.WORD)
         nickname = self.current_token.value
-        full_name = ''
+        full_name = None
         self.next()
 
         if self.current_token.type == TokenType.SPACE:
@@ -116,6 +116,7 @@ class BasisSetParser(BaseParser):
                 full_name = self.current_token.value
                 self.next()
 
+        self.eat(TokenType.NL)
         self.skip()
 
         num_contraction = self.integer()
