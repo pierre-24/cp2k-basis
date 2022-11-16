@@ -36,16 +36,16 @@ class AtomicPseudoPotentials:
             self.pseudopotentials[name] = ap
 
 
-class PseudopotentialFamiliesParser(BaseParser):
+class AtomicPseudopotentialsParser(BaseParser):
     def __init__(self, inp: str):
         super().__init__(inp)
 
-    def pseudopotential_families(self):
+    def atomic_pseudopotentials(self) -> Dict[str, AtomicPseudoPotentials]:
         """
         PP_FAMILIES := ATOMIC_PP* EOS
         """
 
-        pp_families = {}
+        pps = {}
 
         self.skip()
 
@@ -54,15 +54,15 @@ class PseudopotentialFamiliesParser(BaseParser):
 
             # todo: no family name!
 
-            if atomic_pp.symbol not in pp_families:
-                pp_families[atomic_pp.symbol] = AtomicPseudoPotentials(atomic_pp.symbol)
+            if atomic_pp.symbol not in pps:
+                pps[atomic_pp.symbol] = AtomicPseudoPotentials(atomic_pp.symbol)
 
-            pp_families[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp)
+            pps[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp)
 
             self.skip()
 
         self.eat(TokenType.EOS)
-        return pp_families
+        return pps
 
     def atomic_pseudopotential(self) -> AtomicPseudopotential:
         """
@@ -79,7 +79,6 @@ class PseudopotentialFamiliesParser(BaseParser):
 
         self.expect(TokenType.WORD)
         names = [self.current_token.value]
-        family_name = None
         self.next()
 
         while self.current_token.type != TokenType.NL:
@@ -128,7 +127,7 @@ class PseudopotentialFamiliesParser(BaseParser):
                 self.eat(TokenType.SPACE)
                 self.line('n' * (i + 1))
 
-        self.skip()
+            self.skip()
 
         return AtomicPseudopotential(
             symbol,

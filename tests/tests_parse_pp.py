@@ -1,6 +1,7 @@
 import unittest
+import pathlib
 
-from cp2k_basis.pseudopotential import PseudopotentialFamiliesParser
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
 
 ATOMIC_PP = """{symbol} {names}
 {e_per_shell}
@@ -24,10 +25,26 @@ class PPParserTestCase(unittest.TestCase):
             projectors='0.30634684 2 17.51002284 -5.61037883\n 7.24296793\n0.32105825 2 6.90321066 -2.19925814\n 2.60219733'  # noqa
         )
 
-        app = PseudopotentialFamiliesParser(ATOMIC_PP.format(**params)).atomic_pseudopotential()
+        app = AtomicPseudopotentialsParser(ATOMIC_PP.format(**params)).atomic_pseudopotential()
 
         self.assertEqual(params['symbol'], app.symbol)
         self.assertEqual(params['names'], ' '.join(app.names))
         self.assertEqual(list(int(x) for x in params['e_per_shell'].split()), app.e_per_shell)
         self.assertEqual(params['nlocal'], app.nlocal_coefs)
         self.assertEqual(params['nproj'], app.nnonlocal_projectors)
+
+    def test_full_pp(self):
+        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
+            pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
+
+        name = 'GTH-BLYP'
+        symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
+
+        for symbol in symbols:
+            self.assertIn(symbol, pseudos)
+            app = pseudos[symbol]
+            self.assertIn(name, app.pseudopotentials)
+
+            name_pair = '{}-q{}'.format(name, sum(app.pseudopotentials[name].e_per_shell))
+            self.assertIn(name_pair, app.pseudopotentials)
+            self.assertEqual(app.pseudopotentials[name_pair], app.pseudopotentials[name])
