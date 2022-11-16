@@ -36,6 +36,18 @@ class AtomicPseudoPotentials:
             self.pseudopotentials[name] = ap
 
 
+def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudoPotentials]) -> Dict[str, List[str]]:
+    per_name = {}
+
+    for pseudo in basis.values():
+        for name in pseudo.pseudopotentials:
+            if name not in per_name:
+                per_name[name] = []
+            per_name[name].append(pseudo.symbol)
+
+    return per_name
+
+
 class AtomicPseudopotentialsParser(BaseParser):
     def __init__(self, inp: str):
         super().__init__(inp)

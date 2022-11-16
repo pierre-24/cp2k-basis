@@ -1,7 +1,7 @@
 import unittest
 import pathlib
 
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, avail_atom_per_pseudo_family
 
 ATOMIC_PP = """{symbol} {names}
 {e_per_shell}
@@ -48,3 +48,15 @@ class PPParserTestCase(unittest.TestCase):
             name_pair = '{}-q{}'.format(name, sum(app.pseudopotentials[name].e_per_shell))
             self.assertIn(name_pair, app.pseudopotentials)
             self.assertEqual(app.pseudopotentials[name_pair], app.pseudopotentials[name])
+
+    def test_avail_pseudo(self):
+        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
+            pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
+
+        name = 'GTH-BLYP'
+        symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
+
+        pseudo_families = avail_atom_per_pseudo_family(pseudos)
+
+        self.assertIn(name, pseudo_families)
+        self.assertEqual(sorted(symbols), sorted(pseudo_families[name]))
