@@ -1,6 +1,7 @@
 import unittest
 import pathlib
 
+from cp2k_basis.atoms import print_availability
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, avail_atom_per_pseudo_family
 
 ATOMIC_PP = """{symbol} {names}
@@ -60,3 +61,5 @@ class PPParserTestCase(unittest.TestCase):
 
         self.assertIn(name, pseudo_families)
         self.assertEqual(sorted(symbols), sorted(pseudo_families[name]))
+
+        print_availability(name, symbols)
