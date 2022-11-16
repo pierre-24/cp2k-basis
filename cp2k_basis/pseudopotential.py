@@ -10,30 +10,30 @@ class AtomicPseudopotential:
     def __init__(
         self,
         symbol: str,
-        family_name: str,
-        full_name: str,
+        names: List[str],
         e_per_shell: List[int],
         nlocal_coefs: int,
         nnonlocal_projectors: int
     ):
         self.symbol = symbol
-        self.family_name = family_name
-        self.full_name = full_name
+        self.names = names
         self.e_per_shell = e_per_shell
         self.nlocal_coefs = nlocal_coefs
         self.nnonlocal_projectors = nnonlocal_projectors
 
 
-class PseudopotentialFamily:
-    def __init__(self, name: str):
-        self.atomic_p: Dict[str, AtomicPseudopotential] = {}
-        self.name = name
+class AtomicPseudoPotentials:
+    def __init__(self, symbol: str):
+        self.pseudopotentials: Dict[str, AtomicPseudopotential] = {}
+        self.symbol = symbol
 
     def add_atomic_pseudopotential(self, ap: AtomicPseudopotential):
-        if ap.symbol in self.atomic_p:
-            raise ValueError('Atomic basis set for {} already defined'.format(ap.symbol))
 
-        self.atomic_p[ap.symbol] = ap
+        for name in ap.names:
+            if name in self.pseudopotentials:
+                raise ValueError('pseudo {} already defined for {}'.format(name, self.symbol))
+
+            self.pseudopotentials[name] = ap
 
 
 class PseudopotentialFamiliesParser(BaseParser):
@@ -54,10 +54,10 @@ class PseudopotentialFamiliesParser(BaseParser):
 
             # todo: no family name!
 
-            if atomic_pp.family_name not in pp_families:
-                pp_families[atomic_pp.family_name] = PseudopotentialFamily(atomic_pp.family_name)
+            if atomic_pp.symbol not in pp_families:
+                pp_families[atomic_pp.symbol] = AtomicPseudoPotentials(atomic_pp.symbol)
 
-            pp_families[atomic_pp.family_name].add_atomic_pseudopotential(atomic_pp)
+            pp_families[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp)
 
             self.skip()
 
@@ -66,7 +66,7 @@ class PseudopotentialFamiliesParser(BaseParser):
 
     def atomic_pseudopotential(self) -> AtomicPseudopotential:
         """
-        ATOMIC_PP := WORD SPACE WORD (SPACE WORD)? NL INT* NL LOCAL_PART NL INT NL PROJECTOR*
+        ATOMIC_PP := WORD SPACE WORD (SPACE WORD)* NL INT* NL LOCAL_PART NL INT NL PROJECTOR*
         LOCAL_PART :=  FLOAT INT FLOAT*
         PROJECTOR := FLOAT INT FLOAT* NL (FLOAT* NL)*
         """
@@ -78,15 +78,15 @@ class PseudopotentialFamiliesParser(BaseParser):
         self.eat(TokenType.SPACE)
 
         self.expect(TokenType.WORD)
-        full_name = self.current_token.value
+        names = [self.current_token.value]
         family_name = None
         self.next()
 
-        if self.current_token.type == TokenType.SPACE:
+        while self.current_token.type != TokenType.NL:
+            self.eat(TokenType.SPACE)
+            self.expect(TokenType.WORD)
+            names.append(self.current_token.value)
             self.next()
-            if self.current_token.type == TokenType.WORD:
-                family_name = self.current_token.value
-                self.next()
 
         self.eat(TokenType.NL)
         self.skip()
@@ -132,8 +132,7 @@ class PseudopotentialFamiliesParser(BaseParser):
 
         return AtomicPseudopotential(
             symbol,
-            family_name,
-            full_name,
+            names,
             e_per_shell,
             nlocal_coefs,
             nnonlocal_projectors
