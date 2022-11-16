@@ -3,7 +3,7 @@ import pathlib
 
 from cp2k_basis.basis_set import BasisSetParser
 
-SINGLE_ABS = """{symbol} {nickname} {full_name}
+SINGLE_ABS = """{symbol} {names}
 1
 {principle} {l_min} {l_max} {ngauss} {gaussians_per_l}
 {coefs}
@@ -13,8 +13,7 @@ SINGLE_ABS = """{symbol} {nickname} {full_name}
 class BSParserTestCase(unittest.TestCase):
     def test_atomic_basis_set(self):
         params = dict(  # good ol' STO-3G
-            nickname='STO-3G',
-            full_name='STO-3G-q0',
+            names=' '.join(['STO-3G', 'STO-3G-q0']),
             symbol='H',
             principle=1,
             l_min=0,
@@ -26,7 +25,7 @@ class BSParserTestCase(unittest.TestCase):
 
         abs = BasisSetParser(SINGLE_ABS.format(**params)).atomic_basis_set()
 
-        self.assertEqual(params['full_name'], abs.full_name)
+        self.assertEqual(params['names'], ' '.join(abs.names))
         self.assertEqual(params['symbol'], abs.symbol)
         self.assertEqual(1, len(abs.contractions))
 
@@ -44,23 +43,26 @@ class BSParserTestCase(unittest.TestCase):
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
             basis_sets = BasisSetParser(f.read()).basis_sets()
 
-        found_bs = ['SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
+        self.assertIn('C', basis_sets)
+        self.assertIn('H', basis_sets)
 
+        # check basis sets for C
         repr_C = (
-            ('(7s,7p)', '[1s,1p]'),  # "STO-7G"
-            ('(14s,14p,7d)', '[2s,2p,1d]'),  # "7-77G(p,d)"
-            ('(21s,21p,7d)', '[3s,3p,1d]'),  # "7-777G(p,d)"
-            ('(21s,21p,14d)', '[3s,3p,2d]'),  # "7-777G(2p,2d)"
-            ('(21s,21p,14d,7f)', '[3s,3p,2d,1f]')  # "7-777G(2pd,2df)"
+            ('SZV-MOLOPT-GTH', 1, '(7s,7p)', '[1s,1p]'),  # "STO-7G"
+            ('DZVP-MOLOPT-GTH', 1, '(14s,14p,7d)', '[2s,2p,1d]'),  # "7-77G(p,d)"
+            ('TZVP-MOLOPT-GTH', 1, '(21s,21p,7d)', '[3s,3p,1d]'),  # "7-777G(p,d)"
+            ('TZVP-GTH', 2, '(15s,15p,1d)', '[3s,3p,1d]'),  # "5-555G(p,d)"
+            ('TZV2P-MOLOPT-GTH', 1, '(21s,21p,14d)', '[3s,3p,2d]'),  # "7-777G(2p,2d)"
+            ('TZV2PX-MOLOPT-GTH', 1, '(21s,21p,14d,7f)', '[3s,3p,2d,1f]')  # "7-777G(2pd,2df)"
         )
 
-        for i, bs_name in enumerate(found_bs):
-            self.assertIn(bs_name, basis_sets)
-            self.assertIn('C', basis_sets[bs_name].atomic_bs)
-            self.assertIn('H', basis_sets[bs_name].atomic_bs)
+        for bs_name, ncont, full, contracted in repr_C:
+            self.assertIn(bs_name, basis_sets['C'].basis_sets)
+            abs = basis_sets['C'].basis_sets[bs_name]
 
-            self.assertEqual(basis_sets[bs_name].atomic_bs['H'].full_name, bs_name + '-q1')
-            self.assertEqual(basis_sets[bs_name].atomic_bs['C'].full_name, bs_name + '-q4')
+            self.assertIn(bs_name + '-q4', basis_sets['C'].basis_sets)  # the -q4 version is also there
+            self.assertEqual(abs, basis_sets['C'].basis_sets[bs_name + '-q4'])
 
-            self.assertEqual(repr_C[i][0], basis_sets[bs_name].atomic_bs['C'].full_representation())
-            self.assertEqual(repr_C[i][1], basis_sets[bs_name].atomic_bs['C'].contracted_representation())
+            self.assertEqual(ncont, len(abs.contractions))
+            self.assertEqual(full, abs.full_representation())
+            self.assertEqual(contracted, abs.contracted_representation())

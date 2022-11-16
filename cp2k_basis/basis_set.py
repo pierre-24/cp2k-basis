@@ -23,10 +23,9 @@ class Contraction:
 
 
 class AtomicBasisSet:
-    def __init__(self, symbol: str, bs_name: str, full_name: str, contractions: List[Contraction]):
+    def __init__(self, symbol: str, names: List[str], contractions: List[Contraction]):
         self.symbol = symbol
-        self.bs_name = bs_name
-        self.full_name = full_name
+        self.names = names
         self.contractions = contractions
 
     def _l_max(self) -> int:
@@ -57,23 +56,28 @@ class AtomicBasisSet:
         return '{} [{}|{}]'.format(self.symbol, self._representation(False, ''), self._representation(True, ''))
 
 
-class BasisSet:
-    def __init__(self, name: str):
-        self.atomic_bs: Dict[str, AtomicBasisSet] = {}
-        self.name = name
+class AtomicBasisSets:
+    """Set of basis set for a given atom
+    """
+
+    def __init__(self, symbol: str):
+        self.basis_sets: Dict[str, AtomicBasisSet] = {}
+        self.symbol = symbol
 
     def add_atomic_basis_set(self, bs: AtomicBasisSet):
-        if bs.symbol in self.atomic_bs:
-            raise ValueError('Atomic basis set for {} already defined'.format(bs.symbol))
 
-        self.atomic_bs[bs.symbol] = bs
+        for name in bs.names:
+            if name in self.basis_sets:
+                raise ValueError('{} already exists for atom {}'.format(name, self.symbol))
+
+            self.basis_sets[name] = bs
 
 
 class BasisSetParser(BaseParser):
     def __init__(self, inp: str):
         super().__init__(inp)
 
-    def basis_sets(self) -> Dict[str, BasisSet]:
+    def basis_sets(self) -> Dict[str, AtomicBasisSets]:
         """Basis set
         BASIS_SETS := ATOMIC_BASIS_SET* EOS
         """
@@ -85,10 +89,10 @@ class BasisSetParser(BaseParser):
         while self.current_token.type != TokenType.EOS:
             atomic_basis_set = self.atomic_basis_set()
 
-            if atomic_basis_set.bs_name not in basis_sets:
-                basis_sets[atomic_basis_set.bs_name] = BasisSet(atomic_basis_set.bs_name)
+            if atomic_basis_set.symbol not in basis_sets:
+                basis_sets[atomic_basis_set.symbol] = AtomicBasisSets(atomic_basis_set.symbol)
 
-            basis_sets[atomic_basis_set.bs_name].add_atomic_basis_set(atomic_basis_set)
+            basis_sets[atomic_basis_set.symbol].add_atomic_basis_set(atomic_basis_set)
 
             self.skip()
 
@@ -97,7 +101,7 @@ class BasisSetParser(BaseParser):
 
     def atomic_basis_set(self) -> AtomicBasisSet:
         """
-        ATOMIC_BASIS_SET := WORD SPACE WORD (SPACE WORD)? NL INT NL CONTRACTION*
+        ATOMIC_BASIS_SET := WORD SPACE WORD (SPACE WORD)* NL INT NL CONTRACTION*
         """
 
         self.expect(TokenType.WORD)
@@ -106,15 +110,14 @@ class BasisSetParser(BaseParser):
         self.eat(TokenType.SPACE)
 
         self.expect(TokenType.WORD)
-        nickname = self.current_token.value
-        full_name = None
+        names = [self.current_token.value]
         self.next()
 
-        if self.current_token.type == TokenType.SPACE:
+        while self.current_token.type != TokenType.NL:
+            self.eat(TokenType.SPACE)
+            self.expect(TokenType.WORD)
+            names.append(self.current_token.value)
             self.next()
-            if self.current_token.type == TokenType.WORD:
-                full_name = self.current_token.value
-                self.next()
 
         self.eat(TokenType.NL)
         self.skip()
@@ -127,7 +130,7 @@ class BasisSetParser(BaseParser):
         for i in range(num_contraction):
             contractions.append(self.contraction())
 
-        return AtomicBasisSet(symbol, nickname, full_name, contractions)
+        return AtomicBasisSet(symbol, names, contractions)
 
     def contraction(self) -> Contraction:
         """
