@@ -1,7 +1,7 @@
 import unittest
 import pathlib
 
-from cp2k_basis.basis_set import BasisSetParser
+from cp2k_basis.basis_set import BasisSetParser, avail_atom_per_basis
 
 SINGLE_ABS = """{symbol} {names}
 1
@@ -66,3 +66,13 @@ class BSParserTestCase(unittest.TestCase):
             self.assertEqual(ncont, len(abs.contractions))
             self.assertEqual(full, abs.full_representation())
             self.assertEqual(contracted, abs.contracted_representation())
+
+    def test_avail_atom_per_basis(self):
+        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
+            basis_sets = BasisSetParser(f.read()).basis_sets()
+
+        bs_per_atom = avail_atom_per_basis(basis_sets)
+        found_bs = ['SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
+
+        for basis_name in found_bs:
+            self.assertEqual(['C', 'H'], sorted(bs_per_atom[basis_name]))

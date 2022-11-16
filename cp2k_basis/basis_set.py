@@ -73,6 +73,18 @@ class AtomicBasisSets:
             self.basis_sets[name] = bs
 
 
+def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[str]]:
+    per_name = {}
+
+    for atomic_basis in basis.values():
+        for name in atomic_basis.basis_sets:
+            if name not in per_name:
+                per_name[name] = []
+            per_name[name].append(atomic_basis.symbol)
+
+    return per_name
+
+
 class BasisSetParser(BaseParser):
     def __init__(self, inp: str):
         super().__init__(inp)
