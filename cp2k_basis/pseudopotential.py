@@ -14,6 +14,16 @@ class NonLocalProjector:
         self.nfunc = nfunc
         self.coefficients = coefficients
 
+    def __str__(self) -> str:
+        r = '{:16.8f} {:>3}'.format(self.radius, self.nfunc)
+
+        for i in range(self.nfunc):
+            if i != 0:  # pad
+                r += '                    ' + ' ' * 15 * i
+            r += (' {:14.8f}' * (self.nfunc - i)).format(*self.coefficients[i, i:]) + '\n'
+
+        return r
+
 
 class AtomicPseudopotential:
     """Atomic GTH (Goedecker-Teter-Hutter) pseudopotential of CP2K
@@ -35,6 +45,23 @@ class AtomicPseudopotential:
         self.lcoefficients = lcoefficients
         self.nlprojectors = nlprojectors
 
+    def __repr__(self) -> str:
+        r = '#\n{}  {}\n  {}\n'.format(
+            self.symbol, ' '.join(self.names), ' '.join('{:>4}'.format(x) for x in self.nelec))
+
+        # local part
+        n = self.lcoefficients.shape[0]
+        r += '{:16.8f} {:>3}'.format(self.lradius, n)
+        r += (' {:14.8f}' * n).format(*self.lcoefficients) + '\n'
+
+        # nonlocal part
+        r += '  {:>4}\n'.format(len(self.nlprojectors))
+
+        for proj in self.nlprojectors:
+            r += str(proj)
+
+        return r
+
 
 class AtomicPseudoPotentials:
     def __init__(self, symbol: str):
@@ -48,6 +75,9 @@ class AtomicPseudoPotentials:
                 raise ValueError('pseudo {} already defined for {}'.format(name, self.symbol))
 
             self.pseudopotentials[name] = ap
+
+    def __repr__(self) -> str:
+        return '\n'.join(str(bs) for bs in self.pseudopotentials.values())
 
 
 def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudoPotentials]) -> Dict[str, List[str]]:

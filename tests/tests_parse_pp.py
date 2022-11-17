@@ -89,3 +89,26 @@ class PPParserTestCase(unittest.TestCase):
         self.assertEqual(sorted(symbols), sorted(pseudo_families[name]))
 
         print_availability(name, symbols)
+
+    def test_repr(self):
+        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
+            pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
+
+        app = pseudos['Ne'].pseudopotentials['GTH-BLYP']
+
+        parser = AtomicPseudopotentialsParser(str(app))
+        parser.skip()  # skip comment
+        app2 = parser.atomic_pseudopotential()
+
+        self.assertEqual(app2.symbol, app.symbol)
+        self.assertEqual(app2.names, app.names)
+        self.assertEqual(app2.nelec, app.nelec)
+        self.assertEqual(app2.lradius, app.lradius)
+        self.assertTrue(numpy.array_equal(app2.lcoefficients, app.lcoefficients))
+
+        for i in range(len(app.nlprojectors)):
+            proj = app.nlprojectors[i]
+            proj2 = app2.nlprojectors[i]
+
+            self.assertEqual(proj2.radius, proj.radius)
+            self.assertTrue(numpy.array_equal(proj2.coefficients, proj.coefficients))
