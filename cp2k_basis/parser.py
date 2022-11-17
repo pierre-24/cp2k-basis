@@ -1,4 +1,5 @@
-from typing import Iterator, Callable, List, Union
+import re
+from typing import Iterator, Callable, List, Union, Tuple
 from enum import Enum, unique
 
 
@@ -175,3 +176,28 @@ class BaseParser:
             self.eat(TokenType.NL)
 
         return result
+
+
+class PruneAndRename:
+    """Curate a list of name based on a set of rules of the form `(pattern, replacement)`, where `pattern` is a valid
+    `re.Pattern`.
+
+    If a pattern matches, then its `replacement` is yield instead.
+    If `replacement` is empty, then the name is simply discarded.
+    """
+
+    def __init__(self, rules: List[Tuple[re.Pattern, str]]):
+        self.rules = rules
+
+    def __call__(self, names: Iterator[str]) -> Iterator[str]:
+        for name in names:
+            matched = False
+            for rule in self.rules:
+                if rule[0].match(name):
+                    if len(rule[1]) != 0:
+                        yield rule[0].sub(rule[1], name)
+                    matched = True
+                    break
+
+            if not matched:
+                yield name

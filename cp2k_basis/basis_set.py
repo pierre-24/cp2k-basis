@@ -1,6 +1,6 @@
 import numpy
 
-from typing import List, Dict
+from typing import List, Dict, Callable, Iterable
 
 from cp2k_basis.parser import BaseParser, TokenType
 
@@ -102,9 +102,9 @@ class AtomicBasisSets:
         self.basis_sets: Dict[str, AtomicBasisSet] = {}
         self.symbol = symbol
 
-    def add_atomic_basis_set(self, bs: AtomicBasisSet):
+    def add_atomic_basis_set(self, bs: AtomicBasisSet, names: Iterable[str]):
 
-        for name in bs.names:
+        for name in names:
             if name in self.basis_sets:
                 raise ValueError('{} already exists for atom {}'.format(name, self.symbol))
 
@@ -127,8 +127,9 @@ def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[st
 
 
 class BasisSetParser(BaseParser):
-    def __init__(self, inp: str):
+    def __init__(self, inp: str, prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x):
         super().__init__(inp)
+        self.prune_and_rename = prune_and_rename
 
     def basis_sets(self) -> Dict[str, AtomicBasisSets]:
         """Basis set
@@ -145,7 +146,8 @@ class BasisSetParser(BaseParser):
             if atomic_basis_set.symbol not in basis_sets:
                 basis_sets[atomic_basis_set.symbol] = AtomicBasisSets(atomic_basis_set.symbol)
 
-            basis_sets[atomic_basis_set.symbol].add_atomic_basis_set(atomic_basis_set)
+            basis_sets[atomic_basis_set.symbol].add_atomic_basis_set(
+                atomic_basis_set, self.prune_and_rename(atomic_basis_set.names))
 
             self.skip()
 

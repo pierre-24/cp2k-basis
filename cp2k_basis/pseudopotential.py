@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Callable, Iterable
 
 import numpy
 
@@ -68,16 +68,16 @@ class AtomicPseudoPotentials:
         self.pseudopotentials: Dict[str, AtomicPseudopotential] = {}
         self.symbol = symbol
 
-    def add_atomic_pseudopotential(self, ap: AtomicPseudopotential):
+    def add_atomic_pseudopotential(self, ap: AtomicPseudopotential, names: Iterable[str]):
 
-        for name in ap.names:
+        for name in names:
             if name in self.pseudopotentials:
                 raise ValueError('pseudo {} already defined for {}'.format(name, self.symbol))
 
             self.pseudopotentials[name] = ap
 
     def __repr__(self) -> str:
-        return '\n'.join(str(bs) for bs in self.pseudopotentials.values())
+        return ''.join(str(bs) for bs in self.pseudopotentials.values())
 
 
 def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudoPotentials]) -> Dict[str, List[str]]:
@@ -93,8 +93,9 @@ def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudoPotentials]) -> Di
 
 
 class AtomicPseudopotentialsParser(BaseParser):
-    def __init__(self, inp: str):
+    def __init__(self, inp: str, prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x):
         super().__init__(inp)
+        self.prune_and_rename = prune_and_rename
 
     def atomic_pseudopotentials(self) -> Dict[str, AtomicPseudoPotentials]:
         """
@@ -108,12 +109,10 @@ class AtomicPseudopotentialsParser(BaseParser):
         while self.current_token.type != TokenType.EOS:
             atomic_pp = self.atomic_pseudopotential()
 
-            # todo: no family name!
-
             if atomic_pp.symbol not in pps:
                 pps[atomic_pp.symbol] = AtomicPseudoPotentials(atomic_pp.symbol)
 
-            pps[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp)
+            pps[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp, self.prune_and_rename(atomic_pp.names))
 
             self.skip()
 

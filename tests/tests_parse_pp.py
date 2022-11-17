@@ -1,8 +1,9 @@
 import unittest
 import pathlib
 import numpy
+import re
 
-from cp2k_basis.atoms import print_availability
+from cp2k_basis.parser import PruneAndRename
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, avail_atom_per_pseudo_family
 
 ATOMIC_PP = """{symbol} {names}
@@ -88,8 +89,6 @@ class PPParserTestCase(unittest.TestCase):
         self.assertIn(name, pseudo_families)
         self.assertEqual(sorted(symbols), sorted(pseudo_families[name]))
 
-        print_availability(name, symbols)
-
     def test_repr(self):
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
             pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
@@ -112,3 +111,26 @@ class PPParserTestCase(unittest.TestCase):
 
             self.assertEqual(proj2.radius, proj.radius)
             self.assertTrue(numpy.array_equal(proj2.coefficients, proj.coefficients))
+
+    def test_prune_and_rename(self):
+        symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
+
+        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
+            pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
+
+        extended = re.compile(r'^.*-q\d{1,2}$')
+
+        for symbol in symbols:
+            self.assertTrue(any(k == 'GTH-BLYP' for k in pseudos[symbol].pseudopotentials.keys()))
+            self.assertTrue(any(extended.match(k) for k in pseudos[symbol].pseudopotentials.keys()))
+
+        prune_and_rename = PruneAndRename([
+            (extended, ''),  # discard all *-q versions
+            (re.compile(r'GTH-(.*)'), 'XX-\\1')  # just for the fun of it, change the name of the remaining pseudo
+        ])
+
+        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
+            curated_pseudos = AtomicPseudopotentialsParser(f.read(), prune_and_rename).atomic_pseudopotentials()
+
+        for symbol in symbols:
+            self.assertEqual(list(curated_pseudos[symbol].pseudopotentials.keys()), ['XX-BLYP'])
