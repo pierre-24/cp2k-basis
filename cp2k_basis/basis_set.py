@@ -40,6 +40,20 @@ class Contraction:
         self.exponents = exponents
         self.coefficients = coefficients
 
+    def __repr__(self) -> str:
+        r = ' {} {} {} {} {}\n'.format(
+            self.principle_n,
+            self.l_min,
+            self.l_max,
+            self.nfunc,
+            ' '.join(str(x) for x in self.nshell))
+
+        fmt = '{:>20.12f}' + ' {: .12f}' * sum(self.nshell) + '\n'
+        for i in range(self.nfunc):
+            r += fmt.format(self.exponents[i], *self.coefficients[i])
+
+        return r
+
 
 class AtomicBasisSet:
     def __init__(self, symbol: str, names: List[str], contractions: List[Contraction]):
@@ -70,8 +84,14 @@ class AtomicBasisSet:
     def contracted_representation(self) -> str:
         return '[{}]'.format(self._representation(True))
 
-    def __repr__(self):
-        return '{} [{}|{}]'.format(self.symbol, self._representation(False, ''), self._representation(True, ''))
+    def __repr__(self) -> str:
+        r = '# {} {} {} -> {}\n'.format(
+            self.symbol, self.names[0], self.full_representation(), self.contracted_representation())
+        r += ' {}  {}\n {}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
+
+        r += ''.join(str(c) for c in self.contractions)
+
+        return r
 
 
 class AtomicBasisSets:
@@ -89,6 +109,9 @@ class AtomicBasisSets:
                 raise ValueError('{} already exists for atom {}'.format(name, self.symbol))
 
             self.basis_sets[name] = bs
+
+    def __repr__(self) -> str:
+        return '\n'.join(str(bs) for bs in self.basis_sets.values())
 
 
 def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[str]]:

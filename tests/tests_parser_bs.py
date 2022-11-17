@@ -89,3 +89,28 @@ class BSParserTestCase(unittest.TestCase):
 
         for basis_name in found_bs:
             self.assertEqual(['C', 'H'], sorted(bs_per_atom[basis_name]))
+
+    def test_repr(self):
+        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
+            basis_sets = BasisSetParser(f.read()).basis_sets()
+
+        abs = basis_sets['C'].basis_sets['TZV2PX-MOLOPT-GTH']
+
+        parser = BasisSetParser(str(abs))
+        parser.skip()  # skip comment
+        abs2 = parser.atomic_basis_set()
+
+        self.assertEqual(abs2.names, abs.names)
+        self.assertEqual(abs2.symbol, abs.symbol)
+        self.assertEqual(len(abs2.contractions), len(abs.contractions))
+
+        contraction = abs.contractions[0]
+        contraction2 = abs2.contractions[0]
+
+        self.assertEqual(contraction2.principle_n, contraction.principle_n)
+        self.assertEqual((contraction2.l_min, contraction2.l_max), (contraction.l_min, contraction.l_max))
+        self.assertEqual(contraction2.nfunc, contraction.nfunc)
+        self.assertEqual(contraction2.nshell, contraction.nshell)
+
+        self.assertTrue(numpy.array_equal(contraction2.exponents, contraction.exponents))
+        self.assertTrue(numpy.array_equal(contraction2.coefficients, contraction.coefficients))
