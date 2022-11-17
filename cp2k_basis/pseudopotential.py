@@ -1,6 +1,18 @@
 from typing import List, Dict
 
+import numpy
+
 from cp2k_basis.parser import BaseParser, TokenType
+
+
+class NonLocalProjector:
+    def __init__(self, radius: float, nfunc: int, coefficients: numpy.ndarray):
+        if coefficients.shape != (nfunc, nfunc):
+            raise ValueError('number of coefficient must be equal to `nfunc * nfunc`')
+
+        self.radius = radius
+        self.nfunc = nfunc
+        self.coefficients = coefficients
 
 
 class AtomicPseudopotential:
@@ -11,15 +23,17 @@ class AtomicPseudopotential:
         self,
         symbol: str,
         names: List[str],
-        e_per_shell: List[int],
-        nlocal_coefs: int,
-        nnonlocal_projectors: int
+        nelec: List[int],
+        lradius: float,
+        lcoefficients: numpy.ndarray,
+        nlprojectors: List[NonLocalProjector]
     ):
         self.symbol = symbol
         self.names = names
-        self.e_per_shell = e_per_shell
-        self.nlocal_coefs = nlocal_coefs
-        self.nnonlocal_projectors = nnonlocal_projectors
+        self.nelec = nelec
+        self.lradius = lradius
+        self.lcoefficients = lcoefficients
+        self.nlprojectors = nlprojectors
 
 
 class AtomicPseudoPotentials:
@@ -78,9 +92,9 @@ class AtomicPseudopotentialsParser(BaseParser):
 
     def atomic_pseudopotential(self) -> AtomicPseudopotential:
         """
-        ATOMIC_PP := WORD SPACE WORD (SPACE WORD)* NL INT* NL LOCAL_PART NL INT NL PROJECTOR*
+        ATOMIC_PP := WORD SPACE WORD (SPACE WORD)* NL INT* NL LOCAL_PART NL NLOCAL_PART
         LOCAL_PART :=  FLOAT INT FLOAT*
-        PROJECTOR := FLOAT INT FLOAT* NL (FLOAT* NL)*
+        NLOCAL_PART := INT NL PROJECTOR*
         """
 
         # first line
@@ -103,48 +117,63 @@ class AtomicPseudopotentialsParser(BaseParser):
         self.skip()
 
         # electron per shell
-        e_per_shell = [self.integer()]
+        nelec = [self.integer()]
 
         while self.current_token.type not in [TokenType.NL, TokenType.EOS]:
             self.eat(TokenType.SPACE)
-            e_per_shell.append(self.integer())
+            nelec.append(self.integer())
 
         self.eat(TokenType.NL)
         self.skip()
 
         # local part
-        self.number()
+        lradius = self.number()
         self.eat(TokenType.SPACE)
-        nlocal_coefs = self.integer()
+        n_lcoefficients = self.integer()
 
-        if nlocal_coefs > 0:
+        if n_lcoefficients > 0:
             self.eat(TokenType.SPACE)
-            self.line('n' * nlocal_coefs)
+            lcoefficients = numpy.array(self.line('n' * n_lcoefficients))
         else:
+            lcoefficients = numpy.array([])
             self.eat(TokenType.NL)
 
         self.skip()
 
-        # nonlocal projectors
-        nnonlocal_projectors = self.integer()
-
+        # nonlocal part
+        n_nlprojectors = self.integer()
+        nlprojectors = []
         self.eat(TokenType.NL)
         self.skip()
 
-        for proj_i in range(nnonlocal_projectors):
-            self.number()
-            self.eat(TokenType.SPACE)
-            nprojectors = self.integer()
-            for i in reversed(range(nprojectors)):
-                self.eat(TokenType.SPACE)
-                self.line('n' * (i + 1))
-
-            self.skip()
+        for proj_i in range(n_nlprojectors):
+            nlprojectors.append(self.nlprojector())
 
         return AtomicPseudopotential(
             symbol,
             names,
-            e_per_shell,
-            nlocal_coefs,
-            nnonlocal_projectors
+            nelec,
+            lradius,
+            lcoefficients,
+            nlprojectors
         )
+
+    def nlprojector(self) -> NonLocalProjector:
+        """
+        PROJECTOR := FLOAT INT FLOAT* NL (FLOAT* NL)*
+        """
+
+        nlradius = self.number()
+        self.eat(TokenType.SPACE)
+        nfunc = self.integer()
+
+        coefficients = numpy.zeros((nfunc, nfunc))
+
+        for i in reversed(range(nfunc)):
+            self.eat(TokenType.SPACE)
+            j = nfunc - i - 1
+            coefficients[j, j:] = self.line('n' * (i + 1))
+
+        self.skip()
+
+        return NonLocalProjector(nlradius, nfunc, coefficients)
