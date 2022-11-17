@@ -1,26 +1,36 @@
 import unittest
 import pathlib
 
+import numpy
+
 from cp2k_basis.basis_set import BasisSetParser, avail_atom_per_basis
 
 SINGLE_ABS = """{symbol} {names}
 1
-{principle} {l_min} {l_max} {ngauss} {gaussians_per_l}
+{principle} {l_min} {l_max} {nfunc} {nshell}
 {coefs}
 """
 
 
 class BSParserTestCase(unittest.TestCase):
     def test_atomic_basis_set(self):
+        coefs = numpy.array([
+            [0.3425250914E+01, 0.1543289673],
+            [0.6239137298, 0.5353281423],
+            [0.1688554040, 0.4446345422]]
+        )
+
+        coefs_str = '{:>20.12f} {: .12f}\n{:>20.12f} {: .12f}\n{:>20.12f} {: .12f}'.format(*coefs.ravel())
+
         params = dict(  # good ol' STO-3G
             names=' '.join(['STO-3G', 'STO-3G-q0']),
             symbol='H',
             principle=1,
             l_min=0,
             l_max=0,
-            ngauss=3,
-            gaussians_per_l=1,
-            coefs='0.3425250914E+01 0.1543289673\n0.6239137298 0.5353281423\n0.1688554040 0.4446345422'
+            nfunc=3,
+            nshell=1,
+            coefs=coefs_str
         )
 
         abs = BasisSetParser(SINGLE_ABS.format(**params)).atomic_basis_set()
@@ -36,8 +46,11 @@ class BSParserTestCase(unittest.TestCase):
         self.assertEqual(params['principle'], contraction.principle_n)
         self.assertEqual(params['l_min'], contraction.l_min)
         self.assertEqual(params['l_max'], contraction.l_max)
-        self.assertEqual(params['ngauss'], contraction.ngauss)
-        self.assertEqual([params['gaussians_per_l']], contraction.gaussians_per_l)
+        self.assertEqual(params['nfunc'], contraction.nfunc)
+        self.assertEqual([params['nshell']], contraction.nshell)
+
+        self.assertTrue(numpy.array_equal(contraction.exponents, coefs[:, 0]))
+        self.assertTrue(numpy.array_equal(contraction.coefficients.T[0], coefs[:, 1]))
 
     def test_full_basis_set(self):
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:

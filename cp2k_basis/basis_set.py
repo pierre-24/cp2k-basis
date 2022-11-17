@@ -1,3 +1,5 @@
+import numpy
+
 from typing import List, Dict
 
 from cp2k_basis.parser import BaseParser, TokenType
@@ -14,12 +16,29 @@ L_TO_SHELL = {
 
 
 class Contraction:
-    def __init__(self, principle_n: int, l_min: int, l_max: int, ngauss: int, gaussians_per_l: List[int]):
+    def __init__(
+            self,
+            principle_n: int,
+            l_min: int,
+            l_max: int,
+            nfunc: int,
+            nshell: List[int],
+            exponents: numpy.ndarray,
+            coefficients: numpy.ndarray
+    ):
+        if exponents.shape != (nfunc, ):
+            raise ValueError('number of exponent must be equal to `nfunc`')
+
+        if coefficients.shape != (nfunc, sum(nshell)):
+            raise ValueError('number of coefficient must be equal to `nfunc * sum(nshell)`')
+
         self.principle_n = principle_n
         self.l_min = l_min
         self.l_max = l_max
-        self.ngauss = ngauss
-        self.gaussians_per_l = gaussians_per_l
+        self.nfunc = nfunc
+        self.nshell = nshell
+        self.exponents = exponents
+        self.coefficients = coefficients
 
 
 class AtomicBasisSet:
@@ -41,8 +60,7 @@ class AtomicBasisSet:
 
         for contraction in self.contractions:
             for i in range(contraction.l_min, contraction.l_max + 1):
-                repr[i] += (contraction.ngauss if not contracted else 1) * \
-                    contraction.gaussians_per_l[i - contraction.l_min]
+                repr[i] += (contraction.nfunc if not contracted else 1) * contraction.nshell[i - contraction.l_min]
 
         return sep.join('{}{}'.format(repr[i], L_TO_SHELL[i]) for i in range(l_max + 1))
 
@@ -157,19 +175,24 @@ class BasisSetParser(BaseParser):
         self.eat(TokenType.SPACE)
         l_max = self.integer()
         self.eat(TokenType.SPACE)
-        ngauss = self.integer()
+        nfunc = self.integer()
         self.eat(TokenType.SPACE)
 
-        gaussians_per_l = [self.integer()]
+        nshell = [self.integer()]
 
         for i in range(1, l_max - l_min + 1):
             self.eat(TokenType.SPACE)
-            gaussians_per_l.append(self.integer())
+            nshell.append(self.integer())
 
         self.skip()
 
-        for i in range(ngauss):
-            self.line('n' + 'n' * sum(gaussians_per_l))
+        exponents = numpy.zeros(nfunc)
+        coefficients = numpy.zeros((nfunc, sum(nshell)))
+
+        for i in range(nfunc):
+            c = self.line('n' + 'n' * sum(nshell))
+            exponents[i] = c[0]
+            coefficients[i] = c[1:]
             self.skip()
 
-        return Contraction(principle_n, l_min, l_max, ngauss, gaussians_per_l)
+        return Contraction(principle_n, l_min, l_max, nfunc, nshell, exponents, coefficients)
