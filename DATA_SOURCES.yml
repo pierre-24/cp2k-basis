@@ -1,0 +1,26 @@
+- base: https://raw.githubusercontent.com/cp2k/cp2k/tree/{commit}/data/
+  data:
+    commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
+  files:
+    - name: BASIS_MOLOPT
+      type: BASIS_SET
+      references:
+        - 10.1063/1.2770708
+      rules:
+        '^.*-q\d{1,2}$': ''
+    - name: GTH_BASIS_SETS
+      type: BASIS_SET
+      references:
+        - 10.1103/PhysRevB.54.1703
+        - 10.1103/PhysRevB.58.3641
+        - 10.1007/s00214-005-0655-y
+      rules:
+        '^.*-q\d{1,2}$': ''
+    - name: GTH_POTENTIALS
+      type: POTENTIALS
+      references:
+        - 10.1103/PhysRevB.54.1703
+        - 10.1103/PhysRevB.58.3641
+        - 10.1007/s00214-005-0655-y
+      rules:
+        '^.*-q\d{1,2}$': ''
