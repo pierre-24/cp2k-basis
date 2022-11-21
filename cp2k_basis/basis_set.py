@@ -23,7 +23,7 @@ string_dt = h5py.special_dtype(vlen=str)
 class Contraction:
 
     HDF5_DS_INFO = 'contraction_{}_info'
-    HDF5_DS_EXP_COEF = 'contraction_{}_exp_coefs'
+    HDF5_DS_EXP_COEFS = 'contraction_{}_exp_coefs'
 
     def __init__(
             self,
@@ -72,7 +72,7 @@ class Contraction:
         dset_info[:] = lst
 
         dset_exp_coefs = group.create_dataset(
-            Contraction.HDF5_DS_EXP_COEF.format(i), shape=(self.nfunc, sum(self.nshell) + 1), dtype='d')
+            Contraction.HDF5_DS_EXP_COEFS.format(i), shape=(self.nfunc, sum(self.nshell) + 1), dtype='d')
 
         dset_exp_coefs[:, 0] = self.exponents
         dset_exp_coefs[:, 1:] = self.coefficients
@@ -84,7 +84,7 @@ class Contraction:
         """
 
         dset_info = group[Contraction.HDF5_DS_INFO.format(i)]
-        dset_exp_coefs = group[Contraction.HDF5_DS_EXP_COEF.format(i)]
+        dset_exp_coefs = group[Contraction.HDF5_DS_EXP_COEFS.format(i)]
 
         # checks
         nshell = dset_info.attrs.get('nshell', -1)

@@ -65,8 +65,7 @@ class BSTestCase(unittest.TestCase):
         # write h5file with basis sets for C
         with h5py.File(path, 'w') as f:
             abs1 = self.basis_sets['C']
-            bs_group = f.create_group('basis_sets')
-            abs1.dump_hdf5(bs_group.create_group('C'))
+            abs1.dump_hdf5(f.create_group('basis_sets/C'))
 
         # read it back and compare
         with h5py.File(path) as f:
