@@ -1,3 +1,4 @@
+import h5py
 import numpy
 
 from typing import List, Dict, Callable, Iterable
@@ -93,6 +94,10 @@ class AtomicBasisSet:
 
         return r
 
+    def dump_hdf5(self, group: h5py.Group):
+        """Dump in HDF5"""
+        pass
+
 
 class AtomicBasisSets:
     """Set of basis set for a given atom
@@ -112,6 +117,22 @@ class AtomicBasisSets:
 
     def __repr__(self) -> str:
         return '\n'.join(str(bs) for bs in self.basis_sets.values())
+
+    def dump_hdf5(self, file: h5py.File):
+        """Dump in HDF5"""
+
+        try:
+            group = file[self.symbol]
+        except ValueError:
+            group = file.create_group(self.symbol)
+
+        for key, basis in self.basis_sets.items():
+            try:
+                subgroup = group[key]
+            except ValueError:
+                subgroup = group.create_group(key)
+
+            basis.dump_hdf5(subgroup)
 
 
 def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[str]]:

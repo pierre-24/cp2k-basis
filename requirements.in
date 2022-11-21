@@ -3,3 +3,4 @@ flake8
 flake8-quotes
 autopep8
 numpy
+h5py
