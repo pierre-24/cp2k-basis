@@ -1,3 +1,5 @@
+import pathlib
+
 import h5py
 import numpy
 
@@ -15,8 +17,14 @@ L_TO_SHELL = {
     5: 'h'
 }
 
+string_dt = h5py.special_dtype(vlen=str)
+
 
 class Contraction:
+
+    HDF5_DS_INFO = 'contraction_{}_info'
+    HDF5_DS_EXP_COEF = 'contraction_{}_exp_coefs'
+
     def __init__(
             self,
             principle_n: int,
@@ -54,6 +62,43 @@ class Contraction:
             r += fmt.format(self.exponents[i], *self.coefficients[i])
 
         return r
+
+    def dump_hdf5(self, group: h5py.Group, i: int):
+        dset_info = group.create_dataset(Contraction.HDF5_DS_INFO.format(i), shape=(4 + len(self.nshell)), dtype='i')
+        dset_info.attrs['nshell'] = len(self.nshell)
+
+        lst = [self.principle_n, self.l_min, self.l_max, self.nfunc]
+        lst.extend(self.nshell)
+        dset_info[:] = lst
+
+        dset_exp_coefs = group.create_dataset(
+            Contraction.HDF5_DS_EXP_COEF.format(i), shape=(self.nfunc, sum(self.nshell) + 1), dtype='d')
+
+        dset_exp_coefs[:, 0] = self.exponents
+        dset_exp_coefs[:, 1:] = self.coefficients
+
+    @classmethod
+    def read_hdf5(cls, group: h5py.Group, i: int):
+        """
+        Read HDF5 group
+        """
+
+        dset_info = group[Contraction.HDF5_DS_INFO.format(i)]
+        dset_exp_coefs = group[Contraction.HDF5_DS_EXP_COEF.format(i)]
+
+        # checks
+        nshell = dset_info.attrs.get('nshell', -1)
+
+        if dset_info.shape != (4 + nshell,):
+            raise ValueError('{} must contains {} data'.format(dset_info.name, 4 + nshell))
+
+        principle_n, l_min, l_max, nfunc = dset_info[:4]
+        nshell = list(dset_info[4:])
+
+        if dset_exp_coefs.shape != (nfunc, sum(nshell) + 1):
+            raise ValueError('{} must contains {}x{} data'.format(dset_exp_coefs.name, nfunc, sum(nshell) + 1))
+
+        return cls(principle_n, l_min, l_max, nfunc, nshell, dset_exp_coefs[:, 0], dset_exp_coefs[:, 1:])
 
 
 class AtomicBasisSet:
@@ -96,7 +141,35 @@ class AtomicBasisSet:
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
-        pass
+
+        ds_info = group.create_dataset('info', shape=(2, ), dtype='i')
+        ds_info[:] = [len(self.names), len(self.contractions)]
+
+        ds_names = group.create_dataset('names', shape=(len(self.names), ), dtype=string_dt)
+        ds_names[:] = self.names
+
+        for i, contraction in enumerate(self.contractions):
+            contraction.dump_hdf5(group, i)
+
+    @classmethod
+    def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSet':
+        ds_info = group['info']
+        ds_names = group['names']
+
+        # checks
+        if ds_info.shape != (2, ):
+            raise ValueError('Dataset `info` in {} must have length 2'.format(group.name))
+
+        if ds_names.shape != (ds_info[0], ):
+            raise ValueError('Dataset `names` in {} must have length {}'.format(group.name, ds_info[0]))
+
+        # read contractions
+        contractions = []
+
+        for i in range(ds_info[1]):
+            contractions.append(Contraction.read_hdf5(group, i))
+
+        return cls(symbol, names=list(n.decode('utf8') for n in ds_names), contractions=contractions)
 
 
 class AtomicBasisSets:
@@ -109,6 +182,9 @@ class AtomicBasisSets:
 
     def add_atomic_basis_set(self, bs: AtomicBasisSet, names: Iterable[str]):
 
+        if type(bs) is not AtomicBasisSet:
+            raise TypeError('`bs` must be AtomicBasisSet')
+
         for name in names:
             if name in self.basis_sets:
                 raise ValueError('{} already exists for atom {}'.format(name, self.symbol))
@@ -116,23 +192,31 @@ class AtomicBasisSets:
             self.basis_sets[name] = bs
 
     def __repr__(self) -> str:
-        return '\n'.join(str(bs) for bs in self.basis_sets.values())
+        return ''.join(str(bs) for bs in self.basis_sets.values())
 
-    def dump_hdf5(self, file: h5py.File):
+    def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
-        try:
-            group = file[self.symbol]
-        except ValueError:
-            group = file.create_group(self.symbol)
-
         for key, basis in self.basis_sets.items():
+            # remove existing
             try:
-                subgroup = group[key]
-            except ValueError:
-                subgroup = group.create_group(key)
+                group.pop(key)
+            except KeyError:
+                pass
 
+            # create new
+            subgroup = group.create_group(key)
             basis.dump_hdf5(subgroup)
+
+    @classmethod
+    def read_hdf5(cls, group: h5py.Group) -> 'AtomicBasisSets':
+        symbol = pathlib.Path(group.name).name
+        o = cls(symbol)
+
+        for key, basis_group in group.items():
+            o.add_atomic_basis_set(AtomicBasisSet.read_hdf5(symbol, basis_group), [key])
+
+        return o
 
 
 def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[str]]:
