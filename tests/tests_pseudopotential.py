@@ -18,7 +18,12 @@ class PseudoTestCase(unittest.TestCase):
         ])
 
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
-            self.pseudos = AtomicPseudopotentialsParser(f.read(), prune_and_rename).atomic_pseudopotentials()
+            self.pseudos = AtomicPseudopotentialsParser(
+                f.read(),
+                prune_and_rename,
+                source='POTENTIALS_EXAMPLE',
+                references=['10.1103/PhysRevB.54.1703', '10.1103/PhysRevB.58.3641', '10.1007/s00214-005-0655-y']
+            ).atomic_pseudopotentials()
 
         self.symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
         self.name = 'GTH-BLYP'
@@ -82,4 +87,17 @@ class PseudoTestCase(unittest.TestCase):
             for symbol in self.symbols:
                 app = AtomicPseudopotentials.read_hdf5(f['pseudopotentials/{}'.format(symbol)])
                 self.assertPseudoEqual(
-                    self.pseudos[symbol].pseudopotentials[self.name], app.pseudopotentials[self.name])
+                    self.pseudos[symbol].pseudopotentials[self.name],
+                    app.pseudopotentials[self.name]
+                )
+
+                # check source & refs
+                self.assertEqual(
+                    self.pseudos[symbol].pseudopotentials[self.name].source,
+                    app.pseudopotentials[self.name].source
+                )
+
+                self.assertEqual(
+                    self.pseudos[symbol].pseudopotentials[self.name].references,
+                    app.pseudopotentials[self.name].references
+                )

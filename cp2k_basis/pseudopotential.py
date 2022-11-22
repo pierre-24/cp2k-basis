@@ -76,7 +76,9 @@ class AtomicPseudopotential:
         nelec: List[int],
         lradius: float,
         lcoefficients: numpy.ndarray,
-        nlprojectors: List[NonLocalProjector]
+        nlprojectors: List[NonLocalProjector],
+        source: str = None,
+        references: List[str] = None
     ):
         self.symbol = symbol
         self.names = names
@@ -84,6 +86,8 @@ class AtomicPseudopotential:
         self.lradius = lradius
         self.lcoefficients = lcoefficients
         self.nlprojectors = nlprojectors
+        self.source = source
+        self.references = references
 
     def __repr__(self) -> str:
         r = '#\n{}  {}\n  {}\n'.format(
@@ -104,6 +108,11 @@ class AtomicPseudopotential:
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
+
+        if self.source:
+            group.attrs['source'] = self.source
+        if self.references:
+            group.attrs['references'] = ','.join(self.references)
 
         ds_info = group.create_dataset('info', shape=(3 + len(self.nelec), ), dtype='i')
         ds_info[:3] = [len(self.names), len(self.lcoefficients), len(self.nlprojectors)]
@@ -151,7 +160,18 @@ class AtomicPseudopotential:
         for i in range(ds_info[2]):
             projectors.append(NonLocalProjector.read_hdf5(group, i))
 
-        return cls(symbol, list(n.decode('utf8') for n in ds_names), nelec, lradius, lcoefs, projectors)
+        source = group.attrs.get('source', None)
+        references = group.attrs['references'].split(',') if 'references' in group.attrs else None
+
+        return cls(
+            symbol,
+            list(n.decode('utf8') for n in ds_names),
+            nelec, lradius,
+            lcoefs,
+            projectors,
+            source=source,
+            references=references
+        )
 
 
 class AtomicPseudopotentials:
@@ -208,9 +228,16 @@ def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudopotentials]) -> Di
 
 
 class AtomicPseudopotentialsParser(BaseParser):
-    def __init__(self, inp: str, prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x):
+    def __init__(
+            self, inp: str,
+            prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+            source: str = None,
+            references: List[str] = None
+    ):
         super().__init__(inp)
         self.prune_and_rename = prune_and_rename
+        self.source = source
+        self.references = references
 
     def atomic_pseudopotentials(self) -> Dict[str, AtomicPseudopotentials]:
         """
@@ -299,7 +326,9 @@ class AtomicPseudopotentialsParser(BaseParser):
             nelec,
             lradius,
             lcoefficients,
-            nlprojectors
+            nlprojectors,
+            self.source,
+            self.references
         )
 
     def nlprojector(self) -> NonLocalProjector:

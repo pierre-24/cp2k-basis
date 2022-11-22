@@ -102,10 +102,19 @@ class Contraction:
 
 
 class AtomicBasisSet:
-    def __init__(self, symbol: str, names: List[str], contractions: List[Contraction]):
+    def __init__(
+        self,
+        symbol: str,
+        names: List[str],
+        contractions: List[Contraction],
+        source: str = None,
+        references: List[str] = None
+    ):
         self.symbol = symbol
         self.names = names
         self.contractions = contractions
+        self.source = source
+        self.references = references
 
     def _l_max(self) -> int:
         l_max = 0
@@ -142,6 +151,11 @@ class AtomicBasisSet:
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
+        if self.source:
+            group.attrs['source'] = self.source
+        if self.references:
+            group.attrs['references'] = ','.join(self.references)
+
         ds_info = group.create_dataset('info', shape=(2, ), dtype='i')
         ds_info[:] = [len(self.names), len(self.contractions)]
 
@@ -169,7 +183,16 @@ class AtomicBasisSet:
         for i in range(ds_info[1]):
             contractions.append(Contraction.read_hdf5(group, i))
 
-        return cls(symbol, names=list(n.decode('utf8') for n in ds_names), contractions=contractions)
+        source = group.attrs.get('source', None)
+        references = group.attrs['references'].split(',') if 'references' in group.attrs else None
+
+        return cls(
+            symbol,
+            names=list(n.decode('utf8') for n in ds_names),
+            contractions=contractions,
+            source=source,
+            references=references
+        )
 
 
 class AtomicBasisSets:
@@ -232,9 +255,17 @@ def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[st
 
 
 class BasisSetParser(BaseParser):
-    def __init__(self, inp: str, prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x):
+    def __init__(
+        self,
+        inp: str,
+        prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+        source: str = None,
+        references: List[str] = None
+    ):
         super().__init__(inp)
         self.prune_and_rename = prune_and_rename
+        self.source = source
+        self.references = references
 
     def basis_sets(self) -> Dict[str, AtomicBasisSets]:
         """Basis set
@@ -290,7 +321,13 @@ class BasisSetParser(BaseParser):
         for i in range(num_contraction):
             contractions.append(self.contraction())
 
-        return AtomicBasisSet(symbol, names, contractions)
+        return AtomicBasisSet(
+            symbol,
+            names,
+            contractions,
+            self.source,
+            self.references
+        )
 
     def contraction(self) -> Contraction:
         """

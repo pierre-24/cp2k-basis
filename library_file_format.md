@@ -23,13 +23,16 @@ basis_sets/
    |- ...
 ```
 
-Each `basis set` group is composed of the following datasets:
-- `info`, which is of shape `(2,)` and contains `(len(names), len(contractions))`, for checking purposes
-- `names`, which contains the various name of this basis set and which length should match the one give in the `info` dataset
-- For each contraction `i` (`i in range(nfunc)`), two datasets
-  - `contraction_{i}_info`, of shape `(4 + n,)` which contains `(principle_n, l_min, l_max, nfunc, nshell[0], ..., nshell[n-1])`.
-     `n`, the number of shells, is to be found as attribute `nshell` of this dataset.
-  - `contraction_{}_exp_coefs`, of shape `(nfunc, n+1)`, which contains the exponents are in `[:, 0]`, while the coefficients are found in `[:, 1:]`.
+Each `basis set` group is composed of the following datasets, which are all mandatory:
+
+| Name                        | Shape                   | Attributes           | Info                                                                                              |
+|-----------------------------|-------------------------|----------------------|---------------------------------------------------------------------------------------------------|
+| `info`                      | `(2,)`                  | ---                  | contains `(len(names), len(contractions))`                                                        |
+| `names`                     | `(n,)`                  | ---                  | contains `n=len(names)` names                                                                     |
+| `contraction_{i}_info`      | `(4+n,)`                | `nshell` [mandatory] | contains `(principle_n, l_min, l_max, nfunc, nshell[0], ..., nshell[n-1])` with `n=attrs[nshell]` |
+| `contraction_{i}_exp_coefs` | `(nfunc,1+sum(nshell))` | ---                  | contains exponents in `[:, 0]` and coefficients in `[:, 1:]`                                      |
+
+The two last datasets are repeated with `i=[0:len(contractions)]`.
 
 Thus, the following structure, e.g., is valid:
 
@@ -45,6 +48,12 @@ basis_sets/C/TZVP-GTH/      # contains two contractions
 |- contraction_1_exp_coefs  # of shape (1, 2)
 ```
 
+Each `basis set` group might have the following attributes:
+
++ `source`, which contains the URL to the original basis set, and
++ `references`, which contains a comma-separated list of DOI corresponding to the basis set.
+
+Those two attributes are optional: if an attribute is missing, an empty value is assumed.
 
 ## The `pseudopotentials` group
 
@@ -64,14 +73,16 @@ pseudopotentials/
    |- ...
 ```
 
-Each `pseudopotential` group is composed of the following datasets:
+Each `pseudopotential` group is composed of the following datasets, which are all mandatory:
 
-- `info`, of shape `(3 + n,)` and contains `(len(names), len(lcoefs), len(nlprojectors), nelec[0], ... nelec[n-1])`)
-  where `n` is the number of shells, to be found as attribute `nshell` of this dataset.
-- `names`, which contains the various name of this basis set and which length should match the one give in the `info` dataset.
-- `local_radius_coefs`, which contains `(lradius, lcoef[0],..., lcoefs[m-1])`, where `m=len(lcoefs)` given in the first dataset.
-- For each non local projector, `nlprojector_{i}_radius_coefs`, of shape `(1+p,)`, which contains `(nlradius, nlcoefs[triu(0)], ..., nlcoefs[triu(p-1)])`, 
-  where `p` is the number of upper triangle indices, computed for the `nfunc` attribute of this dataset and `triu(i)` gives the triangular index `i`.
+| Name                           | Shape      | Attributes           | Info                                                                                                                                                                                      |
+|--------------------------------|------------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `info`                         | `(3+n,)`   | `nshell` [mandatory] | contains `(len(names), len(lcoefs), len(nlprojectors), nelec[0], ... nelec[n-1])` with `n=attrs[nshell]`                                                                                  |
+| `names`                        | `(n,)`     | ---                  | contains `n=len(names)` names                                                                                                                                                             |
+| `local_radius_coefs`           | `(1+n,)`   | ---                  | contains `(lradius, lcoef[0],..., lcoefs[n-1])` with `n=len(lcoefs)`                                                                                                                      |
+| `nlprojector_{i}_radius_coefs` | `(1+n,)`   | `nfunc` [mandatory]  | contains `(nlradius, nlcoefs[triu(n)[0]], ..., nlcoefs[triu(n)[n-1]])` with `n=attrs[nfunc]` and `triu(N)` gives the list of the upper triangular indices of a square matrix of size `N`. |
+
+The last dataset is repeated with `i=[0:len(nlprojectors)]`.
 
 The following structure, e.g., is valid:
 
@@ -86,3 +97,5 @@ pseudopotentials/Ne/GTH-BLYP/
 |- nlprojector_1_radius_coefs  # of shape (2,)
                                # and has attribute nfunc=1
 ```
+
+Each `pseudopotential` group might also have the `source` and `references` attributes, with the same definition as above.

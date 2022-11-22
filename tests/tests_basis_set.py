@@ -18,7 +18,12 @@ class BSTestCase(unittest.TestCase):
         ])
 
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            self.basis_sets = BasisSetParser(f.read(), prune_and_rename).basis_sets()
+            self.basis_sets = BasisSetParser(
+                f.read(),
+                prune_and_rename,
+                source='BASIS_EXAMPLE',
+                references=['10.1063/1.2770708']
+            ).basis_sets()
 
         self.bs_names = [
             'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
@@ -74,3 +79,7 @@ class BSTestCase(unittest.TestCase):
             for basis_name in self.bs_names:
                 self.assertIn(basis_name, abs2.basis_sets)
                 self.assertAtomicBasisSetEqual(abs1.basis_sets[basis_name], abs2.basis_sets[basis_name])
+
+                # check source & refs
+                self.assertEqual(abs1.basis_sets[basis_name].source, abs2.basis_sets[basis_name].source)
+                self.assertEqual(abs1.basis_sets[basis_name].references, abs2.basis_sets[basis_name].references)
