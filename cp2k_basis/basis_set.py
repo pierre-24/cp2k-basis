@@ -3,10 +3,10 @@ import pathlib
 import h5py
 import numpy
 
-from typing import List, Dict, Callable, Iterable
+from typing import List, Dict, Callable, Iterable, Union
 
-from cp2k_basis.parser import BaseParser, TokenType
-
+from cp2k_basis import logger
+from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
 
 L_TO_SHELL = {
     0: 's',
@@ -151,6 +151,8 @@ class AtomicBasisSet:
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
+        logger.info('dump basis set for {} in {}'.format(self.symbol, group.name))
+
         if self.source:
             group.attrs['source'] = self.source
         if self.references:
@@ -167,6 +169,8 @@ class AtomicBasisSet:
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSet':
+        logger.info('read basis set for {} in {}'.format(symbol, group.name))
+
         ds_info = group['info']
         ds_names = group['names']
 
@@ -254,11 +258,11 @@ def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[st
     return per_name
 
 
-class BasisSetParser(BaseParser):
+class AtomicBasisSetsParser(BaseParser):
     def __init__(
         self,
         inp: str,
-        prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+        prune_and_rename: Union[Callable[[Iterable[str]], Iterable[str]], PruneAndRename] = lambda x: x,
         source: str = None,
         references: List[str] = None
     ):
@@ -267,12 +271,13 @@ class BasisSetParser(BaseParser):
         self.source = source
         self.references = references
 
-    def basis_sets(self) -> Dict[str, AtomicBasisSets]:
+    def basis_sets(self, basis_sets: Dict[str, AtomicBasisSets] = None) -> Dict[str, AtomicBasisSets]:
         """Basis set
         BASIS_SETS := ATOMIC_BASIS_SET* EOS
         """
 
-        basis_sets = {}
+        if basis_sets is None:
+            basis_sets = {}
 
         self.skip()
 
@@ -309,6 +314,8 @@ class BasisSetParser(BaseParser):
             self.expect(TokenType.WORD)
             names.append(self.current_token.value)
             self.next()
+
+        logger.info('parse basis set for {} in {}'.format(symbol, ', '.join(names)))
 
         self.eat(TokenType.NL)
         self.skip()
@@ -351,15 +358,27 @@ class BasisSetParser(BaseParser):
             self.eat(TokenType.SPACE)
             nshell.append(self.integer())
 
+        # skip anything remaining on this line (see `U` in $CP2K/cp2l/data/BASIS_MOLOPT)
+        while self.current_token.type not in [TokenType.NL, TokenType.EOS]:
+            self.next()
+
         self.skip()
 
         exponents = numpy.zeros(nfunc)
         coefficients = numpy.zeros((nfunc, sum(nshell)))
 
         for i in range(nfunc):
-            c = self.line('n' + 'n' * sum(nshell))
+            c = [self.number()]
+            for j in range(sum(nshell)):
+                self.eat(TokenType.SPACE)
+                c.append(self.number())
             exponents[i] = c[0]
             coefficients[i] = c[1:]
+
+            # skip anything remaining on this line (see `O` in $CP2K/cp2l/data/GTH_BASIS_SET)
+            while self.current_token.type not in [TokenType.NL, TokenType.EOS]:
+                self.next()
+
             self.skip()
 
         return Contraction(principle_n, l_min, l_max, nfunc, nshell, exponents, coefficients)

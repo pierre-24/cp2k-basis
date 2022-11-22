@@ -3,7 +3,7 @@ import unittest
 
 import numpy
 
-from cp2k_basis.basis_set import BasisSetParser
+from cp2k_basis.basis_set import AtomicBasisSetsParser
 from cp2k_basis.parser import Lexer, Token as TK, TokenType as TT, BaseParser, ParserSyntaxError
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
 
@@ -92,7 +92,7 @@ class BSParserTestCase(unittest.TestCase):
             coefs=coefs_str
         )
 
-        abs = BasisSetParser(SINGLE_ABS.format(**params)).atomic_basis_set()
+        abs = AtomicBasisSetsParser(SINGLE_ABS.format(**params)).atomic_basis_set()
 
         self.assertEqual(params['names'], ' '.join(abs.names))
         self.assertEqual(params['symbol'], abs.symbol)
@@ -113,7 +113,7 @@ class BSParserTestCase(unittest.TestCase):
 
     def test_full_basis_set(self):
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            basis_sets = BasisSetParser(f.read()).basis_sets()
+            basis_sets = AtomicBasisSetsParser(f.read()).basis_sets()
 
         self.assertIn('C', basis_sets)
         self.assertIn('H', basis_sets)

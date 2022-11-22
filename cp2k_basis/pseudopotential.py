@@ -1,11 +1,12 @@
 import pathlib
-from typing import List, Dict, Callable, Iterable
+from typing import List, Dict, Callable, Iterable, Union
 
 import h5py
 import numpy
 
+from cp2k_basis import logger
 from cp2k_basis.basis_set import string_dt
-from cp2k_basis.parser import BaseParser, TokenType
+from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
 
 
 class NonLocalProjector:
@@ -108,6 +109,7 @@ class AtomicPseudopotential:
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
+        logger.info('dump pseudopotential for {} in {}'.format(self.symbol, group.name))
 
         if self.source:
             group.attrs['source'] = self.source
@@ -133,6 +135,8 @@ class AtomicPseudopotential:
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group):
+        logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
+
         ds_info = group['info']
         ds_names = group['names']
         ds_radius_coefs = group[AtomicPseudopotential.HDF5_DS_RADIUS_COEF]
@@ -230,7 +234,7 @@ def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudopotentials]) -> Di
 class AtomicPseudopotentialsParser(BaseParser):
     def __init__(
             self, inp: str,
-            prune_and_rename: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+            prune_and_rename: Union[Callable[[Iterable[str]], Iterable[str]], PruneAndRename] = lambda x: x,
             source: str = None,
             references: List[str] = None
     ):
@@ -239,12 +243,16 @@ class AtomicPseudopotentialsParser(BaseParser):
         self.source = source
         self.references = references
 
-    def atomic_pseudopotentials(self) -> Dict[str, AtomicPseudopotentials]:
+    def atomic_pseudopotentials(
+            self,
+            pps: Dict[str, AtomicPseudopotentials] = None
+    ) -> Dict[str, AtomicPseudopotentials]:
         """
-        PP_FAMILIES := ATOMIC_PP* EOS
+        ATOMIC_PPs := ATOMIC_PP* EOS
         """
 
-        pps = {}
+        if pps is None:
+            pps = {}
 
         self.skip()
 
@@ -283,6 +291,8 @@ class AtomicPseudopotentialsParser(BaseParser):
             self.expect(TokenType.WORD)
             names.append(self.current_token.value)
             self.next()
+
+        logger.info('parse pseudopotential for {} in {}'.format(symbol, ', '.join(names)))
 
         self.eat(TokenType.NL)
         self.skip()

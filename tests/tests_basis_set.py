@@ -5,7 +5,7 @@ import re
 import h5py
 import numpy
 
-from cp2k_basis.basis_set import BasisSetParser, avail_atom_per_basis, AtomicBasisSets
+from cp2k_basis.basis_set import AtomicBasisSetsParser, avail_atom_per_basis, AtomicBasisSets
 from cp2k_basis.parser import PruneAndRename
 
 
@@ -18,7 +18,7 @@ class BSTestCase(unittest.TestCase):
         ])
 
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            self.basis_sets = BasisSetParser(
+            self.basis_sets = AtomicBasisSetsParser(
                 f.read(),
                 prune_and_rename,
                 source='BASIS_EXAMPLE',
@@ -51,7 +51,7 @@ class BSTestCase(unittest.TestCase):
     def test_repr(self):
         abs1 = self.basis_sets['C'].basis_sets['TZV2PX-MOLOPT-GTH']
 
-        parser = BasisSetParser(str(abs1))
+        parser = AtomicBasisSetsParser(str(abs1))
         parser.skip()  # skip comment
         abs2 = parser.atomic_basis_set()
 
