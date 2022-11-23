@@ -26,5 +26,11 @@ visitor_blueprint = Blueprint('visitor', __name__)
 class IndexView(RenderTemplateView):
     template_name = 'index.html'
 
+    def get_context_data(self):
+        ctx = super().get_context_data()
+
+        ctx['ATOMS_PER_BASIS_SET'] = flask.current_app.config['ATOMS_PER_BASIS_SET']
+        return ctx
+
 
 visitor_blueprint.add_url_rule('/', view_func=IndexView.as_view(name='index'))

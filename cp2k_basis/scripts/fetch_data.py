@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('-i', '--source', default='DATA_SOURCES.yml', type=argparse.FileType('r'))
-    parser.add_argument('-o', '--output', default='library.h5', type=pathlib.Path)
+    parser.add_argument('-o', '--output', default='LIBRARY_EXAMPLE.h5', type=pathlib.Path)
 
     args = parser.parse_args()
 
@@ -33,7 +33,11 @@ def main():
 
     # fetch files
     for segment in data:
-        base_url = segment['base'].format(**segment['data'])
+        if 'data' in segment:
+            base_url = segment['base'].format(**segment['data'])
+        else:
+            base_url = segment['base']
+
         for file in segment['files']:
             full_url = base_url + file['name']
             logger.info('fetch {} [{}]'.format(full_url, file['type']))

@@ -95,6 +95,8 @@ Z_TO_SYMB = {
     92: 'U'
 }
 
+SYMB_TO_Z = dict((b, a) for a, b in Z_TO_SYMB.items())
+
 TPL = """Available for {0}:
 
 {1:2}                                                 {2:2}
