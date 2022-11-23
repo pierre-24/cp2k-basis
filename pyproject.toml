@@ -19,5 +19,13 @@ dependencies = [
     'numpy',
     'h5py',
     'pyyaml',
-    'requests'
+    'requests',
+    'Flask',
+    'Flask-Limiter'
 ]
+
+[project.scripts]
+cp2k_basis_fetch_data = "cp2k_basis.scripts.fetch_data:main"
+
+[tool.setuptools]
+packages = ['cp2k_basis', 'cp2k_basis_webservice']

@@ -1,3 +1,9 @@
+"""
+Fetch the basis sets and pseudopotentials as described in the input, and pack them together as a library (HDF5 file).
+See https://github.com/pierre-24/cp2k-basis/blob/master/DATA_SOURCES.yml for a description of the input, and
+https://github.com/pierre-24/cp2k-basis/blob/master/library_file_format.md for a description of the output.
+"""
+
 import pathlib
 import h5py
 import yaml
@@ -12,7 +18,7 @@ from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('-i', '--source', default='DATA_SOURCES.yml', type=argparse.FileType('r'))
     parser.add_argument('-o', '--output', default='library.h5', type=pathlib.Path)

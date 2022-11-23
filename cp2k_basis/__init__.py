@@ -1,3 +1,7 @@
+"""
+Implementation of a parser for CP2K basis sets and pseudopotentials, and of their storage as an HDF5 file.
+"""
+
 import logging
 import os
 

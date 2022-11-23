@@ -1,3 +1,22 @@
+# This file contains a list of repositories
+# (which is a given location in a website containing different files).
+#
+# Each repository has the following attributes:
+#
+# - base: base URL, might content placeholders of the form `{name}`
+# - data: dictionary of values for each placeholder.
+# - files: list of files to fetch. Each file has the following attributes:
+#
+#   + name: name of the file,
+#   + type: give the type of data found in the file, can be either `BASIS_SETS` or `PSEUDOPOTENTIALS`,
+#   + references: list of references, in the form of DOI,
+#   + rules: set of rule to modify or discard names,
+#     as a dictionary where the key is a REGEX matching a name,
+#     and the value is its replacement (empty values means that the name is discarded).
+#
+#   The full URL to download the file will be given by `base.replace(**data) + name`.
+
+--- # list of repositories
 - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
   data:
     commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
