@@ -20,8 +20,8 @@ from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument('-i', '--source', default='DATA_SOURCES.yml', type=argparse.FileType('r'))
-    parser.add_argument('-o', '--output', default='LIBRARY_EXAMPLE.h5', type=pathlib.Path)
+    parser.add_argument('source', type=argparse.FileType('r'))
+    parser.add_argument('-o', '--output', default='library.h5', type=pathlib.Path)
 
     args = parser.parse_args()
 

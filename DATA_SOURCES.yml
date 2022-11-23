@@ -17,7 +17,7 @@
 #   The full URL to download the file will be given by `base.replace(**data) + name`.
 
 --- # list of repositories
-- base: https://github.com/cp2k/cp2k/raw/{commit}/data/
+- base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # CP2K main repository
   data:
     commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
   files:

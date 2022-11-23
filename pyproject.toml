@@ -20,7 +20,7 @@ dependencies = [
     'h5py',
     'pyyaml',
     'requests',
-    'Flask',
+    'Flask>=2.0',
     'Flask-Limiter'
 ]
 
@@ -28,4 +28,4 @@ dependencies = [
 cp2k_basis_fetch_data = "cp2k_basis.scripts.fetch_data:main"
 
 [tool.setuptools]
-packages = ['cp2k_basis', 'cp2k_basis_webservice']
+packages = ['cp2k_basis', 'cp2k_basis.scripts']

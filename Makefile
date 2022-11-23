@@ -6,3 +6,6 @@ lint:
 
 test:
 	python -m unittest discover -s tests
+
+run:
+	flask --app cp2k_basis_webservice run

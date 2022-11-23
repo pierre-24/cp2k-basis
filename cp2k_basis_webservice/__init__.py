@@ -19,18 +19,24 @@ limiter = Limiter(key_func=get_remote_address)
 
 
 class Config:
+    LIBRARY = 'library.h5'
+
     BASIS_SETS_PER_ATOM = []
     ATOMS_PER_BASIS_SET = []
     PSEUDOPOTENTIALS_PER_ATOM = []
     ATOMS_PER_PSEUDOPOTENTIAL = []
 
 
-def load_library(app: Flask, path: pathlib.Path):
+def load_library(app: Flask):
 
     basis_sets_per_atom = {}
     atom_per_bs = {}
     pseudos_per_atom = {}
     atom_per_pseudo = {}
+
+    path = pathlib.Path(app.config['LIBRARY'])
+    if not path.exists():
+        raise FileNotFoundError('Library file `{}` does not exists'.format(path))
 
     with h5py.File(path) as f:
         if 'basis_sets' in f:
@@ -66,27 +72,15 @@ def load_library(app: Flask, path: pathlib.Path):
 def create_app():
 
     # create and configure app
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config())
-
-    # update settings from file if any
-    if 'CWS_SETTINGS' in os.environ:
-        app.config.from_envvar('CWS_SETTINGS')
+    app.config.from_pyfile('settings.py', silent=True)
 
     # add other modules
     limiter.init_app(app)
 
     # load library
-    library_path = os.environ.get('CWS_LIBRARY', None)
-
-    if library_path is None:
-        raise FileNotFoundError('Environment variable CWS_LIBRARY is not defined.')
-
-    library_path = pathlib.Path(library_path)
-    if not library_path.exists():
-        raise FileNotFoundError('Library file `{}` does not exists.')
-
-    load_library(app, library_path)
+    load_library(app)
 
     # add blueprint(s)
     from cp2k_basis_webservice.blueprint import visitor_blueprint
