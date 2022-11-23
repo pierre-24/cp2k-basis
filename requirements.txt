@@ -44,6 +44,8 @@ markupsafe==2.1.1
     # via
     #   jinja2
     #   werkzeug
+marshmallow==3.19.0
+    # via webargs
 mccabe==0.7.0
     # via flake8
 numpy==1.23.4
@@ -51,7 +53,10 @@ numpy==1.23.4
     #   cp2k-basis
     #   h5py
 packaging==21.3
-    # via limits
+    # via
+    #   limits
+    #   marshmallow
+    #   webargs
 pycodestyle==2.9.1
     # via
     #   autopep8
@@ -76,6 +81,8 @@ typing-extensions==4.4.0
     #   limits
 urllib3==1.26.12
     # via requests
+webargs==8.2.0
+    # via cp2k-basis
 werkzeug==2.2.2
     # via flask
 wrapt==1.14.1

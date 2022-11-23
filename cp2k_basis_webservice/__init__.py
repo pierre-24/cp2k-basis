@@ -2,7 +2,6 @@
 Implementation of a working webservice
 """
 
-import os
 import pathlib
 
 import h5py
@@ -21,6 +20,7 @@ limiter = Limiter(key_func=get_remote_address)
 class Config:
     LIBRARY = 'library.h5'
 
+    # to be filled by `load_library()`
     BASIS_SETS_PER_ATOM = []
     ATOMS_PER_BASIS_SET = []
     PSEUDOPOTENTIALS_PER_ATOM = []
@@ -83,7 +83,8 @@ def create_app():
     load_library(app)
 
     # add blueprint(s)
-    from cp2k_basis_webservice.blueprint import visitor_blueprint
+    from cp2k_basis_webservice.blueprints import visitor_blueprint, api_blueprint
     app.register_blueprint(visitor_blueprint)
+    app.register_blueprint(api_blueprint)
 
     return app
