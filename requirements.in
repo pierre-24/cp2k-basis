@@ -1,8 +1,4 @@
-Jinja2
+-e file:.#egg=cp2k-basis
 flake8
 flake8-quotes
 autopep8
-numpy
-h5py
-pyyaml
-requests
