@@ -7,6 +7,7 @@ from typing import List, Dict, Callable, Iterable, Union
 
 from cp2k_basis import logger
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
+from cp2k_basis.atomic_data_object import string_dt
 
 L_TO_SHELL = {
     0: 's',
@@ -16,8 +17,6 @@ L_TO_SHELL = {
     4: 'g',
     5: 'h'
 }
-
-string_dt = h5py.special_dtype(vlen=str)
 
 
 class Contraction:

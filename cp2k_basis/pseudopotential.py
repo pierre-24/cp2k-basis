@@ -5,7 +5,7 @@ import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.basis_set import string_dt
+from cp2k_basis.atomic_data_object import string_dt
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
 
 
