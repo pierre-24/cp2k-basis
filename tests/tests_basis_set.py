@@ -5,7 +5,7 @@ import re
 import h5py
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetsParser, avail_atom_per_basis, AtomicBasisSets
+from cp2k_basis.basis_set import AtomicBasisSetsParser, AtomicBasisSets, AtomicBasisSet
 from cp2k_basis.parser import PruneAndRename
 
 
@@ -29,9 +29,9 @@ class BSTestCase(unittest.TestCase):
             'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
 
         for basis_name in self.bs_names:
-            self.assertIn(basis_name, self.basis_sets['C'].basis_sets)
+            self.assertIn(basis_name, self.basis_sets['C'].data_objects)
 
-    def assertAtomicBasisSetEqual(self, abs1, abs2):
+    def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSet, abs2: AtomicBasisSet):
         self.assertEqual(abs2.names, abs1.names)
         self.assertEqual(abs2.symbol, abs1.symbol)
         self.assertEqual(len(abs2.contractions), len(abs1.contractions))
@@ -48,21 +48,14 @@ class BSTestCase(unittest.TestCase):
             self.assertTrue(numpy.array_equal(contraction2.exponents, contraction1.exponents))
             self.assertTrue(numpy.array_equal(contraction2.coefficients, contraction1.coefficients))
 
-    def test_repr(self):
-        abs1 = self.basis_sets['C'].basis_sets['TZV2PX-MOLOPT-GTH']
+    def test_str(self):
+        abs1 = self.basis_sets['C'].data_objects['TZV2PX-MOLOPT-GTH']
 
         parser = AtomicBasisSetsParser(str(abs1))
         parser.skip()  # skip comment
         abs2 = parser.atomic_basis_set()
 
         self.assertAtomicBasisSetEqual(abs1, abs2)
-
-    def test_avail_atom_per_basis(self):
-
-        bs_per_atom = avail_atom_per_basis(self.basis_sets)
-
-        for basis_name in self.bs_names:
-            self.assertEqual(['C', 'H'], sorted(bs_per_atom[basis_name]))
 
     def test_hdf5(self):
         path = tempfile.mktemp()
@@ -77,9 +70,9 @@ class BSTestCase(unittest.TestCase):
             abs2 = AtomicBasisSets.read_hdf5(f['basis_sets/C'])
 
             for basis_name in self.bs_names:
-                self.assertIn(basis_name, abs2.basis_sets)
-                self.assertAtomicBasisSetEqual(abs1.basis_sets[basis_name], abs2.basis_sets[basis_name])
+                self.assertIn(basis_name, abs2.data_objects)
+                self.assertAtomicBasisSetEqual(abs1.data_objects[basis_name], abs2.data_objects[basis_name])
 
-                # check source & refs
-                self.assertEqual(abs1.basis_sets[basis_name].source, abs2.basis_sets[basis_name].source)
-                self.assertEqual(abs1.basis_sets[basis_name].references, abs2.basis_sets[basis_name].references)
+                # check metadata
+                self.assertEqual(
+                    abs1.data_objects[basis_name].metadata, abs2.data_objects[basis_name].metadata)

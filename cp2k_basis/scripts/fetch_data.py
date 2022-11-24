@@ -40,7 +40,7 @@ def main():
 
         for file in segment['files']:
             full_url = base_url + file['name']
-            logger.info('fetch {} [{}]'.format(full_url, file['type']))
+            logger.metadata('fetch {} [{}]'.format(full_url, file['type']))
 
             response = requests.get(full_url)
 

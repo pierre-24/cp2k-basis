@@ -129,11 +129,11 @@ class BSParserTestCase(unittest.TestCase):
         )
 
         for bs_name, ncont, full, contracted in repr_C:
-            self.assertIn(bs_name, basis_sets['C'].basis_sets)
-            abs1 = basis_sets['C'].basis_sets[bs_name]
+            self.assertIn(bs_name, basis_sets['C'].data_objects)
+            abs1 = basis_sets['C'].data_objects[bs_name]
 
-            self.assertIn(bs_name + '-q4', basis_sets['C'].basis_sets)  # the -q4 version is also there
-            self.assertEqual(abs1, basis_sets['C'].basis_sets[bs_name + '-q4'])
+            self.assertIn(bs_name + '-q4', basis_sets['C'].data_objects)  # the -q4 version is also there
+            self.assertEqual(abs1, basis_sets['C'].data_objects[bs_name + '-q4'])
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())
@@ -205,8 +205,8 @@ class PPParserTestCase(unittest.TestCase):
         for symbol in symbols:
             self.assertIn(symbol, pseudos)
             app = pseudos[symbol]
-            self.assertIn(name, app.pseudopotentials)
+            self.assertIn(name, app.data_objects)
 
-            name_pair = '{}-q{}'.format(name, sum(app.pseudopotentials[name].nelec))
-            self.assertIn(name_pair, app.pseudopotentials)
-            self.assertEqual(app.pseudopotentials[name_pair], app.pseudopotentials[name])
+            name_pair = '{}-q{}'.format(name, sum(app.data_objects[name].nelec))
+            self.assertIn(name_pair, app.data_objects)
+            self.assertEqual(app.data_objects[name_pair], app.data_objects[name])

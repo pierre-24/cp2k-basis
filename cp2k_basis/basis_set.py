@@ -1,13 +1,11 @@
-import pathlib
-
 import h5py
 import numpy
 
-from typing import List, Dict, Callable, Iterable, Union
+from typing import List, Dict, Callable, Iterable, Union, Any
 
 from cp2k_basis import logger
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
-from cp2k_basis.atomic_data_object import string_dt
+from cp2k_basis.atomic_data_object import BaseAtomicDataObject, BaseAtomicDataObjects
 
 L_TO_SHELL = {
     0: 's',
@@ -20,7 +18,6 @@ L_TO_SHELL = {
 
 
 class Contraction:
-
     HDF5_DS_INFO = 'contraction_{}_info'
     HDF5_DS_EXP_COEFS = 'contraction_{}_exp_coefs'
 
@@ -48,7 +45,7 @@ class Contraction:
         self.exponents = exponents
         self.coefficients = coefficients
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         r = ' {} {} {} {} {}\n'.format(
             self.principle_n,
             self.l_min,
@@ -61,6 +58,11 @@ class Contraction:
             r += fmt.format(self.exponents[i], *self.coefficients[i])
 
         return r
+
+    def __repr__(self):
+        return '<Contraction({}, {}, {}, {}, {})>'.format(
+            self.principle_n, self.l_min, self.l_max, repr(self.nshell), self.nfunc
+        )
 
     def dump_hdf5(self, group: h5py.Group, i: int):
         dset_info = group.create_dataset(Contraction.HDF5_DS_INFO.format(i), shape=(4 + len(self.nshell)), dtype='i')
@@ -100,20 +102,16 @@ class Contraction:
         return cls(principle_n, l_min, l_max, nfunc, nshell, dset_exp_coefs[:, 0], dset_exp_coefs[:, 1:])
 
 
-class AtomicBasisSet:
+class AtomicBasisSet(BaseAtomicDataObject):
     def __init__(
         self,
         symbol: str,
         names: List[str],
         contractions: List[Contraction],
-        source: str = None,
-        references: List[str] = None
+        metadata: Dict[str, Any] = None
     ):
-        self.symbol = symbol
-        self.names = names
+        super().__init__(symbol, names, metadata)
         self.contractions = contractions
-        self.source = source
-        self.references = references
 
     def _l_max(self) -> int:
         l_max = 0
@@ -138,7 +136,7 @@ class AtomicBasisSet:
     def contracted_representation(self) -> str:
         return '[{}]'.format(self._representation(True))
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         r = '# {} {} {} -> {}\n'.format(
             self.symbol, self.names[0], self.full_representation(), self.contracted_representation())
         r += ' {}  {}\n {}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
@@ -147,21 +145,18 @@ class AtomicBasisSet:
 
         return r
 
+    def __repr__(self):
+        return '<AtomicBasisSet({}, {})>'.format(repr(self.symbol), repr(self.names))
+
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
         logger.info('dump basis set for {} in {}'.format(self.symbol, group.name))
 
-        if self.source:
-            group.attrs['source'] = self.source
-        if self.references:
-            group.attrs['references'] = ','.join(self.references)
+        super().dump_hdf5(group)
 
         ds_info = group.create_dataset('info', shape=(2, ), dtype='i')
         ds_info[:] = [len(self.names), len(self.contractions)]
-
-        ds_names = group.create_dataset('names', shape=(len(self.names), ), dtype=string_dt)
-        ds_names[:] = self.names
 
         for i, contraction in enumerate(self.contractions):
             contraction.dump_hdf5(group, i)
@@ -170,15 +165,10 @@ class AtomicBasisSet:
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSet':
         logger.info('read basis set for {} in {}'.format(symbol, group.name))
 
-        ds_info = group['info']
-        ds_names = group['names']
-
         # checks
+        ds_info = group['info']
         if ds_info.shape != (2, ):
             raise ValueError('Dataset `info` in {} must have length 2'.format(group.name))
-
-        if ds_names.shape != (ds_info[0], ):
-            raise ValueError('Dataset `names` in {} must have length {}'.format(group.name, ds_info[0]))
 
         # read contractions
         contractions = []
@@ -186,75 +176,23 @@ class AtomicBasisSet:
         for i in range(ds_info[1]):
             contractions.append(Contraction.read_hdf5(group, i))
 
-        source = group.attrs.get('source', None)
-        references = group.attrs['references'].split(',') if 'references' in group.attrs else None
-
-        return cls(
+        # create object
+        obj = cls(
             symbol,
-            names=list(n.decode('utf8') for n in ds_names),
-            contractions=contractions,
-            source=source,
-            references=references
+            names=[],
+            contractions=contractions
         )
 
+        obj._read_info(group, ds_info[0])
 
-class AtomicBasisSets:
+        return obj
+
+
+class AtomicBasisSets(BaseAtomicDataObjects):
     """Set of basis set for a given atom
     """
 
-    def __init__(self, symbol: str):
-        self.basis_sets: Dict[str, AtomicBasisSet] = {}
-        self.symbol = symbol
-
-    def add_atomic_basis_set(self, bs: AtomicBasisSet, names: Iterable[str]):
-
-        if type(bs) is not AtomicBasisSet:
-            raise TypeError('`bs` must be AtomicBasisSet')
-
-        for name in names:
-            if name in self.basis_sets:
-                raise ValueError('{} already exists for atom {}'.format(name, self.symbol))
-
-            self.basis_sets[name] = bs
-
-    def __repr__(self) -> str:
-        return ''.join(str(bs) for bs in self.basis_sets.values())
-
-    def dump_hdf5(self, group: h5py.Group):
-        """Dump in HDF5"""
-
-        for key, basis in self.basis_sets.items():
-            # remove existing
-            try:
-                group.pop(key)
-            except KeyError:
-                pass
-
-            # create new
-            subgroup = group.create_group(key)
-            basis.dump_hdf5(subgroup)
-
-    @classmethod
-    def read_hdf5(cls, group: h5py.Group) -> 'AtomicBasisSets':
-        symbol = pathlib.Path(group.name).name
-        o = cls(symbol)
-
-        for key, basis_group in group.items():
-            o.add_atomic_basis_set(AtomicBasisSet.read_hdf5(symbol, basis_group), [key])
-
-        return o
-
-
-def avail_atom_per_basis(basis: Dict[str, AtomicBasisSets]) -> Dict[str, List[str]]:
-    per_name = {}
-
-    for atomic_basis in basis.values():
-        for name in atomic_basis.basis_sets:
-            if name not in per_name:
-                per_name[name] = []
-            per_name[name].append(atomic_basis.symbol)
-
-    return per_name
+    object_type = AtomicBasisSet
 
 
 class AtomicBasisSetsParser(BaseParser):
@@ -286,7 +224,7 @@ class AtomicBasisSetsParser(BaseParser):
             if atomic_basis_set.symbol not in basis_sets:
                 basis_sets[atomic_basis_set.symbol] = AtomicBasisSets(atomic_basis_set.symbol)
 
-            basis_sets[atomic_basis_set.symbol].add_atomic_basis_set(
+            basis_sets[atomic_basis_set.symbol].add(
                 atomic_basis_set, self.prune_and_rename(atomic_basis_set.names))
 
             self.skip()
@@ -331,8 +269,7 @@ class AtomicBasisSetsParser(BaseParser):
             symbol,
             names,
             contractions,
-            self.source,
-            self.references
+            metadata={'source': self.source, 'references': self.references}
         )
 
     def contraction(self) -> Contraction:

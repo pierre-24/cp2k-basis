@@ -1,11 +1,10 @@
-import pathlib
-from typing import List, Dict, Callable, Iterable, Union
+from typing import List, Dict, Callable, Iterable, Union, Any
 
 import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.atomic_data_object import string_dt
+from cp2k_basis.atomic_data_object import BaseAtomicDataObject, BaseAtomicDataObjects
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
 
 
@@ -33,6 +32,9 @@ class NonLocalProjector:
             r += '\n'
 
         return r
+
+    def __repr__(self):
+        return '<NonLocalProjector({}, {})>'.format(self.radius, self.nfunc)
 
     def dump_hdf5(self, group: h5py.Group, i: int):
         """Dump HDF5"""
@@ -67,7 +69,7 @@ class NonLocalProjector:
         return cls(dset_radius_coefs[0], nfunc, coefs)
 
 
-class AtomicPseudopotential:
+class AtomicPseudopotential(BaseAtomicDataObject):
     """Atomic GTH (Goedecker-Teter-Hutter) pseudopotential of CP2K
     """
 
@@ -81,19 +83,16 @@ class AtomicPseudopotential:
         lradius: float,
         lcoefficients: numpy.ndarray,
         nlprojectors: List[NonLocalProjector],
-        source: str = None,
-        references: List[str] = None
+        metadata: Dict[str, Any] = None
     ):
-        self.symbol = symbol
-        self.names = names
+        super().__init__(symbol, names, metadata)
+
         self.nelec = nelec
         self.lradius = lradius
         self.lcoefficients = lcoefficients
         self.nlprojectors = nlprojectors
-        self.source = source
-        self.references = references
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         r = '#\n{}  {}\n  {}\n'.format(
             self.symbol, ' '.join(self.names), ' '.join('{:>4}'.format(x) for x in self.nelec))
 
@@ -110,22 +109,19 @@ class AtomicPseudopotential:
 
         return r
 
+    def __repr__(self):
+        return 'AtomicPseudopotential({}, {}, {})'.format(repr(self.symbol), repr(self.names), repr(self.nelec))
+
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
         logger.info('dump pseudopotential for {} in {}'.format(self.symbol, group.name))
 
-        if self.source:
-            group.attrs['source'] = self.source
-        if self.references:
-            group.attrs['references'] = ','.join(self.references)
+        super().dump_hdf5(group)
 
         ds_info = group.create_dataset('info', shape=(3 + len(self.nelec), ), dtype='i')
         ds_info[:3] = [len(self.names), len(self.lcoefficients), len(self.nlprojectors)]
         ds_info[3:] = self.nelec
         ds_info.attrs['nelec'] = len(self.nelec)
-
-        ds_names = group.create_dataset('names', shape=(len(self.names), ), dtype=string_dt)
-        ds_names[:] = self.names
 
         ds_local_radius_coefs = group.create_dataset(
             AtomicPseudopotential.HDF5_DS_RADIUS_COEF, (1 + self.lcoefficients.shape[0]), dtype='d')
@@ -141,7 +137,6 @@ class AtomicPseudopotential:
         logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']
-        ds_names = group['names']
         ds_radius_coefs = group[AtomicPseudopotential.HDF5_DS_RADIUS_COEF]
 
         n = ds_info.attrs['nelec']
@@ -149,9 +144,6 @@ class AtomicPseudopotential:
         # checks
         if ds_info.shape != (3 + n, ):
             raise ValueError('Dataset `info` in {} must have length {}'.format(group.name, 3 + n))
-
-        if ds_names.shape != (ds_info[0], ):
-            raise ValueError('Dataset `names` in {} must have length {}'.format(group.name, ds_info[0]))
 
         if ds_radius_coefs.shape != (ds_info[1] + 1,):
             raise ValueError('Dataset `{}` in {} must have length {}'.format(
@@ -167,71 +159,21 @@ class AtomicPseudopotential:
         for i in range(ds_info[2]):
             projectors.append(NonLocalProjector.read_hdf5(group, i))
 
-        source = group.attrs.get('source', None)
-        references = group.attrs['references'].split(',') if 'references' in group.attrs else None
-
-        return cls(
+        obj = cls(
             symbol,
-            list(n.decode('utf8') for n in ds_names),
+            [],
             nelec, lradius,
             lcoefs,
             projectors,
-            source=source,
-            references=references
         )
 
+        obj._read_info(group, ds_info[0])
 
-class AtomicPseudopotentials:
-    def __init__(self, symbol: str):
-        self.pseudopotentials: Dict[str, AtomicPseudopotential] = {}
-        self.symbol = symbol
-
-    def add_atomic_pseudopotential(self, ap: AtomicPseudopotential, names: Iterable[str]):
-
-        for name in names:
-            if name in self.pseudopotentials:
-                raise ValueError('pseudo {} already defined for {}'.format(name, self.symbol))
-
-            self.pseudopotentials[name] = ap
-
-    def __repr__(self) -> str:
-        return ''.join(str(bs) for bs in self.pseudopotentials.values())
-
-    def dump_hdf5(self, group: h5py.Group):
-        """Dump in HDF5"""
-
-        for key, pseudo in self.pseudopotentials.items():
-            # remove existing
-            try:
-                group.pop(key)
-            except KeyError:
-                pass
-
-            # create new
-            subgroup = group.create_group(key)
-            pseudo.dump_hdf5(subgroup)
-
-    @classmethod
-    def read_hdf5(cls, group: h5py.Group) -> 'AtomicPseudopotentials':
-        symbol = pathlib.Path(group.name).name
-        o = cls(symbol)
-
-        for key, basis_group in group.items():
-            o.add_atomic_pseudopotential(AtomicPseudopotential.read_hdf5(symbol, basis_group), [key])
-
-        return o
+        return obj
 
 
-def avail_atom_per_pseudo_family(basis: Dict[str, AtomicPseudopotentials]) -> Dict[str, List[str]]:
-    per_name = {}
-
-    for pseudo in basis.values():
-        for name in pseudo.pseudopotentials:
-            if name not in per_name:
-                per_name[name] = []
-            per_name[name].append(pseudo.symbol)
-
-    return per_name
+class AtomicPseudopotentials(BaseAtomicDataObjects):
+    object_type = AtomicPseudopotential
 
 
 class AtomicPseudopotentialsParser(BaseParser):
@@ -265,7 +207,7 @@ class AtomicPseudopotentialsParser(BaseParser):
             if atomic_pp.symbol not in pps:
                 pps[atomic_pp.symbol] = AtomicPseudopotentials(atomic_pp.symbol)
 
-            pps[atomic_pp.symbol].add_atomic_pseudopotential(atomic_pp, self.prune_and_rename(atomic_pp.names))
+            pps[atomic_pp.symbol].add(atomic_pp, self.prune_and_rename(atomic_pp.names))
 
             self.skip()
 
@@ -340,8 +282,10 @@ class AtomicPseudopotentialsParser(BaseParser):
             lradius,
             lcoefficients,
             nlprojectors,
-            self.source,
-            self.references
+            metadata={
+                'source': self.source,
+                'references': self.references
+            }
         )
 
     def nlprojector(self) -> NonLocalProjector:

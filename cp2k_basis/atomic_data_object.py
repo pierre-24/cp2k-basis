@@ -2,6 +2,9 @@ import pathlib
 import h5py
 
 from typing import Dict, Iterable, Union, Any, List
+
+import numpy
+
 try:
     from typing import Self
 except ImportError:
@@ -12,11 +15,17 @@ except ImportError:
 string_dt = h5py.special_dtype(vlen=str)
 
 
-class AtomicDataObject:
-    def __init__(self, symbol: str, names: List[str], info: Dict[str, Union[str, Any]] = None):
+class BaseAtomicDataObject:
+    """Base atomic data storage
+    """
+
+    def __init__(self, symbol: str, names: List[str], metadata: Dict[str, Union[str, Any]] = None):
         self.symbol = symbol
         self.names = names
-        self.info = info
+
+        self.metadata = {}
+        if metadata:
+            self.metadata = metadata
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
@@ -26,7 +35,7 @@ class AtomicDataObject:
         ds_names[:] = self.names
 
         # dump info as attributes
-        for key, value in self.info.items():
+        for key, value in self.metadata.items():
             group.attrs[key] = value
 
     def _read_info(self, group: h5py.Group, name_size: int):
@@ -39,7 +48,10 @@ class AtomicDataObject:
         self.names = list(n.decode('utf8') for n in ds_names)
 
         for key, values in group.attrs.items():
-            self.info[key] = values
+            if type(values) == numpy.ndarray:
+                self.metadata[key] = list(values)
+            else:
+                self.metadata[key] = values
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> Self:
@@ -52,18 +64,18 @@ class AtomicDataException(Exception):
     pass
 
 
-class AtomicDataObjects:
+class BaseAtomicDataObjects:
     """
     Storage for `AtomicDataObject`
     """
 
-    object_type = AtomicDataObject
+    object_type = BaseAtomicDataObject
 
     def __init__(self, symbol: str):
         self.symbol = symbol
-        self.data_objects: Dict[str, AtomicDataObject] = {}
+        self.data_objects: Dict[str, BaseAtomicDataObject] = {}
 
-    def add(self, obj: AtomicDataObject, names: Iterable[str]):
+    def add(self, obj: BaseAtomicDataObject, names: Iterable[str]):
         if type(obj) is not self.object_type:
             raise TypeError('`obj` must be of type {}'.format(self.object_type))
 

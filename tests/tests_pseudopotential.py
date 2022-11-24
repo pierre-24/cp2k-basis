@@ -7,8 +7,7 @@ import numpy
 import re
 
 from cp2k_basis.parser import PruneAndRename
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, avail_atom_per_pseudo_family, \
-    AtomicPseudopotentials
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, AtomicPseudopotentials, AtomicPseudopotential
 
 
 class PseudoTestCase(unittest.TestCase):
@@ -30,10 +29,10 @@ class PseudoTestCase(unittest.TestCase):
 
         for symbol in self.symbols:
             self.assertIn(symbol, self.pseudos)
-            self.assertEqual(len(self.pseudos[symbol].pseudopotentials), 1)
-            self.assertIn(self.name, self.pseudos[symbol].pseudopotentials)
+            self.assertEqual(len(self.pseudos[symbol].data_objects), 1)
+            self.assertIn(self.name, self.pseudos[symbol].data_objects)
 
-    def assertPseudoEqual(self, app1, app2):
+    def assertPseudoEqual(self, app1: AtomicPseudopotential, app2: AtomicPseudopotential):
         self.assertEqual(app2.symbol, app1.symbol)
         self.assertEqual(app2.names, app1.names)
         self.assertEqual(app2.nelec, app1.nelec)
@@ -47,14 +46,8 @@ class PseudoTestCase(unittest.TestCase):
             self.assertEqual(proj2.radius, proj.radius)
             self.assertTrue(numpy.array_equal(proj2.coefficients, proj.coefficients))
 
-    def test_avail_pseudo(self):
-        pseudo_families = avail_atom_per_pseudo_family(self.pseudos)
-
-        self.assertIn(self.name, pseudo_families)
-        self.assertEqual(sorted(self.symbols), sorted(pseudo_families[self.name]))
-
-    def test_repr(self):
-        app1 = self.pseudos['Ne'].pseudopotentials['GTH-BLYP']
+    def test_str(self):
+        app1 = self.pseudos['Ne'].data_objects['GTH-BLYP']
 
         parser = AtomicPseudopotentialsParser(str(app1))
         parser.skip()  # skip comment
@@ -72,7 +65,7 @@ class PseudoTestCase(unittest.TestCase):
             curated_pseudos = AtomicPseudopotentialsParser(f.read(), prune_and_rename).atomic_pseudopotentials()
 
         for symbol in self.symbols:
-            self.assertEqual(list(curated_pseudos[symbol].pseudopotentials.keys()), ['XX-BLYP'])
+            self.assertEqual(list(curated_pseudos[symbol].data_objects.keys()), ['XX-BLYP'])
 
     def test_hdf5(self):
         path = tempfile.mktemp()
@@ -87,17 +80,12 @@ class PseudoTestCase(unittest.TestCase):
             for symbol in self.symbols:
                 app = AtomicPseudopotentials.read_hdf5(f['pseudopotentials/{}'.format(symbol)])
                 self.assertPseudoEqual(
-                    self.pseudos[symbol].pseudopotentials[self.name],
-                    app.pseudopotentials[self.name]
+                    self.pseudos[symbol].data_objects[self.name],
+                    app.data_objects[self.name]
                 )
 
-                # check source & refs
+                # check metadata
                 self.assertEqual(
-                    self.pseudos[symbol].pseudopotentials[self.name].source,
-                    app.pseudopotentials[self.name].source
-                )
-
-                self.assertEqual(
-                    self.pseudos[symbol].pseudopotentials[self.name].references,
-                    app.pseudopotentials[self.name].references
+                    self.pseudos[symbol].data_objects[self.name].metadata,
+                    app.data_objects[self.name].metadata
                 )

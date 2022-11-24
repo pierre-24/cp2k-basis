@@ -51,7 +51,7 @@ def load_library(app: Flask):
 
                 atomic_basis_sets = AtomicBasisSets.read_hdf5(group)
                 basis_sets_per_atom[symbol] = atomic_basis_sets
-                for name in atomic_basis_sets.basis_sets.keys():
+                for name in atomic_basis_sets.data_objects.keys():
                     if name not in atom_per_bs:
                         atom_per_bs[name] = []
                     atom_per_bs[name].append(symbol)
@@ -63,7 +63,7 @@ def load_library(app: Flask):
 
                 atomic_pseudos = AtomicPseudopotentials.read_hdf5(group)
                 pseudos_per_atom[symbol] = atomic_pseudos
-                for name in atomic_pseudos.pseudopotentials.keys():
+                for name in atomic_pseudos.data_objects.keys():
                     if name not in atom_per_pseudo:
                         atom_per_pseudo[name] = []
                     atom_per_pseudo[name].append(symbol)

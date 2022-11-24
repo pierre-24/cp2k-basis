@@ -93,7 +93,7 @@ class BaseDataAPI(MethodView):
         for symbol in atoms:
             data_per_atom = flask.current_app.config['{}S_PER_ATOM'.format(self.source)].get(symbol)
             if data_per_atom:
-                data = getattr(data_per_atom, self.source.lower() + 's').get(name)
+                data = data_per_atom.data_objects.get(name)
                 if data:
                     result.append(data)
                 else:
