@@ -29,6 +29,9 @@ class NonLocalProjector:
                 r += '                    ' + ' ' * 15 * i
             r += (' {:14.8f}' * (self.nfunc - i)).format(*self.coefficients[i, i:]) + '\n'
 
+        if self.nfunc == 0:
+            r += '\n'
+
         return r
 
     def dump_hdf5(self, group: h5py.Group, i: int):

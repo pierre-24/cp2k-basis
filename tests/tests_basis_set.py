@@ -23,7 +23,7 @@ class BSTestCase(unittest.TestCase):
                 prune_and_rename,
                 source='BASIS_EXAMPLE',
                 references=['10.1063/1.2770708']
-            ).basis_sets()
+            ).atomic_basis_sets()
 
         self.bs_names = [
             'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']

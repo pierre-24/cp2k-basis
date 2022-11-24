@@ -67,17 +67,62 @@ def handle_error_s(err: Union[NotFound, Forbidden]):
 
 
 field_atoms = fields.DelimitedList(fields.Str(validate=lambda x: x in SYMB_TO_Z))
-field_basis = fields.Str(validate=lambda x: x in flask.current_app.config['ATOMS_PER_BASIS_SET'])
+field_name = fields.Str()
 
 parser = FlaskParser()
 
 
-class BasisSetAPI(MethodView):
+class BaseDataAPI(MethodView):
+    source: str = ''
+    textual_source: str = ''
 
-    @parser.use_kwargs({'basis': field_basis}, location='view_args')
+    @parser.use_kwargs({'name': field_name}, location='view_args')
     @parser.use_kwargs({'atoms': field_atoms}, location='query')
     def get(self, **kwargs):
-        return flask.jsonify(status=200)
+        name = kwargs.pop('name')
+
+        if name not in flask.current_app.config['ATOMS_PER_{}'.format(self.source)]:
+            flask.abort(404, 'Unnkown {} {}'.format(self.textual_source, name))
+
+        atoms = kwargs.pop('atoms', None)
+
+        if not atoms:
+            atoms = flask.current_app.config['ATOMS_PER_{}'.format(self.source)][name]
+
+        result = []
+        for symbol in atoms:
+            data_per_atom = flask.current_app.config['{}S_PER_ATOM'.format(self.source)].get(symbol)
+            if data_per_atom:
+                data = getattr(data_per_atom, self.source.lower() + 's').get(name)
+                if data:
+                    result.append(data)
+                else:
+                    flask.abort(404, description='No {} {} for {}'.format(self.textual_source, name, symbol))
+            else:
+                flask.abort(404, description='No {} available for {}'.format(self.textual_source, symbol))
+
+        return flask.jsonify(
+            request=dict(
+                atoms=atoms,
+                name=name,
+            ),
+            result=''.join(str(data) for data in result)
+        )
 
 
-api_blueprint.add_url_rule('/basis/<basis>/', view_func=BasisSetAPI.as_view(name='test'))
+class BasisSetDataAPI(BaseDataAPI):
+    source = 'BASIS_SET'
+    textual_source = 'basis set'
+
+
+api_blueprint.add_url_rule('/basis/<name>/data', view_func=BasisSetDataAPI.as_view(name='basis-data'))
+
+
+class PseudopotentialDataAPI(BaseDataAPI):
+
+    source = 'PSEUDOPOTENTIAL'
+    textual_source = 'pseudopotential'
+
+
+api_blueprint.add_url_rule(
+    '/pseudopotential/<name>/data', view_func=PseudopotentialDataAPI.as_view(name='pseudo-data'))

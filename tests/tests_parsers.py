@@ -113,7 +113,7 @@ class BSParserTestCase(unittest.TestCase):
 
     def test_full_basis_set(self):
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            basis_sets = AtomicBasisSetsParser(f.read()).basis_sets()
+            basis_sets = AtomicBasisSetsParser(f.read()).atomic_basis_sets()
 
         self.assertIn('C', basis_sets)
         self.assertIn('H', basis_sets)

@@ -56,7 +56,7 @@ def main():
                     prune_and_rename=pp,
                     source=full_url,
                     references=file['references']
-                ).basis_sets(basis_sets)
+                ).atomic_basis_sets(basis_sets)
 
             elif file['type'] == 'POTENTIALS':
                 pseudos = AtomicPseudopotentialsParser(

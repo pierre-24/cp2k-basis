@@ -18,6 +18,11 @@ limiter = Limiter(key_func=get_remote_address)
 
 
 class Config:
+    # Flask
+    SERVER_NAME = '127.0.0.1:5000'
+    PREFERRED_URL_SCHEME = 'http'
+
+    # library
     LIBRARY = 'library.h5'
 
     # to be filled by `load_library()`
@@ -69,10 +74,10 @@ def load_library(app: Flask):
     app.config['ATOMS_PER_PSEUDOPOTENTIAL'] = atom_per_pseudo
 
 
-def create_app():
+def create_app(instance_relative_config=True):
 
     # create and configure app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=instance_relative_config)
     app.config.from_object(Config())
     app.config.from_pyfile('settings.py', silent=True)
 

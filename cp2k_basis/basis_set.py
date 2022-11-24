@@ -271,7 +271,7 @@ class AtomicBasisSetsParser(BaseParser):
         self.source = source
         self.references = references
 
-    def basis_sets(self, basis_sets: Dict[str, AtomicBasisSets] = None) -> Dict[str, AtomicBasisSets]:
+    def atomic_basis_sets(self, basis_sets: Dict[str, AtomicBasisSets] = None) -> Dict[str, AtomicBasisSets]:
         """Basis set
         BASIS_SETS := ATOMIC_BASIS_SET* EOS
         """
