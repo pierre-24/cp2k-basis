@@ -84,11 +84,13 @@ class BaseDataAPI(MethodView):
         except StorageException as e:
             flask.abort(404, description=str(e))
 
+        req = dict(name=name)
+
+        if atoms:
+            req['atoms'] = atoms
+
         return flask.jsonify(
-            request=dict(
-                atoms=atoms,
-                name=name,
-            ),
+            request=req,
             result=''.join(str(data) for data in result)
         )
 
@@ -108,4 +110,4 @@ class PseudopotentialDataAPI(BaseDataAPI):
 
 
 api_blueprint.add_url_rule(
-    '/pseudopotential/<name>/data', view_func=PseudopotentialDataAPI.as_view(name='pseudo-data'))
+    '/pseudopotentials/<name>/data', view_func=PseudopotentialDataAPI.as_view(name='pseudo-data'))

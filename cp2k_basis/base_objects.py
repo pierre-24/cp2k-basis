@@ -196,7 +196,8 @@ class Storage:
         obj = cls()
 
         for key, group in main_group.items():
-            obj.update(obj.object_type.read_hdf5(group).data_objects.values())
+            for name, data_obj in obj.object_type.read_hdf5(group).data_objects.items():
+                obj.update([data_obj], lambda x: [name])
 
         return obj
 
