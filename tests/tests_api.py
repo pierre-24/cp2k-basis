@@ -1,5 +1,4 @@
 import pathlib
-import unittest
 from unittest import TestCase
 
 from cp2k_basis_webservice import Config, create_app
@@ -32,10 +31,8 @@ class FlaskAppMixture(TestCase):
 class BasisSetAPITestCase(FlaskAppMixture):
     def setUp(self) -> None:
         super().setUp()
-
         self.basis_name = 'SZV-MOLOPT-GTH'
 
-    @unittest.skip('temporary disabled')
     def test_basis_data_ok(self):
 
         response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name))
@@ -43,11 +40,10 @@ class BasisSetAPITestCase(FlaskAppMixture):
         data = response.get_json()
 
         self.assertEqual(data['request']['name'], self.basis_name)
-        self.assertEqual(data['request']['atoms'], self.app.config['ATOMS_PER_BASIS_SET'][self.basis_name])
 
-        basis_set = AtomicBasisSetsParser(data['result']).iter_atomic_basis_sets()
-        for symbol in data['request']['atoms']:
-            self.assertIn(symbol, basis_set)
+        for abs_ in AtomicBasisSetsParser(data['result']).iter_atomic_basis_sets():
+            self.assertIn(
+                abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'].atoms_per_object_name[self.basis_name])
 
     def test_basis_data_wrong_basis_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name='xx'))
@@ -74,7 +70,6 @@ class BasisSetAPITestCase(FlaskAppMixture):
 
 class PseudopotentialAPITestCase(FlaskAppMixture):
 
-    @unittest.skip('temporary disabled')
     def test_pseudo_data_ok(self):
         pseudo_name = 'GTH-BLYP'
 
@@ -83,8 +78,7 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         data = response.get_json()
 
         self.assertEqual(data['request']['name'], pseudo_name)
-        self.assertEqual(data['request']['atoms'], self.app.config['ATOMS_PER_PSEUDOPOTENTIAL'][pseudo_name])
 
-        atomic_pseudopotentials = AtomicPseudopotentialsParser(data['result']).iter_atomic_pseudopotentials()
-        for symbol in data['request']['atoms']:
-            self.assertIn(symbol, atomic_pseudopotentials)
+        for app in AtomicPseudopotentialsParser(data['result']).iter_atomic_pseudopotentials():
+            self.assertIn(
+                app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].atoms_per_object_name[pseudo_name])

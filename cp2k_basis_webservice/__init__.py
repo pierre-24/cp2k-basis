@@ -9,9 +9,8 @@ from flask import Flask
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from cp2k_basis.atoms import SYMB_TO_Z
-from cp2k_basis.basis_set import AtomicBasisSetsStorage
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsStorage
+from cp2k_basis.basis_set import BasisSetsStorage
+from cp2k_basis.pseudopotential import PseudopotentialsStorage
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -26,52 +25,21 @@ class Config:
     LIBRARY = 'library.h5'
 
     # to be filled by `load_library()`
-    BASIS_SETS_PER_ATOM = []
-    ATOMS_PER_BASIS_SET = []
-    PSEUDOPOTENTIALS_PER_ATOM = []
-    ATOMS_PER_PSEUDOPOTENTIAL = []
+    BASIS_SETS_STORAGE = None
+    PSEUDOPOTENTIALS_STORAGE = None
 
 
 def load_library(app: Flask):
-
-    basis_sets_per_atom = {}
-    atom_per_bs = {}
-    pseudos_per_atom = {}
-    atom_per_pseudo = {}
-
     path = pathlib.Path(app.config['LIBRARY'])
     if not path.exists():
         raise FileNotFoundError('Library file `{}` does not exists'.format(path))
 
     with h5py.File(path) as f:
-        if 'basis_sets' in f:
-            for symbol, group in f['basis_sets'].items():
-                if symbol not in SYMB_TO_Z:
-                    continue
+        bs_storage = BasisSetsStorage.read_hdf5(f)
+        pp_storage = PseudopotentialsStorage.read_hdf5(f)
 
-                atomic_basis_sets = AtomicBasisSetsStorage.read_hdf5(group)
-                basis_sets_per_atom[symbol] = atomic_basis_sets
-                for name in atomic_basis_sets.data_objects.keys():
-                    if name not in atom_per_bs:
-                        atom_per_bs[name] = []
-                    atom_per_bs[name].append(symbol)
-
-        if 'pseudopotentials' in f:
-            for symbol, group in f['pseudopotentials'].items():
-                if symbol not in SYMB_TO_Z:
-                    continue
-
-                atomic_pseudos = AtomicPseudopotentialsStorage.read_hdf5(group)
-                pseudos_per_atom[symbol] = atomic_pseudos
-                for name in atomic_pseudos.data_objects.keys():
-                    if name not in atom_per_pseudo:
-                        atom_per_pseudo[name] = []
-                    atom_per_pseudo[name].append(symbol)
-
-    app.config['BASIS_SETS_PER_ATOM'] = basis_sets_per_atom
-    app.config['ATOMS_PER_BASIS_SET'] = atom_per_bs
-    app.config['PSEUDOPOTENTIALS_PER_ATOM'] = pseudos_per_atom
-    app.config['ATOMS_PER_PSEUDOPOTENTIAL'] = atom_per_pseudo
+    app.config['BASIS_SETS_STORAGE'] = bs_storage
+    app.config['PSEUDOPOTENTIALS_STORAGE'] = pp_storage
 
 
 def create_app(instance_relative_config=True):

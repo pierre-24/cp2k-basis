@@ -7,12 +7,6 @@ from typing import Dict, Iterable, Union, Any, List, Callable, Tuple, Iterator
 
 import numpy
 
-try:
-    from typing import Self
-except ImportError:
-    from typing import TypeVar
-    Self = TypeVar('Self')
-
 
 string_dt = h5py.special_dtype(vlen=str)
 
@@ -57,7 +51,7 @@ class BaseAtomicDataObject:
                 self.metadata[key] = values
 
     @classmethod
-    def read_hdf5(cls, symbol: str, group: h5py.Group) -> Self:
+    def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'BaseAtomicDataObject':
         """Create from HDF5"""
 
         raise NotImplementedError()
@@ -111,7 +105,7 @@ class BaseAtomicStorage:
             data.dump_hdf5(subgroup)
 
     @classmethod
-    def read_hdf5(cls, group: h5py.Group) -> Self:
+    def read_hdf5(cls, group: h5py.Group) -> 'BaseAtomicStorage':
         """Extract from HDF5"""
 
         symbol = pathlib.Path(group.name).name
@@ -123,21 +117,25 @@ class BaseAtomicStorage:
         return o
 
 
+class StorageException(Exception):
+    pass
+
+
 class Storage:
     """Stores `BaseAtomicStorage` for each possible atoms
     """
 
     object_type = BaseAtomicStorage
+    name = 'base_storage'
 
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self):
         self.atomic_storages: Dict[str, BaseAtomicStorage] = {}
         self.atoms_per_object_name: Dict[str, List[str]] = {}
 
     def update(
         self,
         data_objects: Iterable[BaseAtomicDataObject],
-        filter_name: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+        filter_name: Union[Callable[[Iterable[str]], Iterable[str]], 'FilterName'] = lambda x: x,
         add_metadata: Callable[[BaseAtomicDataObject], None] = None
     ):
         for obj in data_objects:
@@ -150,7 +148,7 @@ class Storage:
             if add_metadata:
                 add_metadata(obj)
 
-            names = filter_name(obj.names)
+            names = list(filter_name(obj.names))
             self.atomic_storages[symbol].add(obj, names)
 
             # add to reverse
@@ -161,7 +159,31 @@ class Storage:
                 self.atoms_per_object_name[name].append(symbol)
 
     def __repr__(self):
-        return '<Storage({})>'.format(self.name)
+        return '<Storage({})>'.format(repr(self.name))
+
+    def __getitem__(self, item: str) -> BaseAtomicStorage:
+        return self.atomic_storages[item]
+
+    def __contains__(self, item: str) -> bool:
+        return item in self.atomic_storages
+
+    def get_data_objects_for_atoms(self, obj_name: str, atoms: List[str] = None) -> Iterable[BaseAtomicDataObject]:
+        if obj_name not in self.atoms_per_object_name:
+            raise StorageException('`{}` not in this storage'.format(obj_name))
+
+        if atoms is None:
+            atoms = self.atoms_per_object_name[obj_name]
+
+        for symbol in atoms:
+            try:
+                atomic_storage = self[symbol]
+            except KeyError:
+                raise StorageException('Atom `{}` not in this storage')
+
+            try:
+                yield atomic_storage[obj_name]
+            except KeyError:
+                raise StorageException('`{}` does not exists for atom {}'.format(obj_name, symbol))
 
     def dump_hdf5(self, f: h5py.File):
         main_group = f.require_group(self.name)
@@ -169,21 +191,14 @@ class Storage:
             data_object.dump_hdf5(main_group.require_group(key))
 
     @classmethod
-    def read_hdf5(cls, name: str, f: h5py.File):
-        main_group = f[name]
-        obj = cls(name)
+    def read_hdf5(cls, f: h5py.File):
+        main_group = f[cls.name]
+        obj = cls()
 
         for key, group in main_group.items():
-            storage = obj.object_type.read_hdf5(group)
-            obj.atomic_storages[storage.symbol] = storage
+            obj.update(obj.object_type.read_hdf5(group).data_objects.values())
 
         return obj
-
-    def __getitem__(self, item: str) -> BaseAtomicStorage:
-        return self.atomic_storages[item]
-
-    def __contains__(self, item: str) -> bool:
-        return item in self.atomic_storages
 
 
 class FilterName:

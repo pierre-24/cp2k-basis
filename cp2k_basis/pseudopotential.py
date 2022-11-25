@@ -178,9 +178,7 @@ class AtomicPseudopotentialsStorage(BaseAtomicStorage):
 
 class PseudopotentialsStorage(Storage):
     object_type = AtomicPseudopotentialsStorage
-
-    def __init__(self):
-        super().__init__('pseudopotentials')
+    name = 'pseudopotentials'
 
 
 class AtomicPseudopotentialsParser(BaseParser):

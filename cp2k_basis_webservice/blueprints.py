@@ -8,6 +8,7 @@ from webargs import fields
 from webargs.flaskparser import FlaskParser
 
 from cp2k_basis.atoms import SYMB_TO_Z
+from cp2k_basis.base_objects import Storage, StorageException
 
 
 class RenderTemplateView(MethodView):
@@ -33,12 +34,6 @@ visitor_blueprint = Blueprint('visitor', __name__)
 
 class IndexView(RenderTemplateView):
     template_name = 'index.html'
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-
-        ctx['ATOMS_PER_BASIS_SET'] = flask.current_app.config['ATOMS_PER_BASIS_SET']
-        return ctx
 
 
 visitor_blueprint.add_url_rule('/', view_func=IndexView.as_view(name='index'))
@@ -79,27 +74,15 @@ class BaseDataAPI(MethodView):
     @parser.use_kwargs({'name': field_name}, location='view_args')
     @parser.use_kwargs({'atoms': field_atoms}, location='query')
     def get(self, **kwargs):
-        name = kwargs.pop('name')
+        storage: Storage = flask.current_app.config['{}S_STORAGE'.format(self.source)]
 
-        if name not in flask.current_app.config['ATOMS_PER_{}'.format(self.source)]:
-            flask.abort(404, 'Unnkown {} {}'.format(self.textual_source, name))
+        atoms = kwargs.get('atoms', None)
+        name = kwargs.get('name')
 
-        atoms = kwargs.pop('atoms', None)
-
-        if not atoms:
-            atoms = flask.current_app.config['ATOMS_PER_{}'.format(self.source)][name]
-
-        result = []
-        for symbol in atoms:
-            data_per_atom = flask.current_app.config['{}S_PER_ATOM'.format(self.source)].get(symbol)
-            if data_per_atom:
-                data = data_per_atom.data_objects.get(name)
-                if data:
-                    result.append(data)
-                else:
-                    flask.abort(404, description='No {} {} for {}'.format(self.textual_source, name, symbol))
-            else:
-                flask.abort(404, description='No {} available for {}'.format(self.textual_source, symbol))
+        try:
+            result = list(storage.get_data_objects_for_atoms(name, atoms))
+        except StorageException as e:
+            flask.abort(404, description=str(e))
 
         return flask.jsonify(
             request=dict(

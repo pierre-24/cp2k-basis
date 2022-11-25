@@ -197,9 +197,7 @@ class AtomicBasisSetsStorage(BaseAtomicStorage):
 
 class BasisSetsStorage(Storage):
     object_type = AtomicBasisSetsStorage
-
-    def __init__(self):
-        super().__init__('basis_sets')
+    name = 'basis_sets'
 
 
 class AtomicBasisSetsParser(BaseParser):
