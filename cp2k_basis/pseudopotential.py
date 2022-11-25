@@ -4,7 +4,7 @@ import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.atomic_data_object import BaseAtomicDataObject, BaseAtomicDataObjects
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
 
 
@@ -172,7 +172,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         return obj
 
 
-class AtomicPseudopotentials(BaseAtomicDataObjects):
+class AtomicPseudopotentials(BaseAtomicStorage):
     object_type = AtomicPseudopotential
 
 

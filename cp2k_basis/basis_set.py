@@ -5,7 +5,7 @@ from typing import List, Dict, Callable, Iterable, Union, Any
 
 from cp2k_basis import logger
 from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
-from cp2k_basis.atomic_data_object import BaseAtomicDataObject, BaseAtomicDataObjects
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage
 
 L_TO_SHELL = {
     0: 's',
@@ -188,7 +188,7 @@ class AtomicBasisSet(BaseAtomicDataObject):
         return obj
 
 
-class AtomicBasisSets(BaseAtomicDataObjects):
+class AtomicBasisSets(BaseAtomicStorage):
     """Set of basis set for a given atom
     """
 

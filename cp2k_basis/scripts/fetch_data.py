@@ -51,12 +51,7 @@ def main():
             pp = PruneAndRename(rules)
 
             if file['type'] == 'BASIS_SETS':
-                basis_sets = AtomicBasisSetsParser(
-                    response.content.decode('utf8'),
-                    prune_and_rename=pp,
-                    source=full_url,
-                    references=file['references']
-                ).atomic_basis_sets(basis_sets)
+                basis_sets = AtomicBasisSetsParser(response.content.decode('utf8')).atomic_basis_sets()
 
             elif file['type'] == 'POTENTIALS':
                 pseudos = AtomicPseudopotentialsParser(

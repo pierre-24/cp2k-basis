@@ -1,7 +1,7 @@
 import pathlib
 import h5py
 
-from typing import Dict, Iterable, Union, Any, List
+from typing import Dict, Iterable, Union, Any, List, Callable
 
 import numpy
 
@@ -16,7 +16,7 @@ string_dt = h5py.special_dtype(vlen=str)
 
 
 class BaseAtomicDataObject:
-    """Base atomic data storage
+    """Base atomic data object.
     """
 
     def __init__(self, symbol: str, names: List[str], metadata: Dict[str, Union[str, Any]] = None):
@@ -36,7 +36,8 @@ class BaseAtomicDataObject:
 
         # dump info as attributes
         for key, value in self.metadata.items():
-            group.attrs[key] = value
+            if value:
+                group.attrs[key] = value
 
     def _read_info(self, group: h5py.Group, name_size: int):
 
@@ -64,9 +65,8 @@ class AtomicDataException(Exception):
     pass
 
 
-class BaseAtomicDataObjects:
-    """
-    Storage for `AtomicDataObject`
+class BaseAtomicStorage:
+    """Base atomic storage, stores `AtomicDataObject` for a given atomic symbol.
     """
 
     object_type = BaseAtomicDataObject
@@ -113,3 +113,58 @@ class BaseAtomicDataObjects:
             o.add(cls.object_type.read_hdf5(symbol, basis_group), [key])
 
         return o
+
+
+class Storage:
+    """Stores `BaseAtomicStorage` for each possible atoms
+    """
+
+    object_type = BaseAtomicStorage
+
+    def __init__(self, name: str):
+        self.name = name
+        self.atomic_storages: Dict[str, BaseAtomicStorage] = {}
+        self.atoms_per_object_name: Dict[str, List[str]] = {}
+
+    def update(
+        self,
+        data_objects: Iterable[BaseAtomicDataObject],
+        filter_name: Callable[[Iterable[str]], Iterable[str]],
+        add_metadata: Callable[[BaseAtomicDataObject], None]
+    ):
+        for obj in data_objects:
+            symbol = obj.symbol
+
+            # add to storages
+            if symbol not in self.atomic_storages:
+                self.atomic_storages[symbol] = self.object_type(symbol)
+
+            add_metadata(obj)
+            names = filter_name(obj.names)
+            self.atomic_storages[symbol].add(obj, names)
+
+            # add to reverse
+            for name in names:
+                if name not in self.atoms_per_object_name:
+                    self.atoms_per_object_name[name] = []
+
+                self.atoms_per_object_name[name].append(symbol)
+
+    def __repr__(self):
+        return '<Storage({})>'.format(self.name)
+
+    def dump_hdf5(self, f: h5py.File):
+        main_group = f.require_group(self.name)
+        for key, data_object in self.atomic_storages.items():
+            data_object.dump_hdf5(main_group.require_group(key))
+
+    @classmethod
+    def read_hdf5(cls, name: str, f: h5py.File):
+        main_group = f[name]
+        obj = cls(name)
+
+        for key, group in main_group.items():
+            storage = obj.object_type.read_hdf5(group)
+            obj.atomic_storages[storage.symbol] = storage
+
+        return obj
