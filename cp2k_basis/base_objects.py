@@ -1,7 +1,9 @@
 import pathlib
+import re
+
 import h5py
 
-from typing import Dict, Iterable, Union, Any, List, Callable
+from typing import Dict, Iterable, Union, Any, List, Callable, Tuple, Iterator
 
 import numpy
 
@@ -88,6 +90,12 @@ class BaseAtomicStorage:
     def __str__(self) -> str:
         return ''.join(str(bs) for bs in self.data_objects.values())
 
+    def __getitem__(self, item: str) -> BaseAtomicDataObject:
+        return self.data_objects[item]
+
+    def __contains__(self, item: str) -> bool:
+        return item in self.data_objects
+
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
@@ -129,8 +137,8 @@ class Storage:
     def update(
         self,
         data_objects: Iterable[BaseAtomicDataObject],
-        filter_name: Callable[[Iterable[str]], Iterable[str]],
-        add_metadata: Callable[[BaseAtomicDataObject], None]
+        filter_name: Callable[[Iterable[str]], Iterable[str]] = lambda x: x,
+        add_metadata: Callable[[BaseAtomicDataObject], None] = None
     ):
         for obj in data_objects:
             symbol = obj.symbol
@@ -139,7 +147,9 @@ class Storage:
             if symbol not in self.atomic_storages:
                 self.atomic_storages[symbol] = self.object_type(symbol)
 
-            add_metadata(obj)
+            if add_metadata:
+                add_metadata(obj)
+
             names = filter_name(obj.names)
             self.atomic_storages[symbol].add(obj, names)
 
@@ -168,3 +178,34 @@ class Storage:
             obj.atomic_storages[storage.symbol] = storage
 
         return obj
+
+    def __getitem__(self, item: str) -> BaseAtomicStorage:
+        return self.atomic_storages[item]
+
+    def __contains__(self, item: str) -> bool:
+        return item in self.atomic_storages
+
+
+class FilterName:
+    """Curate a list of name based on a set of rules of the form `(pattern, replacement)`, where `pattern` is a valid
+    `re.Pattern`.
+
+    If a pattern matches, then its `replacement` is yield instead.
+    If `replacement` is empty, then the name is simply discarded.
+    """
+
+    def __init__(self, rules: List[Tuple[re.Pattern, str]]):
+        self.rules = rules
+
+    def __call__(self, names: Iterator[str]) -> Iterator[str]:
+        for name in names:
+            matched = False
+            for rule in self.rules:
+                if rule[0].match(name):
+                    if len(rule[1]) != 0:
+                        yield rule[0].sub(rule[1], name)
+                    matched = True
+                    break
+
+            if not matched:
+                yield name

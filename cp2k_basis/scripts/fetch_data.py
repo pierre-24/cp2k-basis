@@ -5,6 +5,8 @@ https://github.com/pierre-24/cp2k-basis/blob/master/library_file_format.md for a
 """
 
 import pathlib
+from typing import Dict
+
 import h5py
 import yaml
 import argparse
@@ -12,9 +14,16 @@ import requests
 import re
 
 from cp2k_basis import logger
-from cp2k_basis.basis_set import AtomicBasisSetsParser
-from cp2k_basis.parser import PruneAndRename
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
+from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
+from cp2k_basis.base_objects import FilterName, BaseAtomicDataObject
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
+
+
+def add_metadata_f(metadata: Dict):
+    def f(obj: BaseAtomicDataObject):
+        obj.metadata = metadata
+
+    return f
 
 
 def main():
@@ -28,8 +37,8 @@ def main():
     # load data
     data = yaml.load(args.source, yaml.Loader)
 
-    basis_sets = {}
-    pseudos = {}
+    bs_storage = BasisSetsStorage()
+    pp_storage = PseudopotentialsStorage()
 
     # fetch files
     for segment in data:
@@ -40,7 +49,7 @@ def main():
 
         for file in segment['files']:
             full_url = base_url + file['name']
-            logger.metadata('fetch {} [{}]'.format(full_url, file['type']))
+            logger.info('fetch {} [{}]'.format(full_url, file['type']))
 
             response = requests.get(full_url)
 
@@ -48,24 +57,21 @@ def main():
             for rule, dest in file['rules'].items():
                 rules.append((re.compile(rule), dest))
 
-            pp = PruneAndRename(rules)
+            filter_name = FilterName(rules)
 
             if file['type'] == 'BASIS_SETS':
-                basis_sets = AtomicBasisSetsParser(response.content.decode('utf8')).atomic_basis_sets()
+                iterator = AtomicBasisSetsParser(response.content.decode('utf8')).iter_atomic_basis_sets()
+                bs_storage.update(
+                    iterator, filter_name, add_metadata_f({'source': full_url, 'references': file['references']}))
 
             elif file['type'] == 'POTENTIALS':
-                pseudos = AtomicPseudopotentialsParser(
-                    response.content.decode('utf8'),
-                    prune_and_rename=pp,
-                    source=full_url,
-                    references=file['references']
-                ).atomic_pseudopotentials(pseudos)
+                iterator = AtomicPseudopotentialsParser(response.content.decode('utf8')).iter_atomic_pseudopotentials()
+                pp_storage.update(
+                    iterator, filter_name, add_metadata_f({'source': full_url, 'references': file['references']}))
 
     with h5py.File(args.output, 'w') as f:
-        for key, abs_ in basis_sets.items():
-            abs_.dump_hdf5(f.create_group('basis_sets/{}'.format(key)))
-        for key, app in pseudos.items():
-            app.dump_hdf5(f.create_group('pseudopotentials/{}'.format(key)))
+        bs_storage.dump_hdf5(f)
+        pp_storage.dump_hdf5(f)
 
 
 if __name__ == '__main__':

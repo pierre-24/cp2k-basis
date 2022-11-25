@@ -1,11 +1,11 @@
 import h5py
 import numpy
 
-from typing import List, Dict, Callable, Iterable, Union, Any
+from typing import List, Dict, Iterable, Any
 
 from cp2k_basis import logger
-from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
-from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage
+from cp2k_basis.parser import BaseParser, TokenType
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage, Storage
 
 L_TO_SHELL = {
     0: 's',
@@ -188,49 +188,35 @@ class AtomicBasisSet(BaseAtomicDataObject):
         return obj
 
 
-class AtomicBasisSets(BaseAtomicStorage):
+class AtomicBasisSetsStorage(BaseAtomicStorage):
     """Set of basis set for a given atom
     """
 
     object_type = AtomicBasisSet
 
 
-class AtomicBasisSetsParser(BaseParser):
-    def __init__(
-        self,
-        inp: str,
-        prune_and_rename: Union[Callable[[Iterable[str]], Iterable[str]], PruneAndRename] = lambda x: x,
-        source: str = None,
-        references: List[str] = None
-    ):
-        super().__init__(inp)
-        self.prune_and_rename = prune_and_rename
-        self.source = source
-        self.references = references
+class BasisSetsStorage(Storage):
+    object_type = AtomicBasisSetsStorage
 
-    def atomic_basis_sets(self, basis_sets: Dict[str, AtomicBasisSets] = None) -> Dict[str, AtomicBasisSets]:
+    def __init__(self):
+        super().__init__('basis_sets')
+
+
+class AtomicBasisSetsParser(BaseParser):
+
+    def iter_atomic_basis_sets(self) -> Iterable[AtomicBasisSet]:
         """Basis set
         BASIS_SETS := ATOMIC_BASIS_SET* EOS
         """
 
-        if basis_sets is None:
-            basis_sets = {}
-
         self.skip()
 
         while self.current_token.type != TokenType.EOS:
-            atomic_basis_set = self.atomic_basis_set()
-
-            if atomic_basis_set.symbol not in basis_sets:
-                basis_sets[atomic_basis_set.symbol] = AtomicBasisSets(atomic_basis_set.symbol)
-
-            basis_sets[atomic_basis_set.symbol].add(
-                atomic_basis_set, self.prune_and_rename(atomic_basis_set.names))
+            yield self.atomic_basis_set()
 
             self.skip()
 
         self.eat(TokenType.EOS)
-        return basis_sets
 
     def atomic_basis_set(self) -> AtomicBasisSet:
         """
@@ -268,8 +254,7 @@ class AtomicBasisSetsParser(BaseParser):
         return AtomicBasisSet(
             symbol,
             names,
-            contractions,
-            metadata={'source': self.source, 'references': self.references}
+            contractions
         )
 
     def contraction(self) -> Contraction:

@@ -1,11 +1,11 @@
-from typing import List, Dict, Callable, Iterable, Union, Any
+from typing import List, Dict, Iterable, Any
 
 import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage
-from cp2k_basis.parser import BaseParser, TokenType, PruneAndRename
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage, Storage
+from cp2k_basis.parser import BaseParser, TokenType
 
 
 class NonLocalProjector:
@@ -172,47 +172,32 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         return obj
 
 
-class AtomicPseudopotentials(BaseAtomicStorage):
+class AtomicPseudopotentialsStorage(BaseAtomicStorage):
     object_type = AtomicPseudopotential
 
 
-class AtomicPseudopotentialsParser(BaseParser):
-    def __init__(
-            self, inp: str,
-            prune_and_rename: Union[Callable[[Iterable[str]], Iterable[str]], PruneAndRename] = lambda x: x,
-            source: str = None,
-            references: List[str] = None
-    ):
-        super().__init__(inp)
-        self.prune_and_rename = prune_and_rename
-        self.source = source
-        self.references = references
+class PseudopotentialsStorage(Storage):
+    object_type = AtomicPseudopotentialsStorage
 
-    def atomic_pseudopotentials(
-            self,
-            pps: Dict[str, AtomicPseudopotentials] = None
-    ) -> Dict[str, AtomicPseudopotentials]:
+    def __init__(self):
+        super().__init__('pseudopotentials')
+
+
+class AtomicPseudopotentialsParser(BaseParser):
+
+    def iter_atomic_pseudopotentials(self) -> Iterable[AtomicPseudopotentialsStorage]:
         """
         ATOMIC_PPs := ATOMIC_PP* EOS
         """
 
-        if pps is None:
-            pps = {}
-
         self.skip()
 
         while self.current_token.type != TokenType.EOS:
-            atomic_pp = self.atomic_pseudopotential()
-
-            if atomic_pp.symbol not in pps:
-                pps[atomic_pp.symbol] = AtomicPseudopotentials(atomic_pp.symbol)
-
-            pps[atomic_pp.symbol].add(atomic_pp, self.prune_and_rename(atomic_pp.names))
+            yield self.atomic_pseudopotential()
 
             self.skip()
 
         self.eat(TokenType.EOS)
-        return pps
 
     def atomic_pseudopotential(self) -> AtomicPseudopotential:
         """
@@ -281,11 +266,7 @@ class AtomicPseudopotentialsParser(BaseParser):
             nelec,
             lradius,
             lcoefficients,
-            nlprojectors,
-            metadata={
-                'source': self.source,
-                'references': self.references
-            }
+            nlprojectors
         )
 
     def nlprojector(self) -> NonLocalProjector:

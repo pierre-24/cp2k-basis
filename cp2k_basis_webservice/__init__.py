@@ -10,8 +10,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from cp2k_basis.atoms import SYMB_TO_Z
-from cp2k_basis.basis_set import AtomicBasisSets
-from cp2k_basis.pseudopotential import AtomicPseudopotentials
+from cp2k_basis.basis_set import AtomicBasisSetsStorage
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsStorage
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -49,7 +49,7 @@ def load_library(app: Flask):
                 if symbol not in SYMB_TO_Z:
                     continue
 
-                atomic_basis_sets = AtomicBasisSets.read_hdf5(group)
+                atomic_basis_sets = AtomicBasisSetsStorage.read_hdf5(group)
                 basis_sets_per_atom[symbol] = atomic_basis_sets
                 for name in atomic_basis_sets.data_objects.keys():
                     if name not in atom_per_bs:
@@ -61,7 +61,7 @@ def load_library(app: Flask):
                 if symbol not in SYMB_TO_Z:
                     continue
 
-                atomic_pseudos = AtomicPseudopotentials.read_hdf5(group)
+                atomic_pseudos = AtomicPseudopotentialsStorage.read_hdf5(group)
                 pseudos_per_atom[symbol] = atomic_pseudos
                 for name in atomic_pseudos.data_objects.keys():
                     if name not in atom_per_pseudo:

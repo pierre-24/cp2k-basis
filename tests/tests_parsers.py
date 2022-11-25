@@ -3,9 +3,9 @@ import unittest
 
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetsParser
+from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
 from cp2k_basis.parser import Lexer, Token as TK, TokenType as TT, BaseParser, ParserSyntaxError
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
 
 
 class LexerTestCase(unittest.TestCase):
@@ -72,7 +72,7 @@ SINGLE_ABS = """{symbol} {names}
 
 
 class BSParserTestCase(unittest.TestCase):
-    def test_atomic_basis_set(self):
+    def test_parse_atomic_basis_set_ok(self):
         coefs = numpy.array([
             [0.3425250914E+01, 0.1543289673],
             [0.6239137298, 0.5353281423],
@@ -111,12 +111,14 @@ class BSParserTestCase(unittest.TestCase):
         self.assertTrue(numpy.array_equal(contraction.exponents, coefs[:, 0]))
         self.assertTrue(numpy.array_equal(contraction.coefficients.T[0], coefs[:, 1]))
 
-    def test_full_basis_set(self):
-        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            basis_sets = AtomicBasisSetsParser(f.read()).atomic_basis_sets()
+    def test_pars_basis_sets_ok(self):
+        storage = BasisSetsStorage()
 
-        self.assertIn('C', basis_sets)
-        self.assertIn('H', basis_sets)
+        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
+            storage.update(AtomicBasisSetsParser(f.read()).iter_atomic_basis_sets())
+
+        self.assertIn('C', storage)
+        self.assertIn('H', storage)
 
         # check basis sets for C
         repr_C = (
@@ -129,11 +131,12 @@ class BSParserTestCase(unittest.TestCase):
         )
 
         for bs_name, ncont, full, contracted in repr_C:
-            self.assertIn(bs_name, basis_sets['C'].data_objects)
-            abs1 = basis_sets['C'].data_objects[bs_name]
+            storage_carbon = storage['C']
+            self.assertIn(bs_name, storage_carbon.data_objects)
+            abs1 = storage_carbon[bs_name]
 
-            self.assertIn(bs_name + '-q4', basis_sets['C'].data_objects)  # the -q4 version is also there
-            self.assertEqual(abs1, basis_sets['C'].data_objects[bs_name + '-q4'])
+            self.assertIn(bs_name + '-q4', storage_carbon)  # the -q4 version is also there
+            self.assertEqual(abs1, storage_carbon[bs_name + '-q4'])
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())
@@ -149,7 +152,7 @@ ATOMIC_PP = """{symbol} {names}
 
 
 class PPParserTestCase(unittest.TestCase):
-    def test_parse_atomic_pp(self):
+    def test_parse_atomic_pp_ok(self):
 
         lradius = 0.4
         lcoefficients = numpy.array([-2.88013377, -1.21143500])
@@ -195,18 +198,19 @@ class PPParserTestCase(unittest.TestCase):
             self.assertEqual(proj.radius, nlradius[i])
             self.assertTrue(numpy.array_equal(proj.coefficients, nlprojectors[i]))
 
-    def test_full_pp(self):
+    def test_parse_pp_ok(self):
+        storage = PseudopotentialsStorage()
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
-            pseudos = AtomicPseudopotentialsParser(f.read()).atomic_pseudopotentials()
+            storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials())
 
         name = 'GTH-BLYP'
         symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
 
         for symbol in symbols:
-            self.assertIn(symbol, pseudos)
-            app = pseudos[symbol]
+            self.assertIn(symbol, storage)
+            app = storage[symbol]
             self.assertIn(name, app.data_objects)
 
-            name_pair = '{}-q{}'.format(name, sum(app.data_objects[name].nelec))
-            self.assertIn(name_pair, app.data_objects)
-            self.assertEqual(app.data_objects[name_pair], app.data_objects[name])
+            name_pair = '{}-q{}'.format(name, sum(app[name].nelec))
+            self.assertIn(name_pair, app)
+            self.assertEqual(app[name_pair], app[name])
