@@ -33,4 +33,4 @@ jobs:
         make lint
     - name: Test
       run: |
-        make test
+        TEST_FETCH_DATA=1 make test

@@ -59,6 +59,18 @@ class PseudoTestCase(unittest.TestCase):
 
         self.assertPseudoEqual(app1, app2)
 
+    def test_pseudopotential_family_str_ok(self):
+        bs1 = self.storage[self.name]
+
+        parser = AtomicPseudopotentialsParser(str(bs1))
+        bs2 = PseudopotentialFamily(self.name)
+        for app in parser.iter_atomic_pseudopotentials():
+            self.assertIn(self.name, app.names)
+            bs2.add(app)
+
+        for symbol in self.symbols:
+            self.assertPseudoEqual(bs1[symbol], bs2[symbol])
+
     def test_prune_and_rename_ok(self):
         storage = PseudopotentialsStorage()
 
@@ -89,3 +101,20 @@ class PseudoTestCase(unittest.TestCase):
 
                 # check metadata
                 self.assertEqual(ppf1[symbol].metadata, ppf2[symbol].metadata)
+
+    def test_storage_dump_hdf5_ok(self):
+        path = tempfile.mktemp()
+
+        # write h5file
+        with h5py.File(path, 'w') as f:
+            self.storage.dump_hdf5(f)
+
+        with h5py.File(path) as f:
+            storage = PseudopotentialsStorage.read_hdf5(f)
+
+            for bs_name in self.storage.families.keys():
+                self.assertIn(bs_name, storage)
+
+                for symbol in storage[bs_name].data_objects.keys():
+                    self.assertIn(symbol, storage[bs_name])
+                    self.assertPseudoEqual(storage[bs_name][symbol], self.storage[bs_name][symbol])

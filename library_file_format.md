@@ -1,33 +1,36 @@
 # `library.h5` file format
 
-The basis set library root contains at least two groups: `basis_sets` and `pseudopotentials`.
+A library file is stored in the [HDF5 format](https://www.hdfgroup.org/solutions/hdf5/), which divide the data in groups (i.e., "folders") and datasets (i.e., "files"), the latter being array of data.
+Groups and datasets can present metadata.
+
+The basis set library root contains at least two main (storage) groups: `basis_sets` and `pseudopotentials`.
 They are detailed below.
 
 ## The `basis_sets` group
 
-This group contains one subgroup per atom (the `atom` group), named by its symbol.
-In each `atom` group, there is one subgroup for each basis set (the `basis set` group).
+This group contains one subgroup per basis set (the `basis sey` group), for wich the name is the basis set name.
+In each `basis set` group, there is one subgroup for each atom (the `atomic basis set` group).
 Thus, the following structure is valid:
 
 ```
-basis_sets/
+*
 |
-+- C/
-|  |
-|  +- SZV-MOLOPT-GTH/
-|  +- SZV-MOLOPT-GTH/
-|  +- DZVP-MOLOPT-GTH/
-|  +- ...
-|
-+- H/
++- basis_sets/
    |
    +- SZV-MOLOPT-GTH/
-   +- SZV-MOLOPT-GTH/
+   |  |
+   |  +- C/
+   |  +- H/
+   |  +- ...
+   |
    +- DZVP-MOLOPT-GTH/
-   +- ...
+      |
+      +- C/
+      +- H/
+      +- ...
 ```
 
-Each `basis set` group is composed of the following datasets, which are all mandatory:
+Each `atomic basis set` group is composed of the following datasets, which are all mandatory:
 
 | Name                        | Shape                   | Attributes           | Info                                                                                              |
 |-----------------------------|-------------------------|----------------------|---------------------------------------------------------------------------------------------------|
@@ -41,48 +44,45 @@ The two last datasets are repeated with `i=[0:len(contractions)]`.
 Thus, the following structure, e.g., is valid:
 
 ```
-basis_sets/C/TZVP-GTH/      # contains two contractions
+*
 |
-+- info                     # contains (2, 2)
-+- names                    # contains (TZVP-GTH-q4, TZVP-GTH)
-+- contraction_0_info       # contains (2, 0, 1, 5, 3, 3)
-|                           # and has attribute nshell=2
-+- contraction_0_exp_coefs  # of shape (5, 7)
-+- contraction_1_info       # contains (3, 2, 2, 1, 1)
-|                           # and has attribute nshell=1
-+- contraction_1_exp_coefs  # of shape (1, 2)
++ basis_sets/TZVP-GTH/C/      # contains two contractions
+  |
+  +- info                     # contains (2, 2)
+  +- names                    # contains (TZVP-GTH-q4, TZVP-GTH)
+  +- contraction_0_info       # contains (2, 0, 1, 5, 3, 3)
+  |                           # and has attribute nshell=2
+  +- contraction_0_exp_coefs  # of shape (5, 7)
+  +- contraction_1_info       # contains (3, 2, 2, 1, 1)
+  |                           # and has attribute nshell=1
+  +- contraction_1_exp_coefs  # of shape (1, 2)
 ```
-
-Each `basis set` group might have the following attributes:
-
-+ `source`, which contains the URL to the original basis set, and
-+ `references`, which contains a comma-separated list of DOI corresponding to the basis set.
-
-Those two attributes are optional: if an attribute is missing, an empty value is assumed.
 
 ## The `pseudopotentials` group
 
-Again, this group contains one subgroup per atom (the `atom` group), named by its symbol.
-In each `atom` group, there is one subgroup for each basis set (the `pseudopotential` group).
+Again, this group contains one subgroup per pseudopotential familly (the `pp family` group), which name is the family name.
+In each `pp family` group, there is one subgroup for each basis set (the `atomic pp` group).
 Thus, the following structure is valid:
 
 ```
-pseudopotentials/
+*
 |
-+- C/
-|  |
-|  +- GTH-BLYP
-|  +- GTH-PBE
-|  +- ...
-|
-+- H/
++- pseudopotentials/
    |
-   +- GTH-BLYP
-   +- GTH-PBE
-   +- ...
+   +- GTH-BLYP/
+   |  |
+   |  +- C/
+   |  +- H/
+   |  +- ...
+   |
+   +- GTH-PBE/
+      |
+      +- C/
+      +- H/
+      +- ...
 ```
 
-Each `pseudopotential` group is composed of the following datasets, which are all mandatory:
+Each `atomic pp` group is composed of the following datasets, which are all mandatory:
 
 | Name                           | Shape      | Attributes          | Info                                                                                                                                                                                      |
 |--------------------------------|------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -96,16 +96,25 @@ The last dataset is repeated with `i=[0:len(nlprojectors)]`.
 The following structure, e.g., is valid:
 
 ```
-pseudopotentials/Ne/GTH-BLYP/
+*
 |
-+- info                        # contains (2, 2, 2, 2, 6)
-|                              # and has attribute nelec=2
-+- names                       # contains (GTH-BLYP-q8, GTH-BLYP)
-+- local_radius_coefs          # of shape (3,)
-+- nlprojector_0_radius_coefs  # of shape (4,)
-|                              # and has attribute nfunc=2
-+- nlprojector_1_radius_coefs  # of shape (2,)
-                               # and has attribute nfunc=1
++- pseudopotentials/Ne/GTH-BLYP/
+   |
+   +- info                        # contains (2, 2, 2, 2, 6)
+   |                              # and has attribute nelec=2
+   +- names                       # contains (GTH-BLYP-q8, GTH-BLYP)
+   +- local_radius_coefs          # of shape (3,)
+   +- nlprojector_0_radius_coefs  # of shape (4,)
+   |                              # and has attribute nfunc=2
+   +- nlprojector_1_radius_coefs  # of shape (2,)
+                                  # and has attribute nfunc=1
 ```
 
-Each `pseudopotential` group might also have the `source` and `references` attributes, with the same definition as above.
+## Metadata
+
+Each `atomic basis set` and `atomic pp` group might also have the following attributes:
+
++ `source`, which contains the URL to the original basis set, and
++ `references`, which contains a one-dimensional array of DOI corresponding to the references.
+
+Those attributes are optional: if an attribute is missing, an empty value can be assumed.

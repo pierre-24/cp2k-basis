@@ -64,6 +64,19 @@ class BSTestCase(unittest.TestCase):
 
         self.assertAtomicBasisSetEqual(abs1, abs2)
 
+    def test_basis_set_str_ok(self):
+        name = 'TZV2PX-MOLOPT-GTH'
+        bs1 = self.storage[name]
+
+        parser = AtomicBasisSetsParser(str(bs1))
+        bs2 = BasisSet(name)
+        for abs_ in parser.iter_atomic_basis_sets():
+            self.assertIn(name, abs_.names)
+            bs2.add(abs_)
+
+        for symbol in self.storage[name].data_objects.keys():
+            self.assertAtomicBasisSetEqual(bs1[symbol], bs2[symbol])
+
     def test_basis_set_dump_hdf5_ok(self):
         path = tempfile.mktemp()
         name = 'TZV2PX-MOLOPT-GTH'
@@ -83,3 +96,20 @@ class BSTestCase(unittest.TestCase):
 
                 # check metadata
                 self.assertEqual(bs1[symbol].metadata, bs2[symbol].metadata)
+
+    def test_storage_dump_hdf5_ok(self):
+        path = tempfile.mktemp()
+
+        # write h5file
+        with h5py.File(path, 'w') as f:
+            self.storage.dump_hdf5(f)
+
+        with h5py.File(path) as f:
+            storage = BasisSetsStorage.read_hdf5(f)
+
+            for bs_name in self.storage.families.keys():
+                self.assertIn(bs_name, storage)
+
+                for symbol in storage[bs_name].data_objects.keys():
+                    self.assertIn(symbol, storage[bs_name])
+                    self.assertAtomicBasisSetEqual(storage[bs_name][symbol], self.storage[bs_name][symbol])

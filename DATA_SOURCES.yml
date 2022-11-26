@@ -1,7 +1,7 @@
-# This file contains a list of repositories
+# This file contains a list of data sources
 # (which is a given location in a website containing different files).
 #
-# Each repository has the following attributes:
+# Each data source has the following attributes:
 #
 # - base: base URL, might content placeholders of the form `{name}`
 # - data: dictionary of values for each placeholder.
