@@ -39,8 +39,8 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        self.assertEqual(data['request']['name'], self.basis_name)
-        self.assertNotIn('atoms', data['request'])
+        self.assertEqual(data['query']['name'], self.basis_name)
+        self.assertNotIn('elements', data['query'])
 
         for abs_ in AtomicBasisSetsParser(data['result']).iter_atomic_basis_sets():
             self.assertIn(
@@ -54,19 +54,19 @@ class BasisSetAPITestCase(FlaskAppMixture):
         atoms = ['H']
 
         response = self.client.get(
-            flask.url_for('api.basis-data', name=self.basis_name) + '?atoms={}'.format(''.join(atoms)))
+            flask.url_for('api.basis-data', name=self.basis_name) + '?elements={}'.format(''.join(atoms)))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        self.assertIn('atoms', data['request'])
-        self.assertEqual(data['request']['atoms'], atoms)
+        self.assertIn('elements', data['query'])
+        self.assertEqual(data['query']['elements'], atoms)
 
     def test_basis_data_wrong_atom_ko(self):
-        response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?atoms=X')
+        response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?elements=X')
         self.assertEqual(response.status_code, 422)
 
     def test_basis_data_missing_atom_ko(self):
-        response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?atoms=U')
+        response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?elements=U')
         self.assertEqual(response.status_code, 404)
 
 
@@ -83,8 +83,8 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        self.assertEqual(data['request']['name'], self.pseudo_name)
-        self.assertNotIn('atoms', data['request'])
+        self.assertEqual(data['query']['name'], self.pseudo_name)
+        self.assertNotIn('elements', data['query'])
 
         for app in AtomicPseudopotentialsParser(data['result']).iter_atomic_pseudopotentials():
             self.assertIn(
@@ -98,13 +98,13 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         atoms = ['H']
 
         response = self.client.get(
-            flask.url_for('api.pseudo-data', name=self.pseudo_name) + '?atoms={}'.format(''.join(atoms)))
+            flask.url_for('api.pseudo-data', name=self.pseudo_name) + '?elements={}'.format(''.join(atoms)))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        self.assertIn('atoms', data['request'])
-        self.assertEqual(data['request']['atoms'], atoms)
+        self.assertIn('elements', data['query'])
+        self.assertEqual(data['query']['elements'], atoms)
 
     def test_pseudo_data_missing_atom_ko(self):
-        response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?atoms=U')
+        response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?elements=U')
         self.assertEqual(response.status_code, 404)

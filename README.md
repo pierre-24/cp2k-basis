@@ -3,6 +3,8 @@
 Just a project to have an overview of the content of CP2K basis sets and potentials.
 See [`DATA_SOURCES.yml`](DATA_SOURCES.yml) for a list of the files used to build the library.
 
+You can also check out [the documentation](./docs/).
+
 ## Install and run
 
 ```bash

@@ -1,7 +1,7 @@
 """
 Fetch the basis sets and pseudopotentials as described in the input, and pack them together as a library (HDF5 file).
 See https://github.com/pierre-24/cp2k-basis/blob/master/DATA_SOURCES.yml for a description of the input, and
-https://github.com/pierre-24/cp2k-basis/blob/master/library_file_format.md for a description of the output.
+https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_file_format.md for a description of the output.
 """
 
 import pathlib

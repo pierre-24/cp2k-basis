@@ -61,7 +61,7 @@ def handle_error_s(err: Union[NotFound, Forbidden]):
     return flask.jsonify(status=err.code, message=err.description), err.code
 
 
-field_atoms = fields.DelimitedList(fields.Str(validate=lambda x: x in SYMB_TO_Z))
+field_elements = fields.DelimitedList(fields.Str(validate=lambda x: x in SYMB_TO_Z))
 field_name = fields.Str()
 
 parser = FlaskParser()
@@ -72,25 +72,25 @@ class BaseDataAPI(MethodView):
     textual_source: str = ''
 
     @parser.use_kwargs({'name': field_name}, location='view_args')
-    @parser.use_kwargs({'atoms': field_atoms}, location='query')
+    @parser.use_kwargs({'elements': field_elements}, location='query')
     def get(self, **kwargs):
         storage: Storage = flask.current_app.config['{}S_STORAGE'.format(self.source)]
 
-        atoms = kwargs.get('atoms', None)
+        elements = kwargs.get('elements', None)
         name = kwargs.get('name')
 
         try:
-            result = list(storage.get_atomic_data_objects(name, atoms))
+            result = list(storage.get_atomic_data_objects(name, elements))
         except StorageException as e:
             flask.abort(404, description=str(e))
 
-        req = dict(name=name)
+        query = dict(name=name)
 
-        if atoms:
-            req['atoms'] = atoms
+        if elements:
+            query['elements'] = elements
 
         return flask.jsonify(
-            request=req,
+            query=query,
             result=''.join(str(data) for data in result)
         )
 
