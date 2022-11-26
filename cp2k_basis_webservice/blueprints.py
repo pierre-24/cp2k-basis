@@ -80,7 +80,7 @@ class BaseDataAPI(MethodView):
         name = kwargs.get('name')
 
         try:
-            result = list(storage.get_data_objects_for_atoms(name, atoms))
+            result = list(storage.get_atomic_data_objects(name, atoms))
         except StorageException as e:
             flask.abort(404, description=str(e))
 

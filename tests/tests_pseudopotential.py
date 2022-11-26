@@ -7,7 +7,7 @@ import numpy
 import re
 
 from cp2k_basis.base_objects import FilterName
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, AtomicPseudopotentialsStorage, \
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialFamily, \
     AtomicPseudopotential, PseudopotentialsStorage
 
 
@@ -33,9 +33,8 @@ class PseudoTestCase(unittest.TestCase):
         self.name = 'GTH-BLYP'
 
         for symbol in self.symbols:
-            self.assertIn(symbol, self.storage)
-            self.assertEqual(len(self.storage[symbol].data_objects), 1)
-            self.assertIn(self.name, self.storage[symbol])
+            self.assertEqual(len(self.storage.families), 1)
+            self.assertIn(symbol, self.storage[self.name])
 
     def assertPseudoEqual(self, app1: AtomicPseudopotential, app2: AtomicPseudopotential):
         self.assertEqual(app2.symbol, app1.symbol)
@@ -51,8 +50,8 @@ class PseudoTestCase(unittest.TestCase):
             self.assertEqual(proj2.radius, proj.radius)
             self.assertTrue(numpy.array_equal(proj2.coefficients, proj.coefficients))
 
-    def test_str_ok(self):
-        app1 = self.storage['Ne']['GTH-BLYP']
+    def test_atomic_pseudopotential_str_ok(self):
+        app1 = self.storage['GTH-BLYP']['Ne']
 
         parser = AtomicPseudopotentialsParser(str(app1))
         parser.skip()  # skip comment
@@ -71,22 +70,22 @@ class PseudoTestCase(unittest.TestCase):
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
             storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials(), prune_and_rename)
 
-        for symbol in self.symbols:
-            self.assertEqual(list(storage[symbol].data_objects.keys()), ['XX-BLYP'])
+        self.assertEqual(list(storage.families.keys()), ['XX-BLYP'])
 
-    def test_atomic_pseudopotentials_storage_dump_hdf5_ok(self):
+    def test_pseudopotential_family_dump_hdf5_ok(self):
         path = tempfile.mktemp()
 
         # write h5file
         with h5py.File(path, 'w') as f:
-            for symbol in self.symbols:
-                self.storage[symbol].dump_hdf5(f.create_group('pseudopotentials/{}'.format(symbol)))
+            ppf1 = self.storage[self.name]
+            ppf1.dump_hdf5(f.create_group('pseudopotentials/{}'.format(self.name)))
 
         # read back
         with h5py.File(path) as f:
+            ppf2 = PseudopotentialFamily.read_hdf5(f['pseudopotentials/{}'.format(self.name)])
+
             for symbol in self.symbols:
-                app = AtomicPseudopotentialsStorage.read_hdf5(f['pseudopotentials/{}'.format(symbol)])
-                self.assertPseudoEqual(self.storage[symbol][self.name], app.data_objects[self.name])
+                self.assertPseudoEqual(ppf1[symbol], ppf2[symbol])
 
                 # check metadata
-                self.assertEqual(self.storage[symbol][self.name].metadata, app.data_objects[self.name].metadata)
+                self.assertEqual(ppf1[symbol].metadata, ppf2[symbol].metadata)

@@ -111,14 +111,11 @@ class BSParserTestCase(unittest.TestCase):
         self.assertTrue(numpy.array_equal(contraction.exponents, coefs[:, 0]))
         self.assertTrue(numpy.array_equal(contraction.coefficients.T[0], coefs[:, 1]))
 
-    def test_pars_basis_sets_ok(self):
+    def test_parse_basis_sets_ok(self):
         storage = BasisSetsStorage()
 
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
             storage.update(AtomicBasisSetsParser(f.read()).iter_atomic_basis_sets())
-
-        self.assertIn('C', storage)
-        self.assertIn('H', storage)
 
         # check basis sets for C
         repr_C = (
@@ -131,12 +128,12 @@ class BSParserTestCase(unittest.TestCase):
         )
 
         for bs_name, ncont, full, contracted in repr_C:
-            storage_carbon = storage['C']
-            self.assertIn(bs_name, storage_carbon.data_objects)
-            abs1 = storage_carbon[bs_name]
+            self.assertIn(bs_name, storage)
+            self.assertIn('C', storage[bs_name])
+            abs1 = storage[bs_name]['C']
 
-            self.assertIn(bs_name + '-q4', storage_carbon)  # the -q4 version is also there
-            self.assertEqual(abs1, storage_carbon[bs_name + '-q4'])
+            self.assertIn(bs_name + '-q4', storage)  # the -q4 version is also there
+            self.assertEqual(abs1, storage[bs_name + '-q4']['C'])
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())
@@ -207,10 +204,11 @@ class PPParserTestCase(unittest.TestCase):
         symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
 
         for symbol in symbols:
-            self.assertIn(symbol, storage)
-            app = storage[symbol]
-            self.assertIn(name, app.data_objects)
+            self.assertIn(name, storage)
+            self.assertIn(symbol, storage[name])
 
-            name_pair = '{}-q{}'.format(name, sum(app[name].nelec))
-            self.assertIn(name_pair, app)
-            self.assertEqual(app[name_pair], app[name])
+            app = storage[name][symbol]
+
+            name_pair = '{}-q{}'.format(name, sum(app.nelec))
+            self.assertIn(name_pair, storage)  # the full version is also there
+            self.assertEqual(app, storage[name_pair][symbol])

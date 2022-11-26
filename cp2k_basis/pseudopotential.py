@@ -4,7 +4,7 @@ import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.base_objects import BaseAtomicDataObject, BaseAtomicStorage, Storage
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Storage
 from cp2k_basis.parser import BaseParser, TokenType
 
 
@@ -159,31 +159,24 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         for i in range(ds_info[2]):
             projectors.append(NonLocalProjector.read_hdf5(group, i))
 
-        obj = cls(
-            symbol,
-            [],
-            nelec, lradius,
-            lcoefs,
-            projectors,
-        )
-
+        obj = cls(symbol, [], nelec, lradius, lcoefs, projectors)
         obj._read_info(group, ds_info[0])
 
         return obj
 
 
-class AtomicPseudopotentialsStorage(BaseAtomicStorage):
+class PseudopotentialFamily(BaseFamilyStorage):
     object_type = AtomicPseudopotential
 
 
 class PseudopotentialsStorage(Storage):
-    object_type = AtomicPseudopotentialsStorage
+    object_type = PseudopotentialFamily
     name = 'pseudopotentials'
 
 
 class AtomicPseudopotentialsParser(BaseParser):
 
-    def iter_atomic_pseudopotentials(self) -> Iterable[AtomicPseudopotentialsStorage]:
+    def iter_atomic_pseudopotentials(self) -> Iterable[PseudopotentialFamily]:
         """
         ATOMIC_PPs := ATOMIC_PP* EOS
         """

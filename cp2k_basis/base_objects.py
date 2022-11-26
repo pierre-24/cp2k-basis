@@ -61,25 +61,24 @@ class AtomicDataException(Exception):
     pass
 
 
-class BaseAtomicStorage:
-    """Base atomic storage, stores `AtomicDataObject` for a given atomic symbol.
+class BaseFamilyStorage:
+    """Base family storage, stores `AtomicDataObject` for a given family name.
     """
 
     object_type = BaseAtomicDataObject
 
-    def __init__(self, symbol: str):
-        self.symbol = symbol
+    def __init__(self, name: str):
+        self.name = name
         self.data_objects: Dict[str, BaseAtomicDataObject] = {}
 
-    def add(self, obj: BaseAtomicDataObject, names: Iterable[str]):
+    def add(self, obj: BaseAtomicDataObject):
         if type(obj) is not self.object_type:
             raise TypeError('`obj` must be of type {}'.format(self.object_type))
 
-        for name in names:
-            if name in self.data_objects:
-                raise AtomicDataException('`{}` already exists for symbol {}'.format(name, self.symbol))
+        if obj.symbol in self.data_objects:
+            raise AtomicDataException('`{}` already exists for symbol {}'.format(self.name, obj.symbol))
 
-            self.data_objects[name] = obj
+        self.data_objects[obj.symbol] = obj
 
     def __str__(self) -> str:
         return ''.join(str(bs) for bs in self.data_objects.values())
@@ -105,14 +104,14 @@ class BaseAtomicStorage:
             data.dump_hdf5(subgroup)
 
     @classmethod
-    def read_hdf5(cls, group: h5py.Group) -> 'BaseAtomicStorage':
+    def read_hdf5(cls, group: h5py.Group) -> 'BaseFamilyStorage':
         """Extract from HDF5"""
 
-        symbol = pathlib.Path(group.name).name
-        o = cls(symbol)
+        name = pathlib.Path(group.name).name
+        o = cls(name)
 
         for key, basis_group in group.items():
-            o.add(cls.object_type.read_hdf5(symbol, basis_group), [key])
+            o.add(cls.object_type.read_hdf5(key, basis_group))
 
         return o
 
@@ -122,15 +121,15 @@ class StorageException(Exception):
 
 
 class Storage:
-    """Stores `BaseAtomicStorage` for each possible atoms
+    """Stores `BaseFamilyStorage` for each possible family name.
     """
 
-    object_type = BaseAtomicStorage
+    object_type = BaseFamilyStorage
     name = 'base_storage'
 
     def __init__(self):
-        self.atomic_storages: Dict[str, BaseAtomicStorage] = {}
-        self.atoms_per_object_name: Dict[str, List[str]] = {}
+        self.families: Dict[str, BaseFamilyStorage] = {}
+        self.families_per_atom: Dict[str, List[str]] = {}
 
     def update(
         self,
@@ -139,55 +138,52 @@ class Storage:
         add_metadata: Callable[[BaseAtomicDataObject], None] = None
     ):
         for obj in data_objects:
-            symbol = obj.symbol
-
-            # add to storages
-            if symbol not in self.atomic_storages:
-                self.atomic_storages[symbol] = self.object_type(symbol)
-
             if add_metadata:
                 add_metadata(obj)
 
+            # prepare reverse
+            symbol = obj.symbol
+            if symbol not in self.families_per_atom:
+                self.families_per_atom[symbol] = []
+
+            # add to storage & reverse
             names = list(filter_name(obj.names))
-            self.atomic_storages[symbol].add(obj, names)
 
-            # add to reverse
             for name in names:
-                if name not in self.atoms_per_object_name:
-                    self.atoms_per_object_name[name] = []
+                if name not in self.families:
+                    self.families[name] = self.object_type(name)
 
-                self.atoms_per_object_name[name].append(symbol)
+                self.families[name].add(obj)
+                self.families_per_atom[symbol].append(name)
 
     def __repr__(self):
         return '<Storage({})>'.format(repr(self.name))
 
-    def __getitem__(self, item: str) -> BaseAtomicStorage:
-        return self.atomic_storages[item]
+    def __getitem__(self, item: str) -> BaseFamilyStorage:
+        return self.families[item]
 
     def __contains__(self, item: str) -> bool:
-        return item in self.atomic_storages
+        return item in self.families
 
-    def get_data_objects_for_atoms(self, obj_name: str, atoms: List[str] = None) -> Iterable[BaseAtomicDataObject]:
-        if obj_name not in self.atoms_per_object_name:
-            raise StorageException('`{}` not in this storage'.format(obj_name))
+    def get_atomic_data_objects(self, family_name: str, atoms: List[str] = None) -> Iterable[BaseAtomicDataObject]:
+        """Get a (sub)set of `AtomicDataObject` in a given family
+        """
+
+        if family_name not in self:
+            raise StorageException('`{}` not in this storage'.format(family_name))
 
         if atoms is None:
-            atoms = self.atoms_per_object_name[obj_name]
+            atoms = self[family_name].data_objects.keys()
 
-        for symbol in atoms:
+        for atom in atoms:
             try:
-                atomic_storage = self[symbol]
+                yield self[family_name][atom]
             except KeyError:
-                raise StorageException('Atom `{}` not in this storage')
-
-            try:
-                yield atomic_storage[obj_name]
-            except KeyError:
-                raise StorageException('`{}` does not exists for atom {}'.format(obj_name, symbol))
+                raise StorageException('Atom {} does not exists for {}'.format(atom, family_name))
 
     def dump_hdf5(self, f: h5py.File):
         main_group = f.require_group(self.name)
-        for key, data_object in self.atomic_storages.items():
+        for key, data_object in self.families.items():
             data_object.dump_hdf5(main_group.require_group(key))
 
     @classmethod
@@ -197,7 +193,7 @@ class Storage:
 
         for key, group in main_group.items():
             for name, data_obj in obj.object_type.read_hdf5(group).data_objects.items():
-                obj.update([data_obj], lambda x: [name])
+                obj.update([data_obj], lambda x: [key])
 
         return obj
 

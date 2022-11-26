@@ -40,10 +40,11 @@ class BasisSetAPITestCase(FlaskAppMixture):
         data = response.get_json()
 
         self.assertEqual(data['request']['name'], self.basis_name)
+        self.assertNotIn('atoms', data['request'])
 
         for abs_ in AtomicBasisSetsParser(data['result']).iter_atomic_basis_sets():
             self.assertIn(
-                abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'].atoms_per_object_name[self.basis_name])
+                abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
 
     def test_basis_data_wrong_basis_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name='xx'))
@@ -57,6 +58,7 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
+        self.assertIn('atoms', data['request'])
         self.assertEqual(data['request']['atoms'], atoms)
 
     def test_basis_data_wrong_atom_ko(self):
@@ -70,15 +72,39 @@ class BasisSetAPITestCase(FlaskAppMixture):
 
 class PseudopotentialAPITestCase(FlaskAppMixture):
 
-    def test_pseudo_data_ok(self):
-        pseudo_name = 'GTH-BLYP'
+    def setUp(self) -> None:
+        super().setUp()
 
-        response = self.client.get(flask.url_for('api.pseudo-data', name=pseudo_name))
+        self.pseudo_name = 'GTH-BLYP'
+
+    def test_pseudo_data_ok(self):
+
+        response = self.client.get(flask.url_for('api.pseudo-data', name=self.pseudo_name))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        self.assertEqual(data['request']['name'], pseudo_name)
+        self.assertEqual(data['request']['name'], self.pseudo_name)
+        self.assertNotIn('atoms', data['request'])
 
         for app in AtomicPseudopotentialsParser(data['result']).iter_atomic_pseudopotentials():
             self.assertIn(
-                app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].atoms_per_object_name[pseudo_name])
+                app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
+
+    def test_pseudo_data_wrong_pseudo_ko(self):
+        response = self.client.get(flask.url_for('api.pseudo-data', name='xx'))
+        self.assertEqual(response.status_code, 404)
+
+    def test_pseudo_data_atom_ok(self):
+        atoms = ['H']
+
+        response = self.client.get(
+            flask.url_for('api.pseudo-data', name=self.pseudo_name) + '?atoms={}'.format(''.join(atoms)))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertIn('atoms', data['request'])
+        self.assertEqual(data['request']['atoms'], atoms)
+
+    def test_pseudo_data_missing_atom_ko(self):
+        response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?atoms=U')
+        self.assertEqual(response.status_code, 404)

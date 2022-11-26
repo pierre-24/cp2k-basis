@@ -5,7 +5,7 @@ import re
 import h5py
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetsParser, AtomicBasisSetsStorage, AtomicBasisSet, BasisSetsStorage
+from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSet, AtomicBasisSet, BasisSetsStorage
 from cp2k_basis.base_objects import FilterName
 
 
@@ -36,7 +36,7 @@ class BSTestCase(unittest.TestCase):
             'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
 
         for basis_name in self.bs_names:
-            self.assertIn(basis_name, self.storage['C'])
+            self.assertIn(basis_name, self.storage)
 
     def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSet, abs2: AtomicBasisSet):
         self.assertEqual(abs2.names, abs1.names)
@@ -55,8 +55,8 @@ class BSTestCase(unittest.TestCase):
             self.assertTrue(numpy.array_equal(contraction2.exponents, contraction1.exponents))
             self.assertTrue(numpy.array_equal(contraction2.coefficients, contraction1.coefficients))
 
-    def test_str_ok(self):
-        abs1 = self.storage['C']['TZV2PX-MOLOPT-GTH']
+    def test_atomic_basis_set_str_ok(self):
+        abs1 = self.storage['TZV2PX-MOLOPT-GTH']['C']
 
         parser = AtomicBasisSetsParser(str(abs1))
         parser.skip()  # skip comment
@@ -64,21 +64,22 @@ class BSTestCase(unittest.TestCase):
 
         self.assertAtomicBasisSetEqual(abs1, abs2)
 
-    def test_atomic_basis_sets_storage_dump_hdf5_ok(self):
+    def test_basis_set_dump_hdf5_ok(self):
         path = tempfile.mktemp()
+        name = 'TZV2PX-MOLOPT-GTH'
 
-        # write h5file with basis sets for C
+        # write h5file with basis set
         with h5py.File(path, 'w') as f:
-            abs1 = self.storage['C']
-            abs1.dump_hdf5(f.create_group('basis_sets/C'))
+            bs1 = self.storage[name]
+            bs1.dump_hdf5(f.create_group('basis_sets/{}'.format(name)))
 
         # read it back and compare
         with h5py.File(path) as f:
-            abs2 = AtomicBasisSetsStorage.read_hdf5(f['basis_sets/C'])
+            bs2 = BasisSet.read_hdf5(f['basis_sets/{}'.format(name)])
 
-            for basis_name in self.bs_names:
-                self.assertIn(basis_name, abs2.data_objects)
-                self.assertAtomicBasisSetEqual(abs1[basis_name], abs2[basis_name])
+            for symbol in ['C', 'H']:
+                self.assertIn(symbol, bs2)
+                self.assertAtomicBasisSetEqual(bs1[symbol], bs2[symbol])
 
                 # check metadata
-                self.assertEqual(abs1[basis_name].metadata, abs2[basis_name].metadata)
+                self.assertEqual(bs1[symbol].metadata, bs2[symbol].metadata)
