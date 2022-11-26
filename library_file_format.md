@@ -98,7 +98,7 @@ The following structure, e.g., is valid:
 ```
 *
 |
-+- pseudopotentials/Ne/GTH-BLYP/
++- pseudopotentials/GTH-BLYP/Ne/
    |
    +- info                        # contains (2, 2, 2, 2, 6)
    |                              # and has attribute nelec=2
