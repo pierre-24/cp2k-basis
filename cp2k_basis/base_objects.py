@@ -75,6 +75,15 @@ class BaseFamilyStorage:
     def __contains__(self, item: str) -> bool:
         return item in self.data_objects
 
+    def __iter__(self) -> Iterable[str]:
+        yield from self.data_objects.keys()
+
+    def values(self) -> Iterable[BaseAtomicDataObject]:
+        """Yield all `AtomicDataObjects`
+        """
+
+        yield from self.data_objects.values()
+
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
@@ -162,21 +171,12 @@ class Storage:
     def __contains__(self, item: str) -> bool:
         return item in self.families
 
-    def get_atomic_data_objects(self, family_name: str, atoms: List[str] = None) -> Iterable[BaseAtomicDataObject]:
-        """Get a (sub)set of `AtomicDataObject` in a given family
-        """
+    def __iter__(self) -> Iterable[str]:
+        yield from self.families.keys()
 
-        if family_name not in self:
-            raise StorageException('`{}` not in this storage'.format(family_name))
-
-        if atoms is None:
-            atoms = self[family_name].data_objects.keys()
-
-        for atom in atoms:
-            try:
-                yield self[family_name][atom]
-            except KeyError:
-                raise StorageException('Atom {} does not exists for {}'.format(atom, family_name))
+    def values(self) -> Iterable[BaseFamilyStorage]:
+        """Yield all `BaseFamilyStorage`"""
+        yield from self.families.values()
 
     def dump_hdf5(self, f: h5py.File):
         main_group = f.require_group(self.name)

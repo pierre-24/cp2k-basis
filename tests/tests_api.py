@@ -43,9 +43,14 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.basis_name)
         self.assertNotIn('elements', data['query'])
 
-        for abs_ in AtomicBasisSetsParser(data['result']).iter_atomic_basis_sets():
+        for abs_ in AtomicBasisSetsParser(data['result']['data']).iter_atomic_basis_sets():
             self.assertIn(
                 abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
+
+        self.assertEqual(
+            sorted(data['result']['elements']),
+            sorted(flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
+        )
 
     def test_basis_data_wrong_basis_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name='xx'))
@@ -61,6 +66,7 @@ class BasisSetAPITestCase(FlaskAppMixture):
 
         self.assertIn('elements', data['query'])
         self.assertEqual(data['query']['elements'], elements.split(','))
+        self.assertEqual(data['result']['elements'], elements.split(','))
 
     def test_basis_data_wrong_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?elements=X')
@@ -120,9 +126,14 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.pseudo_name)
         self.assertNotIn('elements', data['query'])
 
-        for app in AtomicPseudopotentialsParser(data['result']).iter_atomic_pseudopotentials():
+        for app in AtomicPseudopotentialsParser(data['result']['data']).iter_atomic_pseudopotentials():
             self.assertIn(
                 app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
+
+        self.assertEqual(
+            sorted(data['result']['elements']),
+            sorted(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
+        )
 
     def test_pseudo_data_wrong_pseudo_ko(self):
         response = self.client.get(flask.url_for('api.pseudo-data', name='xx'))
@@ -138,6 +149,7 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
 
         self.assertIn('elements', data['query'])
         self.assertEqual(data['query']['elements'], list(ElementSet.create(elements)))
+        self.assertEqual(data['result']['elements'], list(ElementSet.create(elements)))
 
     def test_pseudo_data_missing_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?elements=U')

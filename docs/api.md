@@ -1,6 +1,15 @@
 # REST API reference
 
-## On the `elements` option
+## Preamble
+
+### Request
+
+This API can be used to retrieve two types (`<type>`) of data, either basis sets (`basis`) or pseudopotentials (`pseudopotentials`).
+Each of them has a name (`<name>`).
+
+Options are added as query string: `/api/example?option1=value&option2=value`.
+
+### On the `elements` option
 
 Every time the option `elements` can be used,
 + you can use a list of comma separated atomic symbols, e.g., `C,H,N,O`,
@@ -10,55 +19,52 @@ Every time the option `elements` can be used,
 Elements are limited to Z ≤ 92, i.e., hydrogen to uranium.
 If you want to perform calculations outside this range, you probably have other problems on your plate than finding a basis set ;)
 
-## `/api/<type>/<name>/data`
 
-Obtain data.
+### Response format
 
-`<type>` can be:
+The response is in JSON, and always contains two main fields:
 
-+ `basis` to obtain basis set `<name>` (e.g., `/api/basis/SZV-MOLOPT-GTH/data`). 
-+ `pseudopotentials` to obtain pseudopotential `<name>` (e.g. `/api/pseudopotentials/GTH-BLYP/data`).
-
-Options are:
-
-| Option     | Argument | Description                                                                                     |
-|------------|----------|-------------------------------------------------------------------------------------------------|
-| `elements` | String   | Restrict the output to a subset of elements. If some elements are not present, a 404 is raised. |
-
-
-
-The output is in JSON, and contains the following data:
-
-```js
-response = {
-  "query": {
-    "name": "<name>",
-    // ... other options
-  },
-  "result": "requested data in CP2K format."
+```json
+{
+  "query": {},
+  "result": {}
 }
 ```
 
-## `/api/<type>/<name>/metadata`
+`query` contains the request, to which `result` is the answer.
 
-Obtain metadata on a basis set (`<type>` is `basis`) or GTH potential (`<type>` is `pseudopotentials`).
+## Routes
 
-There is no option.
+### `/api/<type>/<name>/data`
 
-The output is in JSON, and contains the following data:
+Obtain data in the CP2K format.
 
-```js
-response = {
-  "query": {
-    "name": "<name>"
-  },
-  "result": {
-      "description": "a textual description",
-      "elements": [...], // elements for which it is available
-      "references": [...], // list of URL to papers or other sources
-      "source": "https://URL" // original file from which it was gathered.
-  }
-}
-```
+Options:
 
-Other metadata might be added in the future.
+| Option     | Argument | Description                                                                                                                        |
+|------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
+| `elements` | String   | Restrict the output to a subset of elements. If some elements are not defined for this basis set/pseudopotential, a 404 is raised. |
+
+
+Output:
+
+| Field      | Name       | Type           | Description                                                             |
+|------------|------------|----------------|-------------------------------------------------------------------------|
+| `query`    | `name`     | string         | The name you requested                                                  |
+| `query`    | `type`     | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                                        |
+| `result`   | `data`     | string         | The resulting basis set or pseudopotential, in CP2K format              |
+| `result`   | `elements` | list of string | Elements for which there is data (matches the option `elements` if set) |
+
+### `/api/<type>/<name>/metadata`
+
+Obtain metadata about a basis set or pseudopotential. There is no option.
+
+Output:
+
+| Field    | Name         | Type           | Description                                                  |
+|----------|--------------|----------------|--------------------------------------------------------------|
+| `query`  | `name`       | string         | The name you requested                                       |
+| `query`  | `type`       | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                             |
+| `result` | `elements`   | list of string | Elements for which the basis set/pseudopotential are defined |
+| `result` | `references` | list of string | List of URL to articles or repositories                      |
+| `result` | `source`     | string         | URL to the file which was used to create the data            |

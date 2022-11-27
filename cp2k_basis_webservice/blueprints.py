@@ -1,14 +1,13 @@
 import flask
 from flask.views import MethodView
 from flask.blueprints import Blueprint
-from typing import Union
-from werkzeug.exceptions import NotFound, Forbidden
+from werkzeug.exceptions import NotFound
 
 from webargs import fields
 from webargs.flaskparser import FlaskParser
 
 from cp2k_basis.elements import ElementSetField
-from cp2k_basis.base_objects import Storage, StorageException
+from cp2k_basis.base_objects import Storage
 
 
 class RenderTemplateView(MethodView):
@@ -56,8 +55,7 @@ def handle_error(err):
 @api_blueprint.errorhandler(401)
 @api_blueprint.errorhandler(403)
 @api_blueprint.errorhandler(404)
-@api_blueprint.errorhandler(409)
-def handle_error_s(err: Union[NotFound, Forbidden]):
+def handle_error_s(err):
     return flask.jsonify(status=err.code, message=err.description), err.code
 
 
@@ -67,7 +65,7 @@ field_name = fields.Str()
 parser = FlaskParser()
 
 
-class BaseDataAPI(MethodView):
+class BaseFamilyStorageDataAPI(MethodView):
     source: str = ''
     textual_source: str = ''
 
@@ -80,22 +78,36 @@ class BaseDataAPI(MethodView):
         name = kwargs.get('name')
 
         try:
-            result = list(storage.get_atomic_data_objects(name, elements))
-        except StorageException as e:
-            flask.abort(404, description=str(e))
+            family_storage = storage[name]
+        except KeyError:
+            raise NotFound('{} `{}` does not exist'.format(self.textual_source, name))
 
-        query = dict(name=name)
+        if not elements:
+            atomic_data_objects = list(family_storage.values())
+        else:
+            atomic_data_objects = []
+            for symbol in elements:
+                try:
+                    atomic_data_objects.append(family_storage[symbol])
+                except KeyError:
+                    raise NotFound('{} `{}` does not exist for atom {}'.format(self.textual_source, name, symbol))
+
+        query = dict(type=self.source, name=name)
+        result = dict(
+            data=''.join(str(obj) for obj in atomic_data_objects),
+            elements=list(obj.symbol for obj in atomic_data_objects)
+        )
 
         if elements:
             query['elements'] = list(elements)
 
         return flask.jsonify(
             query=query,
-            result=''.join(str(data) for data in result)
+            result=result
         )
 
 
-class BasisSetDataAPI(BaseDataAPI):
+class BasisSetDataAPI(BaseFamilyStorageDataAPI):
     source = 'BASIS_SET'
     textual_source = 'basis set'
 
@@ -103,7 +115,7 @@ class BasisSetDataAPI(BaseDataAPI):
 api_blueprint.add_url_rule('/basis/<name>/data', view_func=BasisSetDataAPI.as_view(name='basis-data'))
 
 
-class PseudopotentialDataAPI(BaseDataAPI):
+class PseudopotentialDataAPI(BaseFamilyStorageDataAPI):
     source = 'PSEUDOPOTENTIAL'
     textual_source = 'pseudopotential'
 
@@ -124,9 +136,9 @@ class BaseMetadataAPI(MethodView):
         try:
             family_storage = storage[name]
         except KeyError:
-            flask.abort(404, description='{} `{}` does not exist'.format(self.textual_source, name))
+            raise NotFound('{} `{}` does not exist'.format(self.textual_source, name))
 
-        query = dict(name=name)
+        query = dict(type=self.source, name=name)
         result = family_storage.metadata
         result['elements'] = list(family_storage.data_objects.keys())
 

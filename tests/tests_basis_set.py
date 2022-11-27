@@ -92,9 +92,9 @@ class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
         with h5py.File(path) as f:
             storage = BasisSetsStorage.read_hdf5(f)
 
-            for bs_name in self.storage.families.keys():
+            for bs_name in self.storage:
                 self.assertIn(bs_name, storage)
 
-                for symbol in storage[bs_name].data_objects.keys():
+                for symbol in storage[bs_name]:
                     self.assertIn(symbol, storage[bs_name])
                     self.assertAtomicBasisSetEqual(storage[bs_name][symbol], self.storage[bs_name][symbol])
