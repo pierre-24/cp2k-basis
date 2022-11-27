@@ -35,6 +35,40 @@ The response is in JSON, and always contains two main fields:
 
 ## Routes
 
+### `/api/data`
+
+Get, for basis sets and pseudopotentials, which elements are defined, and for each element, which basis set/pseudopotentials are defined.
+There is no option.
+
+Output:
+
+| Field      | Name               | Type       | Description                                                                                                                                                                           |
+|------------|--------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `query`    | `type`             | string     | Always `ALL`                                                                                                                                                                          |
+| `result`   | `basis_sets`       | dictionary | Contains two fields: `per_name`, which lists elements available for a given basis set, and `per_elements`, which lists all basis set names available for a given element.             |
+| `result`   | `pseudopotentials` | dictionary | Contains two fields: `per_name`, which lists elements available for a given pseudopotential, and `per_elements`, which lists all pseudopotential names available for a given element. |
+
+
+### `/api/names`
+
+List all available basis set and pseudopotential names available, eventually for a set of elements.
+
+Options:
+
+| Option     | Argument | Description                                  |
+|------------|----------|----------------------------------------------|
+| `elements` | String   | Restrict the output to a subset of elements. |
+
+Output:
+
+| Field    | Name               | Type           | Description                                 |
+|----------|--------------------|----------------|---------------------------------------------|
+| `query`  | `type`             | string         | Always `ALL`                                |
+| `query`  | `elements`         | list of string | Value of the `elements` option, if provided |
+| `result` | `basis_sets`       | list of string | List of basis set names available           |
+| `result` | `pseudopotentials` | list of string | List of pseudopotential names available     |
+
+
 ### `/api/<type>/<name>/data`
 
 Obtain data in the CP2K format.
@@ -48,12 +82,14 @@ Options:
 
 Output:
 
-| Field      | Name       | Type           | Description                                                             |
-|------------|------------|----------------|-------------------------------------------------------------------------|
-| `query`    | `name`     | string         | The name you requested                                                  |
-| `query`    | `type`     | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                                        |
-| `result`   | `data`     | string         | The resulting basis set or pseudopotential, in CP2K format              |
-| `result`   | `elements` | list of string | Elements for which there is data (matches the option `elements` if set) |
+| Field    | Name              | Type           | Description                                                                                                           |
+|----------|-------------------|----------------|-----------------------------------------------------------------------------------------------------------------------|
+| `query`  | `name`            | string         | The name you requested                                                                                                |
+| `query`  | `type`            | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                                                                                      |
+| `query`  | `elements`        | list of string | Value of the `elements` option, if provided                                                                           |
+| `result` | `data`            | string         | The resulting basis set or pseudopotential, in CP2K format                                                            |
+| `result` | `elements`        | list of string | Elements for which there is data (matches the option `elements` if set)                                               |
+| `result` | `alternate_names` | dictionary     | For each element, list of alternate (generally of the form `<name>-qX` with `X` the number of valence electron) names |
 
 ### `/api/<type>/<name>/metadata`
 

@@ -65,6 +65,50 @@ field_name = fields.Str()
 parser = FlaskParser()
 
 
+class AllDataAPI(MethodView):
+    def get(self, **kwargs):
+        bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        pp_storage: Storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
+        return flask.jsonify(
+            query=dict(type='ALL'),
+            result=dict(
+                basis_sets=dict(
+                    per_name=bs_storage.elements_per_family, per_element=bs_storage.families_per_element),
+                pseudopotentials=dict(
+                    per_name=pp_storage.elements_per_family, per_element=pp_storage.families_per_element)
+            )
+        )
+
+
+api_blueprint.add_url_rule('/data', view_func=AllDataAPI.as_view(name='data'))
+
+
+class NamesAPI(MethodView):
+    @parser.use_kwargs({'elements': field_elements}, location='query')
+    def get(self, **kwargs):
+        bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        pp_storage: Storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
+        elements = kwargs.get('elements', None)
+
+        query = dict(type='ALL')
+
+        if elements:
+            query['elements'] = list(elements)
+
+        return flask.jsonify(
+            query=query,
+            result=dict(
+                basis_sets=bs_storage.get_names_for_elements(elements),
+                pseudopotentials=pp_storage.get_names_for_elements(elements)
+            )
+        )
+
+
+api_blueprint.add_url_rule('/names', view_func=NamesAPI.as_view(name='names'))
+
+
 class BaseFamilyStorageDataAPI(MethodView):
     source: str = ''
     textual_source: str = ''
@@ -95,7 +139,9 @@ class BaseFamilyStorageDataAPI(MethodView):
         query = dict(type=self.source, name=name)
         result = dict(
             data=''.join(str(obj) for obj in atomic_data_objects),
-            elements=list(obj.symbol for obj in atomic_data_objects)
+            elements=list(obj.symbol for obj in atomic_data_objects),
+            alternate_names=dict(
+                (obj.symbol, list(filter(lambda x: x != name, obj.names))) for obj in atomic_data_objects)
         )
 
         if elements:

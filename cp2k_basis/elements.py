@@ -151,6 +151,10 @@ class ElementSet:
     def __contains__(self, item: str):
         return ElementSet._Z(item) in self.elements
 
+    def __le__(self, other: Union['ElementSet', str]):
+        other = self._elementset_or_raise(other)
+        return self.elements.issubset(other.elements)
+
     def __iter__(self) -> Iterable[str]:
 
         # NOTE: order not guaranteed

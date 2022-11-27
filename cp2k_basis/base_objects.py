@@ -7,6 +7,7 @@ from typing import Dict, Iterable, Union, Any, List, Callable, Tuple, Iterator
 
 import numpy
 
+from cp2k_basis.elements import ElementSet, SYMB_TO_Z
 
 string_dt = h5py.special_dtype(vlen=str)
 
@@ -135,7 +136,8 @@ class Storage:
 
     def __init__(self):
         self.families: Dict[str, BaseFamilyStorage] = {}
-        self.families_per_atom: Dict[str, List[str]] = {}
+        self.families_per_element: Dict[str, List[str]] = {}
+        self.elements_per_family: Dict[str, List[str]] = {}
 
     def update(
         self,
@@ -147,8 +149,8 @@ class Storage:
 
             # prepare reverse
             symbol = obj.symbol
-            if symbol not in self.families_per_atom:
-                self.families_per_atom[symbol] = []
+            if symbol not in self.families_per_element:
+                self.families_per_element[symbol] = []
 
             # add to storage & reverse
             names = list(filter_name(obj.names))
@@ -156,11 +158,13 @@ class Storage:
             for name in names:
                 if name not in self.families:
                     self.families[name] = self.object_type(name)
+                    self.elements_per_family[name] = []
                     if add_metadata:
                         add_metadata(self.families[name])
 
                 self.families[name].add(obj)
-                self.families_per_atom[symbol].append(name)
+                self.elements_per_family[name].append(symbol)
+                self.families_per_element[symbol].append(name)
 
     def __repr__(self):
         return '<Storage({})>'.format(repr(self.name))
@@ -177,6 +181,20 @@ class Storage:
     def values(self) -> Iterable[BaseFamilyStorage]:
         """Yield all `BaseFamilyStorage`"""
         yield from self.families.values()
+
+    def get_names_for_elements(self, elements: ElementSet) -> List[str]:
+        """Get all defined names, eventually restricted to a subset of elements
+        """
+
+        names_list = []
+        if not elements:
+            names_list = list(self)
+        else:
+            for name in self:
+                if elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
+                    names_list.append(name)
+
+        return names_list
 
     def dump_hdf5(self, f: h5py.File):
         main_group = f.require_group(self.name)

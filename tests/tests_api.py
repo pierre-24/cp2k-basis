@@ -29,6 +29,62 @@ class FlaskAppMixture(TestCase):
         self.client = self.app.test_client(use_cookies=True)
 
 
+class GeneralAPITestCase(FlaskAppMixture):
+    def setUp(self) -> None:
+        super().setUp()
+
+    def test_data_ok(self):
+
+        response = self.client.get(flask.url_for('api.data'))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['type'], 'ALL')
+
+        self.assertEqual(
+            data['result']['basis_sets']['per_name'],
+            flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family
+        )
+
+        self.assertEqual(
+            data['result']['basis_sets']['per_element'],
+            flask.current_app.config['BASIS_SETS_STORAGE'].families_per_element
+        )
+
+        self.assertEqual(
+            data['result']['pseudopotentials']['per_name'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family
+        )
+
+        self.assertEqual(
+            data['result']['pseudopotentials']['per_element'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].families_per_element
+        )
+
+    def test_names_no_elements_ok(self):
+        response = self.client.get(flask.url_for('api.names'))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['type'], 'ALL')
+        self.assertNotIn('elements', data['query'])
+
+        self.assertEqual(data['result']['basis_sets'], list(flask.current_app.config['BASIS_SETS_STORAGE']))
+        self.assertEqual(data['result']['pseudopotentials'], list(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']))
+
+    def test_names_with_elements_ok(self):
+        elements = 'O,Ne'
+        response = self.client.get(flask.url_for('api.names') + '?elements={}'.format(elements))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['type'], 'ALL')
+        self.assertEqual(sorted(data['query']['elements']), sorted(elements.split(',')))
+
+        self.assertEqual(data['result']['basis_sets'], [])
+        self.assertEqual(data['result']['pseudopotentials'], ['GTH-BLYP'])
+
+
 class BasisSetAPITestCase(FlaskAppMixture):
     def setUp(self) -> None:
         super().setUp()
