@@ -175,7 +175,7 @@ class PseudopotentialsStorage(Storage):
 
 class AtomicPseudopotentialsParser(BaseParser):
 
-    def iter_atomic_pseudopotentials(self) -> Iterable[PseudopotentialFamily]:
+    def iter_atomic_pseudopotentials(self) -> Iterable[AtomicPseudopotential]:
         """
         ATOMIC_PPs := ATOMIC_PP* EOS
         """

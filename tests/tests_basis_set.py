@@ -3,13 +3,13 @@ import unittest
 import pathlib
 import re
 import h5py
-import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSet, AtomicBasisSet, BasisSetsStorage
+from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSet, BasisSetsStorage
 from cp2k_basis.base_objects import FilterName
+from tests import CompareAtomicDataObjectMixin
 
 
-class BSTestCase(unittest.TestCase):
+class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
     def setUp(self):
         super().setUp()
 
@@ -33,27 +33,11 @@ class BSTestCase(unittest.TestCase):
             )
 
         self.bs_names = [
-            'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH']
+            'SZV-MOLOPT-GTH', 'DZVP-MOLOPT-GTH', 'TZVP-MOLOPT-GTH', 'TZV2P-MOLOPT-GTH', 'TZV2PX-MOLOPT-GTH'
+        ]
 
         for basis_name in self.bs_names:
             self.assertIn(basis_name, self.storage)
-
-    def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSet, abs2: AtomicBasisSet):
-        self.assertEqual(abs2.names, abs1.names)
-        self.assertEqual(abs2.symbol, abs1.symbol)
-        self.assertEqual(len(abs2.contractions), len(abs1.contractions))
-
-        for i in range(len(abs1.contractions)):
-            contraction1 = abs1.contractions[i]
-            contraction2 = abs2.contractions[i]
-
-            self.assertEqual(contraction2.principle_n, contraction1.principle_n)
-            self.assertEqual((contraction2.l_min, contraction2.l_max), (contraction1.l_min, contraction1.l_max))
-            self.assertEqual(contraction2.nfunc, contraction1.nfunc)
-            self.assertEqual(contraction2.nshell, contraction1.nshell)
-
-            self.assertTrue(numpy.array_equal(contraction2.exponents, contraction1.exponents))
-            self.assertTrue(numpy.array_equal(contraction2.coefficients, contraction1.coefficients))
 
     def test_atomic_basis_set_str_ok(self):
         abs1 = self.storage['TZV2PX-MOLOPT-GTH']['C']
