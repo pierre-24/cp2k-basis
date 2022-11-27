@@ -114,10 +114,10 @@ The following structure, e.g., is valid:
 
 Each `basis set` and `pp familly` group might also have the following attributes:
 
-| Name          | Type    | Description                                     |
-|---------------|---------|-------------------------------------------------|
-| `source`      | `str`   | URL to the original file used to build the data |
-| `description` | `str`   | Description of the data                         |
-| `references`  | `array` | One-dimensional array of DOI                    |
+| Name          | Type    | Description                                                         |
+|---------------|---------|---------------------------------------------------------------------|
+| `source`      | `str`   | URL to the original file used to build the data                     |
+| `description` | `str`   | Description of the data                                             |
+| `references`  | `array` | One-dimensional array of URLs to reference papers (DOI) or sources. |
 
 Those attributes are optional: if an attribute is missing, an empty value can be assumed.

@@ -9,10 +9,12 @@
 #
 #   + name: name of the file,
 #   + type: give the type of data found in the file, can be either `BASIS_SETS` or `PSEUDOPOTENTIALS`,
-#   + references: list of references, in the form of DOI,
-#   + rules: set of rule to modify or discard names,
+#   + filter_name: set of rule to modify or discard names,
 #     as a dictionary where the key is a REGEX matching a name,
 #     and the value is its replacement (empty values means that the name is discarded).
+#   + metadata: set of metadata to be added, as a dictionary of list, where the key is the name of the metadata
+#     and the value is a dictionary of rules, where the key is a REGEX matching the name, and its value
+#     is the value of the metadata.
 #
 #   The full URL to download the file will be given by `base.replace(**data) + name`.
 
@@ -23,23 +25,58 @@
   files:
     - name: BASIS_MOLOPT
       type: BASIS_SETS
-      references:
-        - 10.1063/1.2770708
-      rules:
-        '^.*-q\d{1,2}$': ''
+      filter_name:
+        '^.*-q\d{1,2}$': ''  # remove -q* version
+      metadata:
+        references:
+          '.*': [https://dx.doi.org/10.1063/1.2770708]
+        description:
+          'SZV-MOLOPT-GTH': Single zeta valence [1s1p] MOLOPT basis set for gas and condensed phase and GTH potentials.
+          'DZVP-MOLOPT-GTH': Double zeta valence + 1 set polarization [2s2p1d] MOLOPT basis set for gas and condensed phase and GTH potentials.
+          'TZVP-MOLOPT-GTH': Triple zeta valence + 1 set polarization [3s2p1d] MOLOPT basis set for gas and condensed phase and GTH potentials.
+          'TZV2P-MOLOPT-GTH': Triple zeta valence + 2 set polarization [3s3p2d] MOLOPT basis set for gas and condensed phase and GTH potentials.
+          'TZV2PX-MOLOPT-GTH': Triple zeta valence + 2 set polarization and 1f [3s3p2d1f] MOLOPT basis set for gas and condensed phase and GTH potentials.
+          'SZV-MOLOPT-SR-GTH': Single zeta valence MOLOPT basis set for solids (SR=short-range, with less diffuse basis functions) and GTH potentials.
+          'DZVP-MOLOPT-SR-GTH': Double zeta valence + 1 set polarization MOLOPT basis set for solids (SR=short-range, with less diffuse basis functions) and GTH potentials.
+          # fallback:
+          '.*': MOLOPT basis set.
     - name: GTH_BASIS_SETS
       type: BASIS_SETS
-      references:
-        - 10.1103/PhysRevB.54.1703
-        - 10.1103/PhysRevB.58.3641
-        - 10.1007/s00214-005-0655-y
-      rules:
-        '^.*-q\d{1,2}$': ''
+      filter_name:
+        '^.*-q\d{1,2}$': ''  # remove -q* version
+      metadata:
+        references:
+          '.*': [https://dx.doi.org/10.1016/j.cpc.2004.12.014]  # Quickstep paper, in which they were originally described
+        description:
+          'SZV-GTH': A single zeta valence basis set for GTH potentials.
+          'DZV-GTH': A double zeta valence basis set for H and He for GTH potentials.
+          'DZVP-GTH': A double zeta valence (+ 1 set of polarization) basis set for GTH potentials.
+          'TZVP-GTH': A triple zeta valence (+ 1 set of polarization) basis set for GTH potentials.
+          'TZV2P-GTH': A triple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
+          'QZV2P-GTH': A quadruple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
+          'QZV3P-GTH': A quadruple zeta valence (+ 3 set of polarization) basis set for GTH potentials.
+          'aug-DZVP-GTH': An augmented double zeta valence (+ 1 set of polarization) basis set for GTH potentials.
+          'aug-TZVP-GTH': An augmented triple zeta valence (+ 1 set of polarization) basis set for GTH potentials.
+          'aug-TZV2P-GTH': An augmented triple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
+          'aug-QZV2P-GTH': An augmented quadruple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
+          'aug-QZV3P-GTH': An augmented quadruple zeta valence (+ 3 set of polarization) basis set for GTH potentials.
+          # fallback:
+          '.*': A basis set for GTH potentials.
     - name: GTH_POTENTIALS
       type: POTENTIALS
-      references:
-        - 10.1103/PhysRevB.54.1703
-        - 10.1103/PhysRevB.58.3641
-        - 10.1007/s00214-005-0655-y
-      rules:
-        '^.*-q\d{1,2}$': ''
+      filter_name:
+        '^.*-q\d{1,2}$': ''  # remove -q* version
+        '^GTH-PBESol$': ''  # remove PBEsol, avail in other files
+      metadata:
+        references:
+          '.*': [https://dx.doi.org/10.1103/PhysRevB.54.1703, https://dx.doi.org/10.1103/PhysRevB.58.3641, https://dx.doi.org/10.1007/s00214-005-0655-y, https://github.com/cp2k/cp2k-data]
+        description:
+          '.*-BLYP': GTH potentials for BLYP.
+          '.*-OLYP': GTH potentials for OLYP.
+          '.*-BP': GTH potentials for BP.
+          '.*-HCTH.*': GTH potentials for HCTH.
+          '.*-LDA': GTH potentials for LDA (as PADE).
+          '.*-PADE': GTH potentials for PADE.
+          '.*-PBE': GTH potentials for PBE.
+          # fallback:
+          '.*': GTH potentials.
