@@ -202,13 +202,13 @@ class ElementSet:
 
 
 class ElementSetField(fields.Field):
-    def _serialize(self, value: ElementSet | None, *args, **kwargs):
+    def _serialize(self, value: Union[ElementSet, None], *args, **kwargs):
         if value is None:
             return ''
         else:
             return str(value)
 
-    def _deserialize(self, value: str | None, *args, **kwargs):
+    def _deserialize(self, value: Union[str, None], *args, **kwargs):
         try:
             return ElementSet.create(value)
         except ValueError as e:
