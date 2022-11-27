@@ -1,7 +1,7 @@
 import h5py
 import numpy
 
-from typing import List, Dict, Iterable, Any
+from typing import List, Iterable
 
 from cp2k_basis import logger
 from cp2k_basis.parser import BaseParser, TokenType
@@ -107,10 +107,9 @@ class AtomicBasisSet(BaseAtomicDataObject):
         self,
         symbol: str,
         names: List[str],
-        contractions: List[Contraction],
-        metadata: Dict[str, Any] = None
+        contractions: List[Contraction]
     ):
-        super().__init__(symbol, names, metadata)
+        super().__init__(symbol, names)
         self.contractions = contractions
 
     def _l_max(self) -> int:

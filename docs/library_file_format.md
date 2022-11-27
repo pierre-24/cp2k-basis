@@ -112,9 +112,12 @@ The following structure, e.g., is valid:
 
 ## Metadata
 
-Each `atomic basis set` and `atomic pp` group might also have the following attributes:
+Each `basis set` and `pp familly` group might also have the following attributes:
 
-+ `source`, which contains the URL to the original basis set, and
-+ `references`, which contains a one-dimensional array of DOI corresponding to the references.
+| Name          | Type    | Description                                     |
+|---------------|---------|-------------------------------------------------|
+| `source`      | `str`   | URL to the original file used to build the data |
+| `description` | `str`   | Description of the data                         |
+| `references`  | `array` | One-dimensional array of DOI                    |
 
 Those attributes are optional: if an attribute is missing, an empty value can be assumed.

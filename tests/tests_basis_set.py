@@ -19,7 +19,7 @@ class BSTestCase(unittest.TestCase):
 
         self.storage = BasisSetsStorage()
 
-        def add_metadata(abs_: AtomicBasisSet):
+        def add_metadata(abs_: BasisSet):
             abs_.metadata = {
                 'source': 'BASIS_EXAMPLE',
                 'references': ['10.1063/1.2770708']
@@ -90,12 +90,13 @@ class BSTestCase(unittest.TestCase):
         with h5py.File(path) as f:
             bs2 = BasisSet.read_hdf5(f['basis_sets/{}'.format(name)])
 
+            # check metadata
+            self.assertEqual(bs1.metadata, bs2.metadata)
+
+            # check content
             for symbol in ['C', 'H']:
                 self.assertIn(symbol, bs2)
                 self.assertAtomicBasisSetEqual(bs1[symbol], bs2[symbol])
-
-                # check metadata
-                self.assertEqual(bs1[symbol].metadata, bs2[symbol].metadata)
 
     def test_storage_dump_hdf5_ok(self):
         path = tempfile.mktemp()

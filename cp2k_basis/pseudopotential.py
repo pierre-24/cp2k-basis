@@ -1,4 +1,4 @@
-from typing import List, Dict, Iterable, Any
+from typing import List, Iterable
 
 import h5py
 import numpy
@@ -82,10 +82,9 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         nelec: List[int],
         lradius: float,
         lcoefficients: numpy.ndarray,
-        nlprojectors: List[NonLocalProjector],
-        metadata: Dict[str, Any] = None
+        nlprojectors: List[NonLocalProjector]
     ):
-        super().__init__(symbol, names, metadata)
+        super().__init__(symbol, names)
 
         self.nelec = nelec
         self.lradius = lradius

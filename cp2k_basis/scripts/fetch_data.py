@@ -5,7 +5,7 @@ https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_file_format.md 
 """
 
 import pathlib
-from typing import Dict, List
+from typing import List
 
 import h5py
 import yaml
@@ -15,15 +15,8 @@ import re
 
 from cp2k_basis import logger
 from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
-from cp2k_basis.base_objects import FilterName, BaseAtomicDataObject, Storage
+from cp2k_basis.base_objects import FilterName, Storage, AddMetadata
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
-
-
-def add_metadata_f(metadata: Dict):
-    def f(obj: BaseAtomicDataObject):
-        obj.metadata = metadata
-
-    return f
 
 
 def fetch_data(data_sources: dict) -> List[Storage]:
@@ -47,20 +40,34 @@ def fetch_data(data_sources: dict) -> List[Storage]:
 
             response = requests.get(full_url)
 
-            rules = []
-            for rule, dest in file['rules'].items():
-                rules.append((re.compile(rule), dest))
+            # build the rules for the name
+            name_rules = []
+            if 'filter_name' in file:
+                for rule_pattern, rule_value in file['filter_name'].items():
+                    name_rules.append((re.compile(rule_pattern), rule_value))
 
-            filter_name = FilterName(rules)
-            metadata = dict(source=full_url, references=file['references'])
+            filter_name = FilterName(name_rules)
 
+            # build the rules for the metadata
+            metadata_rules = {}
+            if 'metadata' in file:
+                for key, rule_set in file['metadata'].items():
+                    metadata_rules[key] = []
+                    for rule_pattern, rule_value in rule_set.items():
+                        metadata_rules[key].append((re.compile(rule_pattern), rule_value))
+
+            metadata_rules['source'] = [(re.compile(r'.*',), full_url)]  # add rule for source
+
+            add_metadata = AddMetadata(metadata_rules)
+
+            # fetch data and store them
             if file['type'] == 'BASIS_SETS':
                 iterator = AtomicBasisSetsParser(response.content.decode('utf8')).iter_atomic_basis_sets()
-                bs_storage.update(iterator, filter_name, add_metadata_f(metadata))
+                bs_storage.update(iterator, filter_name, add_metadata)
 
             elif file['type'] == 'POTENTIALS':
                 iterator = AtomicPseudopotentialsParser(response.content.decode('utf8')).iter_atomic_pseudopotentials()
-                pp_storage.update(iterator, filter_name, add_metadata_f(metadata))
+                pp_storage.update(iterator, filter_name, add_metadata)
 
     return [bs_storage, pp_storage]
 

@@ -27,6 +27,12 @@ class FetchDataTestCase(unittest.TestCase):
 
         for bs_name in self.bs_storage.families.keys():
             self.assertIn(bs_name, bs_storage)
+            self.assertEqual(self.bs_storage[bs_name].metadata, bs_storage[bs_name].metadata)
+            for symbol in self.bs_storage[bs_name].data_objects.keys():
+                self.assertIn(symbol, bs_storage[bs_name])
 
         for ppf_name in self.pp_storage.families.keys():
             self.assertIn(ppf_name, pp_storage)
+            self.assertEqual(self.pp_storage[ppf_name].metadata, pp_storage[ppf_name].metadata)
+            for symbol in self.pp_storage[ppf_name].data_objects.keys():
+                self.assertIn(symbol, pp_storage[ppf_name])

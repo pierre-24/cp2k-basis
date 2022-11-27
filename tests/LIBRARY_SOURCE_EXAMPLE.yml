@@ -6,15 +6,21 @@
   files:
     - name: BASIS_EXAMPLE
       type: BASIS_SETS
-      references:
-        - 10.1063/1.2770708
-      rules:
+      metadata:
+        references:
+          '.*': [10.1063/1.2770708]
+        description:
+          'SZV-.*': Single zeta valence MOLOPT basis set.
+          '.*': yet another MOLOPT basis set.
+      filter_name:
         '^.*-q\d{1,2}$': ''
     - name: POTENTIALS_EXAMPLE
       type: POTENTIALS
-      references:
-        - 10.1103/PhysRevB.54.1703
-        - 10.1103/PhysRevB.58.3641
-        - 10.1007/s00214-005-0655-y
-      rules:
+      metadata:
+        references:
+          '.*': [10.1103/PhysRevB.54.1703, 10.1103/PhysRevB.58.3641, 10.1007/s00214-005-0655-y]
+        description:
+          '.*-BLYP': |
+            GTH-BLYP is a set of GTH potentials for BLYP.
+      filter_name:
         '^.*-q\d{1,2}$': ''

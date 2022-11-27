@@ -19,7 +19,7 @@ class PseudoTestCase(unittest.TestCase):
 
         self.storage = PseudopotentialsStorage()
 
-        def add_metadata(app: AtomicPseudopotential):
+        def add_metadata(app: PseudopotentialFamily):
             app.metadata = {
                 'source': 'POTENTIALS_EXAMPLE',
                 'references': ['10.1103/PhysRevB.54.1703', '10.1103/PhysRevB.58.3641', '10.1007/s00214-005-0655-y']
@@ -96,11 +96,12 @@ class PseudoTestCase(unittest.TestCase):
         with h5py.File(path) as f:
             ppf2 = PseudopotentialFamily.read_hdf5(f['pseudopotentials/{}'.format(self.name)])
 
+            # check metadata
+            self.assertEqual(ppf1.metadata, ppf2.metadata)
+
+            # check content
             for symbol in self.symbols:
                 self.assertPseudoEqual(ppf1[symbol], ppf2[symbol])
-
-                # check metadata
-                self.assertEqual(ppf1[symbol].metadata, ppf2[symbol].metadata)
 
     def test_storage_dump_hdf5_ok(self):
         path = tempfile.mktemp()
