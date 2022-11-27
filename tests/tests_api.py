@@ -70,6 +70,39 @@ class BasisSetAPITestCase(FlaskAppMixture):
         response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?elements=U')
         self.assertEqual(response.status_code, 404)
 
+    def test_basis_metadata_ok(self):
+
+        response = self.client.get(flask.url_for('api.basis-metadata', name=self.basis_name))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['name'], self.basis_name)
+
+        self.assertEqual(
+            data['result']['description'],
+            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['description']
+        )
+
+        self.assertEqual(
+            data['result']['source'],
+            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['source']
+        )
+
+        self.assertEqual(
+            data['result']['references'],
+            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['references']
+        )
+
+        self.assertEqual(
+            data['result']['elements'],
+            sorted(flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].data_objects.keys())
+        )
+
+    def test_basis_metadata_wrong_basis_ko(self):
+
+        response = self.client.get(flask.url_for('api.basis-metadata', name='x'))
+        self.assertEqual(response.status_code, 404)
+
 
 class PseudopotentialAPITestCase(FlaskAppMixture):
 
@@ -109,3 +142,31 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
     def test_pseudo_data_missing_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?elements=U')
         self.assertEqual(response.status_code, 404)
+
+    def test_pseudo_metadata_ok(self):
+
+        response = self.client.get(flask.url_for('api.pseudo-metadata', name=self.pseudo_name))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['name'], self.pseudo_name)
+
+        self.assertEqual(
+            data['result']['description'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['description']
+        )
+
+        self.assertEqual(
+            data['result']['source'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['source']
+        )
+
+        self.assertEqual(
+            data['result']['references'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['references']
+        )
+
+        self.assertEqual(
+            data['result']['elements'],
+            sorted(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].data_objects.keys())
+        )

@@ -35,8 +35,30 @@ response = {
     "name": "<name>",
     // ... other options
   },
-  "result": "STRING"
+  "result": "requested data in CP2K format."
 }
 ```
 
-`response.results` contains the requested data in CP2K format.
+## `/api/<type>/<name>/metadata`
+
+Obtain metadata on a basis set (`<type>` is `basis`) or GTH potential (`<type>` is `pseudopotentials`).
+
+There is no option.
+
+The output is in JSON, and contains the following data:
+
+```js
+response = {
+  "query": {
+    "name": "<name>"
+  },
+  "result": {
+      "description": "a textual description",
+      "elements": [...], // elements for which it is available
+      "references": [...], // list of URL to papers or other sources
+      "source": "https://URL" // original file from which it was gathered.
+  }
+}
+```
+
+Other metadata might be added in the future.

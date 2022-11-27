@@ -104,10 +104,50 @@ api_blueprint.add_url_rule('/basis/<name>/data', view_func=BasisSetDataAPI.as_vi
 
 
 class PseudopotentialDataAPI(BaseDataAPI):
-
     source = 'PSEUDOPOTENTIAL'
     textual_source = 'pseudopotential'
 
 
 api_blueprint.add_url_rule(
     '/pseudopotentials/<name>/data', view_func=PseudopotentialDataAPI.as_view(name='pseudo-data'))
+
+
+class BaseMetadataAPI(MethodView):
+    source: str = ''
+    textual_source: str = ''
+
+    @parser.use_kwargs({'name': field_name}, location='view_args')
+    def get(self, **kwargs):
+        storage: Storage = flask.current_app.config['{}S_STORAGE'.format(self.source)]
+        name = kwargs.get('name')
+
+        try:
+            family_storage = storage[name]
+        except KeyError:
+            flask.abort(404, description='{} `{}` does not exist'.format(self.textual_source, name))
+
+        query = dict(name=name)
+        result = family_storage.metadata
+        result['elements'] = list(family_storage.data_objects.keys())
+
+        return flask.jsonify(
+            query=query,
+            result=result
+        )
+
+
+class BasisSetMetadataAPI(BaseMetadataAPI):
+    source = 'BASIS_SET'
+    textual_source = 'basis set'
+
+
+api_blueprint.add_url_rule('/basis/<name>/metadata', view_func=BasisSetMetadataAPI.as_view(name='basis-metadata'))
+
+
+class PseudopotentialMetadataAPI(BaseMetadataAPI):
+    source = 'PSEUDOPOTENTIAL'
+    textual_source = 'pseudopotential'
+
+
+api_blueprint.add_url_rule(
+    '/pseudopotentials/<name>/metadata', view_func=PseudopotentialMetadataAPI.as_view(name='pseudo-metadata'))
