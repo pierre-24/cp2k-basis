@@ -1,6 +1,7 @@
 import pathlib
 from unittest import TestCase
 
+from cp2k_basis.elements import ElementSet
 from cp2k_basis_webservice import Config, create_app
 
 from cp2k_basis.basis_set import AtomicBasisSetsParser
@@ -51,15 +52,15 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 404)
 
     def test_basis_data_atom_ok(self):
-        atoms = ['H']
+        elements = 'H'
 
         response = self.client.get(
-            flask.url_for('api.basis-data', name=self.basis_name) + '?elements={}'.format(''.join(atoms)))
+            flask.url_for('api.basis-data', name=self.basis_name) + '?elements={}'.format(elements))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
         self.assertIn('elements', data['query'])
-        self.assertEqual(data['query']['elements'], atoms)
+        self.assertEqual(data['query']['elements'], elements.split(','))
 
     def test_basis_data_wrong_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.basis_name) + '?elements=X')
@@ -95,15 +96,15 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 404)
 
     def test_pseudo_data_atom_ok(self):
-        atoms = ['H']
+        elements = 'H,C-O'
 
         response = self.client.get(
-            flask.url_for('api.pseudo-data', name=self.pseudo_name) + '?elements={}'.format(''.join(atoms)))
+            flask.url_for('api.pseudo-data', name=self.pseudo_name) + '?elements={}'.format(elements))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
         self.assertIn('elements', data['query'])
-        self.assertEqual(data['query']['elements'], atoms)
+        self.assertEqual(data['query']['elements'], list(ElementSet.create(elements)))
 
     def test_pseudo_data_missing_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?elements=U')

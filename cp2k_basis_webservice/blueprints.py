@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, Forbidden
 from webargs import fields
 from webargs.flaskparser import FlaskParser
 
-from cp2k_basis.atoms import SYMB_TO_Z
+from cp2k_basis.elements import ElementSetField
 from cp2k_basis.base_objects import Storage, StorageException
 
 
@@ -61,7 +61,7 @@ def handle_error_s(err: Union[NotFound, Forbidden]):
     return flask.jsonify(status=err.code, message=err.description), err.code
 
 
-field_elements = fields.DelimitedList(fields.Str(validate=lambda x: x in SYMB_TO_Z))
+field_elements = ElementSetField()
 field_name = fields.Str()
 
 parser = FlaskParser()
@@ -87,7 +87,7 @@ class BaseDataAPI(MethodView):
         query = dict(name=name)
 
         if elements:
-            query['elements'] = elements
+            query['elements'] = list(elements)
 
         return flask.jsonify(
             query=query,
