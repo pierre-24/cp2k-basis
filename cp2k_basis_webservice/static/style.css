@@ -1,0 +1,22 @@
+.blk {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1em;
+    margin-bottom: .5em;
+}
+
+#periodic-table {
+    margin: auto;
+}
+
+#periodic-table .cell-element {
+    border: 1px solid #ccc;
+    width: 40px;
+    height: 48px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.cell-element .symbol {
+    font-weight: bold;
+}

@@ -6,7 +6,8 @@ from werkzeug.exceptions import NotFound
 from webargs import fields
 from webargs.flaskparser import FlaskParser
 
-from cp2k_basis.elements import ElementSetField
+import cp2k_basis
+from cp2k_basis.elements import ElementSetField, Z_TO_SYMB
 from cp2k_basis.base_objects import Storage
 
 
@@ -33,6 +34,17 @@ visitor_blueprint = Blueprint('visitor', __name__)
 
 class IndexView(RenderTemplateView):
     template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        ctx.update(
+            site_name=cp2k_basis.__name__,
+            site_version=cp2k_basis.__version__,
+            z_to_symb=Z_TO_SYMB
+        )
+
+        return ctx
 
 
 visitor_blueprint.add_url_rule('/', view_func=IndexView.as_view(name='index'))

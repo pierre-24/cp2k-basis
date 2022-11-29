@@ -5,6 +5,9 @@ Implementation of a parser for CP2K basis sets and pseudopotentials, and of thei
 import logging
 import os
 
+
+__version__ = '0.1.0'
+
 # logging
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)

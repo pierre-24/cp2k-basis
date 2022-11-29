@@ -1,6 +1,6 @@
 [project]
 name = "cp2k-basis"
-version = "0.1.0"
+dynamic = ["version"]
 authors = [
     {name = "Pierre Beaujean", email = "pierre.beaujean@unamur.be"},
 ]
@@ -30,3 +30,6 @@ cp2k_basis_fetch_data = "cp2k_basis.scripts.fetch_data:main"
 
 [tool.setuptools]
 packages = ['cp2k_basis', 'cp2k_basis.scripts']
+
+[tool.setuptools.dynamic]
+version = {attr = "cp2k_basis.__version__"}

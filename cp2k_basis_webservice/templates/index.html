@@ -1,1 +1,133 @@
-Hello, world.
+{% extends "base.ext.html" %}
+
+{% macro cElement(Z) %}
+    <td><div class="cell-element" data-z="{{ Z }}">
+        <span class="symbol">{{ z_to_symb[Z] }}</span><br>
+        <span class="Z">{{ Z }}</span>
+    </div></td>
+{% endmacro %}
+
+{% macro cEmpty() %}
+    <td><div class="cell-empty"></div></td>
+{% endmacro %}
+
+{% block page_title %}Get basis set and potential{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-12 col-md-4 col-lg-3">
+            <div class="blk">
+                <p>
+                <input type="text" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
+                </p>
+                <p>
+                <select size="5" class="form-select form-select-sm" multiple id="basisSetSelect">
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+                </p>
+            </div>
+
+            <div class="blk">
+                <p>
+                <input type="text" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
+                </p>
+                <p>
+                <select size="5" class="form-select form-select-sm" multiple id="pseudoSelect">
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+                </p>
+            </div>
+
+
+        </div>
+        <div class="col-12 col-md-8 col-lg-9">
+            <div class="blk">
+            <table id="periodic-table">
+                <tr>
+                    {{ cElement(1) }}
+                    {% for i in range(16) %}
+                    {{ cEmpty() }}
+                    {% endfor %}
+                    {{ cElement(2) }}
+                </tr>
+                <tr>
+                    {{ cElement(3) }}
+                    {{ cElement(4) }}
+                    {% for i in range(10) %}
+                    {{ cEmpty() }}
+                    {% endfor %}
+                    {{ cElement(5) }}
+                    {{ cElement(6) }}
+                    {{ cElement(7) }}
+                    {{ cElement(8) }}
+                    {{ cElement(9) }}
+                    {{ cElement(10) }}
+                </tr>
+                <tr>
+                    {% for i in range(19, 37) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for i in range(37, 55) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {{ cElement(55) }}
+                    {{ cElement(56) }}
+                    {{ cEmpty() }}
+                    {% for i in range(72, 87) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {{ cElement(87) }}
+                    {{ cElement(88) }}
+                </tr>
+                <tr class="empty-sep"></tr>
+                <tr>
+                    {{ cEmpty() }}
+                    {{ cEmpty() }}
+                    {{ cEmpty() }}
+                    {% for i in range(57, 72) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {{ cEmpty() }}
+                    {{ cEmpty() }}
+                    {{ cEmpty() }}
+                    {% for i in range(89, 93) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="blk">
+                <p>Basis set:</p>
+                <textarea class="form-control" rows="4" disabled id="basisSetResult"></textarea>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="blk">
+                <p>Pseudopotential:</p>
+                <textarea class="form-control" rows="4" disabled id="pseudoResult"></textarea>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="blk">
+                <p>Input file:</p>
+                <textarea class="form-control" rows="4" disabled id="inputResult"></textarea>
+            </div>
+        </div>
+    </div>
+{% endblock %}
