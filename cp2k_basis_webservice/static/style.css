@@ -68,6 +68,7 @@ footer {
 #pseudoResult, #basisSetResult, #inputResult {
     white-space: pre;
     font-family: monospace;
+    height: 10em;
 }
 
 .copy-button-ctn {
