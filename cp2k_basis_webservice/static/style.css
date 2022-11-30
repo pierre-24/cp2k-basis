@@ -9,6 +9,7 @@ main {
 .blk {
     border: 1px solid #ddd;
     border-bottom: 3px solid #ddd;
+    border-right: 3px solid #ddd;
     border-radius: 3px;
     padding: 1em;
     margin-bottom: .75em;
@@ -68,7 +69,7 @@ footer {
 #pseudoResult, #basisSetResult, #inputResult {
     white-space: pre;
     font-family: monospace;
-    height: 10em;
+    height: 15em;
 }
 
 .copy-button-ctn {

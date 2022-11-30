@@ -31,7 +31,11 @@ export class Controller  {
 
         this.elementsSelected = [];
         this.basisSetSelected = null;
+        this.basisSetNames = {};
         this.pseudoSelected = null;
+        this.pseudoNames = {};
+
+        this.infoTpl = template`<strong>Name:</strong> ${0}<br><strong>Description:</strong> ${1}`;
 
         // interface elements
         this.$basisSetSelect = document.querySelector('#basisSetSelect');
@@ -64,6 +68,10 @@ export class Controller  {
 
         // copy buttons
         document.querySelectorAll('.copy-button').forEach($e => {
+            let $node = document.createElement('i');
+            $node.classList.add('bi', 'bi-clipboard');
+            $e.append($node);
+
            $e.addEventListener('click', () => {
                let $src = document.querySelector('#' + $e.dataset.textarea);
                navigator.clipboard.writeText($src.value);
@@ -175,47 +183,89 @@ export class Controller  {
         });
     }
 
-    _updateOutputs() {
-        this.$basisSetResult.innerText = 'Select element(s).';
-        this.$pseudoResult.innerText = 'Select element(s).';
-        this.$inputResult.innerText = 'Select element(s).';
+    _updateOutputBasisSet(data, metadata) {
+        this.$basisSetResult.value = data;
+        if(metadata.length > 0)
+            this.$basisSetMetadata.innerHTML = this.infoTpl(...metadata);
+    }
 
-        const infoTpl = template`<strong>Name:</strong> ${0}<br><strong>Description:</strong> ${1}`;
+    _updateOutputPseudo(data, metadata) {
+        this.$pseudoResult.value = data;
+        if(metadata.length > 0)
+            this.$pseudoMetadata.innerHTML = this.infoTpl(...metadata);
+    }
 
-        if(this.elementsSelected.length === 0) {
+    _updateOutputInput() {
+        let kinds = '';
+        this.elementsSelected.forEach(e => {
+            let kind = `&KIND ${e}\n`;
             if(this.basisSetSelected.length > 0) {
-                apiCall(`/basis/${this.basisSetSelected}/metadata`).then(data => {
-                    this.$basisSetMetadata.innerHTML = infoTpl(data.query.name, data.result.description);
-                });
-            } else {
-                this.$basisSetMetadata.innerHTML = '';
+                let n = this.basisSetSelected;
+                if (e in this.basisSetNames && this.basisSetNames[e].length > 0)
+                    n = this.basisSetNames[e][0];
+                kind += `  BASIS_SET ${n}\n`;
             }
 
             if(this.pseudoSelected.length > 0) {
-                apiCall(`/pseudopotentials/${this.pseudoSelected}/metadata`).then(data => {
-                    this.$pseudoMetadata.innerHTML = infoTpl(data.query.name, data.result.description);
-                });
-            } else {
-                this.$pseudoMetadata.innerText = '';
-            }
-        } else {
-            if(this.basisSetSelected.length === 0) {
-                this.$basisSetResult.innerText = 'Select a basis set';
-                this.$basisSetMetadata.innerHTML = '';
-            } else {
-                apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
-                    this.$basisSetResult.innerHTML = data.result.data;
-                    this.$basisSetMetadata.innerHTML = infoTpl(data.query.name, data.result.metadata.description);
-                });
+                let n = this.pseudoSelected;
+                if(e in this.pseudoNames && this.pseudoNames[e].length > 0)
+                    n = this.pseudoNames[e][0];
+                kind += `  POTENTIAL ${n}\n`;
             }
 
-            if(this.pseudoSelected.length === 0) {
-                this.$pseudoResult.innerText = 'Select a pseudopotential';
-                this.$basisSetMetadata.innerHTML = '';
-            } else {
+            kind += '&END KIND';
+
+            if(kinds.length > 0)
+                kinds += '\n';
+
+            kinds += kind;
+        });
+
+        this.$inputResult.value = kinds;
+    }
+
+    _updateOutputs() {
+        this.$inputResult.value = 'Select element(s).';
+
+        if(this.basisSetSelected.length === 0)
+            this._updateOutputBasisSet('Select a basis set.', []);
+        else if(this.elementsSelected.length === 0) {
+            apiCall(`/basis/${this.basisSetSelected}/metadata`).then(data => {
+                this._updateOutputBasisSet('Select element(s)', [data.query.name, data.result.description]);
+            });
+        }
+
+        if(this.pseudoSelected.length === 0)
+            this._updateOutputPseudo('Select a pseudopotential.', []);
+        else if(this.elementsSelected.length === 0) {
+            apiCall(`/pseudopotentials/${this.pseudoSelected}/metadata`).then(data => {
+                this._updateOutputPseudo('Select element(s)', [data.query.name, data.result.description]);
+            });
+        }
+
+        if(this.elementsSelected.length > 0)  {
+            if (this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
+                apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
+                    this._updateOutputBasisSet(data.result.data, [data.query.name, data.result.metadata.description]);
+                    this.basisSetNames = data.result.alternate_names;
+                    this._updateOutputInput();
+                });
+            } else if(this.pseudoSelected.length > 0 && this.basisSetSelected.length === 0)  {
                 apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`).then(data => {
-                    this.$pseudoResult.innerHTML = data.result.data;
-                    this.$pseudoMetadata.innerHTML = infoTpl(data.query.name, data.result.metadata.description);
+                    this._updateOutputPseudo(data.result.data, [data.query.name, data.result.metadata.description]);
+                    this.pseudoNames = data.result.alternate_names;
+                    this._updateOutputInput();
+                });
+            } else if (this.basisSetSelected.length > 0 && this.pseudoSelected.length > 0) {
+                Promise.all([ // wait for the end of both requests
+                    apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`),
+                    apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`)
+                ]).then(([data_basis, data_pseudo]) => {
+                    this._updateOutputBasisSet(data_basis.result.data, [data_basis.query.name, data_basis.result.metadata.description]);
+                    this._updateOutputPseudo(data_pseudo.result.data, [data_pseudo.query.name, data_pseudo.result.metadata.description]);
+                    this.basisSetNames = data_basis.result.alternate_names;
+                    this.pseudoNames = data_pseudo.result.alternate_names;
+                    this._updateOutputInput();
                 });
             }
         }
