@@ -1,3 +1,5 @@
+import json
+
 import flask
 from flask.views import MethodView
 from flask.blueprints import Blueprint
@@ -41,7 +43,9 @@ class IndexView(RenderTemplateView):
         ctx.update(
             site_name=cp2k_basis.__name__,
             site_version=cp2k_basis.__version__,
-            z_to_symb=Z_TO_SYMB
+            z_to_symb=Z_TO_SYMB,
+            bs_per_name=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
+            pp_per_name=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
         )
 
         return ctx

@@ -1,22 +1,81 @@
+body {
+    background: #fafafa;
+}
+
+main {
+    padding-top: 1em;
+}
+
 .blk {
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-bottom: 3px solid #ddd;
+    border-radius: 3px;
     padding: 1em;
-    margin-bottom: .5em;
+    margin-bottom: .75em;
+    background: white;
+}
+
+.blk h2 {
+    font-size: 150%;
 }
 
 #periodic-table {
     margin: auto;
 }
 
+#periodic-table tr.empty-sep {
+    height: 1em;
+}
+
 #periodic-table .cell-element {
-    border: 1px solid #ccc;
-    width: 40px;
-    height: 48px;
+    border: 3px dotted #aaa;
+    width: 38px;
+    height: 50px;
     text-align: center;
     cursor: pointer;
 }
 
+#periodic-table .cell-element.selected {
+    background: #7f7;
+}
+
+#periodic-table .cell-element.basis-set-avail {
+    border-top: 3px solid red;
+    border-left: 3px solid red;
+}
+
+#periodic-table .cell-element.pseudo-avail {
+    border-bottom: 3px solid blue;
+    border-right: 3px solid blue;
+}
+
 .cell-element .symbol {
     font-weight: bold;
+}
+
+.cell-element .Z {
+    font-size: 90%;
+    color: #777;
+}
+
+footer {
+    font-size: 90%;
+    text-align: center;
+    margin: 1em 0;
+    color: #777;
+}
+
+#pseudoResult, #basisSetResult, #inputResult {
+    white-space: pre;
+    font-family: monospace;
+}
+
+.copy-button-ctn {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 1em;
+    right: 1em;
 }

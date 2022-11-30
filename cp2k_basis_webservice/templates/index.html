@@ -1,7 +1,7 @@
 {% extends "base.ext.html" %}
 
 {% macro cElement(Z) %}
-    <td><div class="cell-element" data-z="{{ Z }}">
+    <td><div class="cell-element" data-symbol="{{ z_to_symb[Z] }}">
         <span class="symbol">{{ z_to_symb[Z] }}</span><br>
         <span class="Z">{{ Z }}</span>
     </div></td>
@@ -13,39 +13,46 @@
 
 {% block page_title %}Get basis set and potential{% endblock %}
 
+{% block style %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+{% endblock %}
+
 {% block page_content %}
     <div class="row">
-        <div class="col-12 col-md-4 col-lg-3">
+        <div class="col-12 col-xl-8 col-xxl-7">
             <div class="blk">
-                <p>
-                <input type="text" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
-                </p>
-                <p>
-                <select size="5" class="form-select form-select-sm" multiple id="basisSetSelect">
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-                </p>
+                <h2>Welcome to {{ site_name }}</h2>
+                <p>This is a ...</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                <div class="blk">
+                    <p>
+                    <input type="text" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
+                    </p>
+                    <p>
+                    <select size="5" class="form-select form-select-sm" multiple id="basisSetSelect">
+                    </select>
+                    </p>
+                </div></div>
+
+                <div class="col-sm-6">
+                <div class="blk">
+                    <p>
+                    <input type="text" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
+                    </p>
+                    <p>
+                    <select size="5" class="form-select form-select-sm" multiple id="pseudoSelect">
+                    </select>
+                    </p>
+                </div>
+                </div>
             </div>
 
             <div class="blk">
-                <p>
-                <input type="text" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
-                </p>
-                <p>
-                <select size="5" class="form-select form-select-sm" multiple id="pseudoSelect">
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-                </p>
-            </div>
-
-
-        </div>
-        <div class="col-12 col-md-8 col-lg-9">
-            <div class="blk">
+            <p>
+            <button class="btn btn-primary" id="elementsClear">Reset selection</button>
+            </p>
             <table id="periodic-table">
                 <tr>
                     {{ cElement(1) }}
@@ -109,25 +116,47 @@
             </table>
         </div>
         </div>
+        <div class="col-12 col-xl-4 col-xxl-5">
+
+            <div class="blk">
+                <h2>Basis set</h2>
+                <p class="copy-button-ctn">
+                    <textarea class="form-control" rows="6" disabled id="basisSetResult"></textarea>
+                    <button class="btn btn-secondary copy-button" data-textarea="basisSetResult"><i class="bi bi-clipboard"></i></button>
+                </p>
+                <p id="basisSetMetadata"></p>
+            </div>
+
+            <div class="blk">
+                <h2>Pseudopotential</h2>
+                <p class="copy-button-ctn">
+                    <textarea class="form-control" rows="6" disabled id="pseudoResult"></textarea>
+                    <button class="btn btn-secondary copy-button" data-textarea="pseudoResult"><i class="bi bi-clipboard"></i></button>
+                </p>
+                <p id="pseudoMetadata"></p>
+            </div>
+
+            <div class="blk">
+                <h2>Input file</h2>
+                <p><textarea class="form-control" rows="6" disabled id="inputResult"></textarea></p>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-12 col-lg-6">
-            <div class="blk">
-                <p>Basis set:</p>
-                <textarea class="form-control" rows="4" disabled id="basisSetResult"></textarea>
-            </div>
-        </div>
-        <div class="col-12 col-lg-6">
-            <div class="blk">
-                <p>Pseudopotential:</p>
-                <textarea class="form-control" rows="4" disabled id="pseudoResult"></textarea>
-            </div>
-        </div>
-        <div class="col-12 col-lg-6">
-            <div class="blk">
-                <p>Input file:</p>
-                <textarea class="form-control" rows="4" disabled id="inputResult"></textarea>
-            </div>
-        </div>
-    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="module">
+        import {
+            Controller
+        } from "{{ url_for('static', filename='scripts.js') }}";
+
+        let controller = new Controller({
+            'basis_sets': {
+                'per_name': {{ bs_per_name|safe }},
+            },
+            'pseudopotentials': {
+                'per_name':  {{ pp_per_name|safe }},
+            }
+        });
+    </script>
 {% endblock %}
