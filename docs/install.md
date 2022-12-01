@@ -12,9 +12,11 @@ python -m venv virtualenv
 source venv/bin/activate
 
 # install dependencies
+pip3 install pip-tools
 make install
 
 # build front
+# requires node, see https://github.com/nvm-sh/nvm#install--update-script
 make front
 
 # run the webservice:
