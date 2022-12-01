@@ -231,9 +231,10 @@ class AtomicBasisSetsParser(BaseParser):
 
         while self.current_token.type != TokenType.NL:
             self.eat(TokenType.SPACE)
-            self.expect(TokenType.WORD)
-            names.append(self.current_token.value)
-            self.next()
+            if self.current_token.type != TokenType.NL:
+                self.expect(TokenType.WORD)
+                names.append(self.current_token.value)
+                self.next()
 
         logger.info('parse basis set for {} in {}'.format(symbol, ', '.join(names)))
 
@@ -246,6 +247,7 @@ class AtomicBasisSetsParser(BaseParser):
 
         contractions = []
         for i in range(num_contraction):
+            logger.debug('read contraction {}'.format(i))
             contractions.append(self.contraction())
 
         return AtomicBasisSet(

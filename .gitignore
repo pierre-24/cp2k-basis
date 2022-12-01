@@ -255,3 +255,4 @@ cython_debug/
 
 instance/
 cp2k_basis_webservice/static
+tmp/

@@ -173,6 +173,10 @@ class PseudopotentialsStorage(Storage):
     name = 'pseudopotentials'
 
 
+class PPNotAvail(RuntimeError):
+    pass
+
+
 class AtomicPseudopotentialsParser(BaseParser):
 
     def iter_atomic_pseudopotentials(self) -> Iterable[AtomicPseudopotential]:
@@ -183,7 +187,11 @@ class AtomicPseudopotentialsParser(BaseParser):
         self.skip()
 
         while self.current_token.type != TokenType.EOS:
-            yield self.atomic_pseudopotential()
+            try:
+                yield self.atomic_pseudopotential()
+            except PPNotAvail as e:
+                logger.info('NOT AVAILABLE: {}'.format(e))
+                pass
 
             self.skip()
 
@@ -217,12 +225,17 @@ class AtomicPseudopotentialsParser(BaseParser):
         self.eat(TokenType.NL)
         self.skip()
 
+        if not self.current_token.value.isnumeric() and self.current_token.value == 'NA':
+            self.next()
+            raise PPNotAvail((symbol, names))
+
         # electron per shell
         nelec = [self.integer()]
 
         while self.current_token.type not in [TokenType.NL, TokenType.EOS]:
             self.eat(TokenType.SPACE)
-            nelec.append(self.integer())
+            if self.current_token.value.isnumeric():
+                nelec.append(self.integer())
 
         self.eat(TokenType.NL)
         self.skip()
@@ -240,15 +253,17 @@ class AtomicPseudopotentialsParser(BaseParser):
             self.eat(TokenType.NL)
 
         self.skip()
+        nlprojectors = []
 
         # nonlocal part
-        n_nlprojectors = self.integer()
-        nlprojectors = []
-        self.eat(TokenType.NL)
-        self.skip()
+        if self.current_token.value.isnumeric():
+            n_nlprojectors = self.integer()
+            self.eat(TokenType.NL)
+            self.skip()
 
-        for proj_i in range(n_nlprojectors):
-            nlprojectors.append(self.nlprojector())
+            for proj_i in range(n_nlprojectors):
+                logger.debug('read nlprojector {}'.format(proj_i))
+                nlprojectors.append(self.nlprojector())
 
         return AtomicPseudopotential(
             symbol,
