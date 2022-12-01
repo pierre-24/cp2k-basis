@@ -230,8 +230,8 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         data = response.get_json()
 
         self.assertIn('elements', data['query'])
-        self.assertEqual(data['query']['elements'], list(ElementSet.create(elements)))
-        self.assertEqual(data['result']['elements'], list(ElementSet.create(elements)))
+        self.assertEqual(data['query']['elements'], list(ElementSet.create(elements).iter_sorted()))
+        self.assertEqual(data['result']['elements'], list(ElementSet.create(elements).iter_sorted()))
 
     def test_pseudo_data_missing_atom_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name=self.pseudo_name) + '?elements=U')

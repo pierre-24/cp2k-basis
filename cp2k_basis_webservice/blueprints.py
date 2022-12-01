@@ -161,21 +161,21 @@ class BaseFamilyStorageDataAPI(MethodView):
                     'api.{}-data'.format('basis' if self.source == 'BASIS_SET' else 'pseudo'),
                     name=name,
                     _external=True
-                ) + ('' if not elements else '?elements={}'.format(','.join(elements.iter_sorted()))),
+                ) + ('?elements={}'.format(','.join(elements.iter_sorted())) if elements else ''),
                 datetime.datetime.now().strftime('%d/%m/%Y @ %H:%M')
             )
 
         query = dict(type=self.source, name=name)
         result = dict(
             data=header + ''.join(str(obj) for obj in atomic_data_objects),
-            elements=list(elements.iter_sorted()),
+            elements=list(obj.symbol for obj in atomic_data_objects),
             alternate_names=dict(
                 (obj.symbol, list(filter(lambda x: x != name, obj.names))) for obj in atomic_data_objects),
             metadata=family_storage.metadata
         )
 
         if elements:
-            query['elements'] = list(elements)
+            query['elements'] = list(elements.iter_sorted())
 
         return flask.jsonify(
             query=query,
