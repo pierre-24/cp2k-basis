@@ -12,8 +12,10 @@
         description:
           'SZV-.*': Single zeta valence MOLOPT basis set.
           '.*': yet another MOLOPT basis set.
-      filter_name:
-        '^.*-q\d{1,2}$': ''
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
     - name: POTENTIALS_EXAMPLE
       type: POTENTIALS
       metadata:
@@ -22,5 +24,7 @@
         description:
           '.*-BLYP': |
             GTH-BLYP is a set of GTH potentials for BLYP.
-      filter_name:
-        '^.*-q\d{1,2}$': ''
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'

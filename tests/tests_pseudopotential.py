@@ -5,14 +5,14 @@ import pathlib
 import h5py
 import re
 
-from cp2k_basis.base_objects import FilterName
+from cp2k_basis.base_objects import Filter
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialFamily, PseudopotentialsStorage
-from tests import CompareAtomicDataObjectMixin
+from tests import BaseDataObjectMixin
 
 
-class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
+class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
     def setUp(self):
-        prune_and_rename = FilterName([
+        prune_and_rename = Filter([
             (re.compile(r'^.*-q\d{1,2}$'), ''),  # discard all *-q versions
         ])
 
@@ -60,7 +60,7 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
     def test_prune_and_rename_ok(self):
         storage = PseudopotentialsStorage()
 
-        prune_and_rename = FilterName([
+        prune_and_rename = Filter([
             (re.compile(r'^.*-q\d{1,2}$'), ''),  # discard all *-q versions
             (re.compile(r'GTH-(.*)'), 'XX-\\1')  # just for the fun of it, change the name of the remaining pseudo
         ])

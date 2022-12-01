@@ -1,10 +1,41 @@
+import pathlib
+import re
+
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetVariant
-from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant
+from cp2k_basis.base_objects import Filter, FilterStrategy
+from cp2k_basis.basis_set import AtomicBasisSetVariant, BasisSetsStorage, AtomicBasisSetsParser
+from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant, AtomicPseudopotentialsParser, \
+    PseudopotentialsStorage
 
 
-class CompareAtomicDataObjectMixin:
+class BaseDataObjectMixin:
+
+    filter_name = Filter([(re.compile(r'(.*)(-q.*)'), '\\1')], strategy=FilterStrategy.Unique)
+    filter_variant = Filter([(re.compile(r'.*-(q.*)'), '\\1')], strategy=FilterStrategy.First)
+
+    def read_basis_set_from_file(self, path: pathlib.Path):
+
+        bs_storage_parsed = BasisSetsStorage()
+        with path.open() as f:
+            bs_storage_parsed.update(
+                AtomicBasisSetsParser(f.read()).iter_atomic_basis_set_variants(),
+                self.filter_name,
+                self.filter_variant
+            )
+
+        return bs_storage_parsed
+
+    def read_pp_from_file(self, path: pathlib.Path):
+        pp_storage_parsed = PseudopotentialsStorage()
+        with path.open() as f:
+            pp_storage_parsed.update(
+                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants(),
+                self.filter_name,
+                self.filter_variant
+            )
+
+        return pp_storage_parsed
 
     def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSetVariant, abs2: AtomicBasisSetVariant):
         self.assertEqual(abs2.names, abs1.names)

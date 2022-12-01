@@ -2,7 +2,7 @@ import argparse
 import re
 
 from cp2k_basis.elements import print_availability
-from cp2k_basis.base_objects import FilterName
+from cp2k_basis.base_objects import Filter
 from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
 
@@ -19,7 +19,7 @@ def main():
     # load data
     filter_name = lambda x: x  # noqa
     if args.exclude:
-        filter_name = FilterName([(re.compile(r1), r2) for r1, r2 in (r.split('::') for r in args.exclude.split(';'))])
+        filter_name = Filter([(re.compile(r1), r2) for r1, r2 in (r.split('::') for r in args.exclude.split(';'))])
 
     if args.type == 'B':
         storage = BasisSetsStorage()

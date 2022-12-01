@@ -1,4 +1,5 @@
 import re
+from enum import Enum
 
 import h5py
 
@@ -182,7 +183,8 @@ class Storage:
     def update(
         self,
         data_objects: Iterable[BaseAtomicVariantDataObject],
-        filter_name: Union[Callable[[Iterable[str]], Iterable[str]], 'FilterName'] = lambda x: x,
+        filter_name: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: x,
+        filter_variant: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: iter(['q0']),
         add_metadata: Callable[[BaseFamilyStorage], None] = None
     ):
         for obj in data_objects:
@@ -193,8 +195,12 @@ class Storage:
                 self.families_per_element[symbol] = []
 
             # add to storage & reverse
-            names = list(filter_name(obj.names))  # TODO: family name
-            variant = 'q0'  # TODO: variant
+            names = list(filter_name(obj.names))
+
+            try:
+                variant = next(filter_variant(obj.names))
+            except StopIteration:
+                variant = 'q0'
 
             for name in names:
                 if name not in self.families:
@@ -256,29 +262,48 @@ class Storage:
         return obj
 
 
-class FilterName:
-    """Curate a list of name based on a set of rules of the form `(pattern, replacement)`, where `pattern` is a valid
-    `re.Pattern`.
+class FilterStrategy(Enum):
+    No = 'N'
+    First = 'FM'
+    Unique = 'AU'
 
-    If a pattern matches, then its `replacement` is yield instead.
-    If `replacement` is empty, then the name is simply discarded.
+
+class Filter:
+    """Filter a list of string based on a set of rules of the form `(pattern, replacement)`, where `pattern` is a valid
+    `re.Pattern`: 1) if a pattern matches, then its `replacement` is yield instead, and 2) if there is no match,
+    then the value is discarded.
     """
 
-    def __init__(self, rules: List[Tuple[re.Pattern, str]]):
+    def __init__(self, rules: List[Tuple[re.Pattern, str]], strategy: FilterStrategy = FilterStrategy.No):
         self.rules = rules
+        self.strategy = strategy
 
-    def __call__(self, names: Iterator[str]) -> Iterator[str]:
-        for name in names:
-            matched = False
+    @classmethod
+    def create(cls, filter_def: Dict[str, str], strategy: FilterStrategy = FilterStrategy.No):
+        rules = []
+        for pattern, replacement in filter_def.items():
+            rules.append((re.compile(pattern), replacement))
+
+        return cls(rules, strategy)
+
+    def __call__(self, iterable: Iterator[str]) -> Iterator[str]:
+        previous = set()
+
+        for name in iterable:
             for rule_pattern, value in self.rules:
                 if rule_pattern.match(name):
-                    if len(value) != 0:
-                        yield rule_pattern.sub(value, name)
-                    matched = True
-                    break
+                    v = rule_pattern.sub(value, name)
+                    if self.strategy == FilterStrategy.Unique:
+                        if v not in previous:
+                            previous.add(v)
+                            yield v
+                    else:
+                        yield v
 
-            if not matched:
-                yield name
+                    if self.strategy == FilterStrategy.Unique:
+                        return
+
+                    break
 
 
 class AddMetadata:
@@ -293,8 +318,18 @@ class AddMetadata:
     If no pattern is matched, then the metadata is not added.
     """
 
-    def __init__(self, rules: Dict[str, List[Tuple[re.Pattern, str]]]):
+    def __init__(self, rules: Dict[str, List[Tuple[re.Pattern, Any]]]):
         self.rules = rules
+
+    @classmethod
+    def create(cls, rules_def: Dict[str, Dict[str, Any]]):
+        rules = {}
+        for key, rule_set in rules_def.items():
+            rules[key] = []
+            for rule_pattern, rule_value in rule_set.items():
+                rules[key].append((re.compile(rule_pattern), rule_value))
+
+        return cls(rules)
 
     def __call__(self, family_storage: BaseFamilyStorage):
         name = family_storage.name

@@ -5,15 +5,15 @@ import re
 import h5py
 
 from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSet, BasisSetsStorage
-from cp2k_basis.base_objects import FilterName
-from tests import CompareAtomicDataObjectMixin
+from cp2k_basis.base_objects import Filter
+from tests import BaseDataObjectMixin
 
 
-class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
+class BSTestCase(unittest.TestCase, BaseDataObjectMixin):
     def setUp(self):
         super().setUp()
 
-        prune_and_rename = FilterName([
+        prune_and_rename = Filter([
             (re.compile(r'^.*-q\d{1,2}$'), ''),  # discard all *-q versions
         ])
 

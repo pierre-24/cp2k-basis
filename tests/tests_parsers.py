@@ -3,9 +3,10 @@ import unittest
 
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
+from cp2k_basis.basis_set import AtomicBasisSetsParser
 from cp2k_basis.parser import Lexer, Token as TK, TokenType as TT, BaseParser, ParserSyntaxError
-from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
+from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
+from tests import BaseDataObjectMixin
 
 
 class LexerTestCase(unittest.TestCase):
@@ -71,7 +72,7 @@ SINGLE_ABS = """{symbol} {names}
 """
 
 
-class BSParserTestCase(unittest.TestCase):
+class BSParserTestCase(unittest.TestCase, BaseDataObjectMixin):
     def test_parse_atomic_basis_set_ok(self):
         coefs = numpy.array([
             [0.3425250914E+01, 0.1543289673],
@@ -112,10 +113,7 @@ class BSParserTestCase(unittest.TestCase):
         self.assertTrue(numpy.array_equal(contraction.coefficients.T[0], coefs[:, 1]))
 
     def test_parse_basis_sets_ok(self):
-        storage = BasisSetsStorage()
-
-        with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            storage.update(AtomicBasisSetsParser(f.read()).iter_atomic_basis_set_variants())
+        storage = self.read_basis_set_from_file(pathlib.Path(__file__).parent / 'BASIS_EXAMPLE')
 
         # check basis sets for C
         repr_C = (
@@ -130,10 +128,8 @@ class BSParserTestCase(unittest.TestCase):
         for bs_name, ncont, full, contracted in repr_C:
             self.assertIn(bs_name, storage)
             self.assertIn('C', storage[bs_name])
-            abs1 = storage[bs_name]['C']['q0']  # incorrect variant, since there is no detection
-
-            self.assertIn(bs_name + '-q4', storage)  # the -q4 version is also there
-            self.assertEqual(abs1, storage[bs_name + '-q4']['C']['q0'])  # but incorrectly referred to
+            self.assertIn('q4', storage[bs_name]['C'])
+            abs1 = storage[bs_name]['C']['q4']
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())
@@ -148,7 +144,7 @@ ATOMIC_PP = """{symbol} {names}
 """
 
 
-class PPParserTestCase(unittest.TestCase):
+class PPParserTestCase(unittest.TestCase, BaseDataObjectMixin):
     def test_parse_atomic_pp_ok(self):
 
         lradius = 0.4
@@ -196,19 +192,26 @@ class PPParserTestCase(unittest.TestCase):
             self.assertTrue(numpy.array_equal(proj.coefficients, nlprojectors[i]))
 
     def test_parse_pp_ok(self):
-        storage = PseudopotentialsStorage()
-        with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
-            storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants())
+        storage = self.read_pp_from_file(pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE')
 
         name = 'GTH-BLYP'
-        symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
+        symbols = [
+            ('H', 'q1'),
+            ('He', 'q2'),
+            ('Li', 'q3'),
+            ('Be', 'q4'),
+            ('B', 'q3'),
+            ('C', 'q4'),
+            ('N', 'q5'),
+            ('O', 'q6'),
+            ('F', 'q7'),
+            ('Ne', 'q8')
+        ]
 
-        for symbol in symbols:
+        for symbol, variant in symbols:
             self.assertIn(name, storage)
             self.assertIn(symbol, storage[name])
+            self.assertIn(variant, storage[name][symbol])
 
-            app = storage[name][symbol]['q0']  # again: wrong variant since no detection
-
-            name_pair = '{}-q{}'.format(name, sum(app.nelec))
-            self.assertIn(name_pair, storage)  # the full version is also there
-            self.assertEqual(app, storage[name_pair][symbol]['q0'])
+            app = storage[name][symbol][variant]
+            self.assertEqual(variant, 'q{}'.format(sum(app.nelec)))
