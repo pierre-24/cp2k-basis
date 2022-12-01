@@ -14,6 +14,9 @@ source venv/bin/activate
 # install dependencies
 make install
 
+# build front
+make front
+
 # run the webservice:
 # either:
 make run

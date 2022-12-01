@@ -1,0 +1,92 @@
+@body-bg: #fafafa;
+@blk-border-color: #ddd;
+
+@cell-element-border-color: #777;
+@cell-element-selected-bg: #5f5;
+@cell-element-bs-avail-border-color: red;
+@cell-element-pseudo-avail-border-color: blue;
+
+body {
+    background: @body-bg;
+}
+
+main {
+    padding-top: 1em;
+}
+
+.blk {
+    border: 1px solid @blk-border-color;
+    border-bottom: 3px solid @blk-border-color;
+    border-right: 3px solid @blk-border-color;
+    border-radius: 3px;
+    padding: 1em;
+    margin-bottom: .75em;
+    background: white;
+
+     h2 {
+        font-size: 150%;
+    }
+}
+
+#periodic-table {
+    margin: auto;
+
+    tr.empty-sep {
+        height: 1em;
+    }
+
+    .cell-element {
+        border: 3px dotted @cell-element-border-color;
+        width: 38px;
+        height: 50px;
+        text-align: center;
+        cursor: pointer;
+
+        &.selected {
+            background: @cell-element-selected-bg;
+        }
+
+        &.basis-set-avail {
+            border-top: 3px solid @cell-element-bs-avail-border-color;
+            border-left: 3px solid @cell-element-bs-avail-border-color;
+        }
+
+        &.pseudo-avail {
+            border-bottom: 3px solid @cell-element-pseudo-avail-border-color;
+            border-right: 3px solid @cell-element-pseudo-avail-border-color;
+        }
+
+        .symbol {
+            font-weight: bold;
+        }
+
+        .cell-element .Z {
+            font-size: 90%;
+            color: #777;
+        }
+    }
+}
+
+#pseudoResult, #basisSetResult, #inputResult {
+    white-space: pre;
+    font-family: monospace;
+    height: 15em;
+}
+
+.copy-button-ctn {
+    position: relative;
+
+    .copy-button {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+    }
+}
+
+
+footer {
+    font-size: 90%;
+    text-align: center;
+    margin: 1em 0;
+    color: #777;
+}

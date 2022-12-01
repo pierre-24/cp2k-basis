@@ -3,7 +3,7 @@
 function apiCall(url) {
     return fetch(`/api${url}`).then(resp => {
         if(!resp.ok) {
-            alert(`error ${resp.status} while requesting ${resp.url}`);
+            window.alert(`error ${resp.status} while requesting ${resp.url}`);
         } else {
             return resp.json();
         }

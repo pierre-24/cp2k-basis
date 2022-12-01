@@ -1,6 +1,10 @@
 install:
 	pip-sync
 
+front:
+	npm i
+	npm run grunt
+
 lint:
 	flake8 cp2k_basis cp2k_basis_webservice tests --max-line-length=120 --ignore=N802
 

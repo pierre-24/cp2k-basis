@@ -20,6 +20,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 18
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -28,9 +31,11 @@ jobs:
       run: |
         pip3 install pip-tools
         make install
+        make front
     - name: Lint
       run: |
         make lint
+        npm run grunt jshint
     - name: Test
       run: |
         TEST_FETCH_DATA=1 make test
