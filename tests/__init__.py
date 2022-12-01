@@ -1,7 +1,7 @@
 import numpy
 
 from cp2k_basis.basis_set import AtomicBasisSetVariant
-from cp2k_basis.pseudopotential import AtomicPseudopotential
+from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant
 
 
 class CompareAtomicDataObjectMixin:
@@ -23,7 +23,7 @@ class CompareAtomicDataObjectMixin:
             self.assertTrue(numpy.array_equal(contraction2.exponents, contraction1.exponents))
             self.assertTrue(numpy.array_equal(contraction2.coefficients, contraction1.coefficients))
 
-    def assertAtomicPseudoEqual(self, app1: AtomicPseudopotential, app2: AtomicPseudopotential):
+    def assertAtomicPseudoEqual(self, app1: AtomicPseudopotentialVariant, app2: AtomicPseudopotentialVariant):
         self.assertEqual(app2.symbol, app1.symbol)
         self.assertEqual(app2.names, app1.names)
         self.assertEqual(app2.nelec, app1.nelec)

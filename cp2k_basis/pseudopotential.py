@@ -4,7 +4,7 @@ import h5py
 import numpy
 
 from cp2k_basis import logger
-from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Storage
+from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Storage, BaseAtomicVariantDataObject
 from cp2k_basis.parser import BaseParser, TokenType
 
 
@@ -69,7 +69,7 @@ class NonLocalProjector:
         return cls(dset_radius_coefs[0], nfunc, coefs)
 
 
-class AtomicPseudopotential(BaseAtomicDataObject):
+class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
     """Atomic GTH (Goedecker-Teter-Hutter) pseudopotential of CP2K
     """
 
@@ -84,7 +84,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         lcoefficients: numpy.ndarray,
         nlprojectors: List[NonLocalProjector]
     ):
-        super().__init__(names, symbol)
+        super().__init__(symbol, names)
 
         self.nelec = nelec
         self.lradius = lradius
@@ -123,7 +123,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         ds_info.attrs['nelec'] = len(self.nelec)
 
         ds_local_radius_coefs = group.create_dataset(
-            AtomicPseudopotential.HDF5_DS_RADIUS_COEF, (1 + self.lcoefficients.shape[0]), dtype='d')
+            AtomicPseudopotentialVariant.HDF5_DS_RADIUS_COEF, (1 + self.lcoefficients.shape[0]), dtype='d')
 
         ds_local_radius_coefs[0] = self.lradius
         ds_local_radius_coefs[1:] = self.lcoefficients
@@ -132,11 +132,11 @@ class AtomicPseudopotential(BaseAtomicDataObject):
             contraction.dump_hdf5(group, i)
 
     @classmethod
-    def iter_hdf5_variants(cls, symbol: str):
+    def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicPseudopotentialVariant':
         logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']
-        ds_radius_coefs = group[AtomicPseudopotential.HDF5_DS_RADIUS_COEF]
+        ds_radius_coefs = group[AtomicPseudopotentialVariant.HDF5_DS_RADIUS_COEF]
 
         n = ds_info.attrs['nelec']
 
@@ -146,7 +146,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
 
         if ds_radius_coefs.shape != (ds_info[1] + 1,):
             raise ValueError('Dataset `{}` in {} must have length {}'.format(
-                AtomicPseudopotential.HDF5_DS_RADIUS_COEF, group.name, ds_info[1] + 1))
+                AtomicPseudopotentialVariant.HDF5_DS_RADIUS_COEF, group.name, ds_info[1] + 1))
 
         # fetch
         nelec = list(ds_info[3:])
@@ -164,6 +164,10 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         return obj
 
 
+class AtomicPseudopotential(BaseAtomicDataObject):
+    object_type = AtomicPseudopotentialVariant
+
+
 class PseudopotentialFamily(BaseFamilyStorage):
     object_type = AtomicPseudopotential
 
@@ -179,7 +183,7 @@ class PPNotAvail(RuntimeError):
 
 class AtomicPseudopotentialsParser(BaseParser):
 
-    def iter_atomic_pseudopotentials(self) -> Iterable[AtomicPseudopotential]:
+    def iter_atomic_pseudopotential_variants(self) -> Iterable[AtomicPseudopotentialVariant]:
         """
         ATOMIC_PPs := ATOMIC_PP* EOS
         """
@@ -188,7 +192,7 @@ class AtomicPseudopotentialsParser(BaseParser):
 
         while self.current_token.type != TokenType.EOS:
             try:
-                yield self.atomic_pseudopotential()
+                yield self.atomic_pseudopotential_variant()
             except PPNotAvail as e:
                 logger.info('NOT AVAILABLE: {}'.format(e))
                 pass
@@ -197,7 +201,7 @@ class AtomicPseudopotentialsParser(BaseParser):
 
         self.eat(TokenType.EOS)
 
-    def atomic_pseudopotential(self) -> AtomicPseudopotential:
+    def atomic_pseudopotential_variant(self) -> AtomicPseudopotentialVariant:
         """
         ATOMIC_PP := WORD SPACE WORD (SPACE WORD)* NL INT* NL LOCAL_PART NL NLOCAL_PART
         LOCAL_PART :=  FLOAT INT FLOAT*
@@ -265,7 +269,7 @@ class AtomicPseudopotentialsParser(BaseParser):
                 logger.debug('read nlprojector {}'.format(proj_i))
                 nlprojectors.append(self.nlprojector())
 
-        return AtomicPseudopotential(
+        return AtomicPseudopotentialVariant(
             symbol,
             names,
             nelec,

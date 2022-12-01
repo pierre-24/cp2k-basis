@@ -26,7 +26,8 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
             self.storage.update(
-                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials(), prune_and_rename, add_metadata)
+                AtomicPseudopotentialsParser(
+                    f.read()).iter_atomic_pseudopotential_variants(), prune_and_rename, add_metadata)
 
         self.symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
         self.name = 'GTH-BLYP'
@@ -40,7 +41,7 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         parser = AtomicPseudopotentialsParser(str(app1))
         parser.skip()  # skip comment
-        app2 = parser.atomic_pseudopotential()
+        app2 = parser.atomic_pseudopotential_variant()
 
         self.assertAtomicPseudoEqual(app1, app2)
 
@@ -49,7 +50,7 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         parser = AtomicPseudopotentialsParser(str(bs1))
         bs2 = PseudopotentialFamily(self.name)
-        for app in parser.iter_atomic_pseudopotentials():
+        for app in parser.iter_atomic_pseudopotential_variants():
             self.assertIn(self.name, app.names)
             bs2.add(app)
 
@@ -65,7 +66,8 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
         ])
 
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
-            storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials(), prune_and_rename)
+            storage.update(
+                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants(), prune_and_rename)
 
         self.assertEqual(list(storage.families.keys()), ['XX-BLYP'])
 

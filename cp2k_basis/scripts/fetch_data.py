@@ -66,7 +66,8 @@ def fetch_data(data_sources: dict) -> List[Storage]:
                 bs_storage.update(iterator, filter_name, add_metadata)
 
             elif file['type'] == 'POTENTIALS':
-                iterator = AtomicPseudopotentialsParser(response.content.decode('utf8')).iter_atomic_pseudopotentials()
+                iterator = AtomicPseudopotentialsParser(
+                    response.content.decode('utf8')).iter_atomic_pseudopotential_variants()
                 pp_storage.update(iterator, filter_name, add_metadata)
 
     return [bs_storage, pp_storage]

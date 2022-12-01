@@ -195,7 +195,7 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.pseudo_name)
         self.assertNotIn('elements', data['query'])
 
-        for app in AtomicPseudopotentialsParser(data['result']['data']).iter_atomic_pseudopotentials():
+        for app in AtomicPseudopotentialsParser(data['result']['data']).iter_atomic_pseudopotential_variants():
             self.assertIn(
                 app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
 

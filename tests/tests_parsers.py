@@ -130,10 +130,10 @@ class BSParserTestCase(unittest.TestCase):
         for bs_name, ncont, full, contracted in repr_C:
             self.assertIn(bs_name, storage)
             self.assertIn('C', storage[bs_name])
-            abs1 = storage[bs_name]['C']['q0']
+            abs1 = storage[bs_name]['C']['q0']  # incorrect variant, since there is no detection
 
             self.assertIn(bs_name + '-q4', storage)  # the -q4 version is also there
-            self.assertEqual(abs1, storage[bs_name + '-q4']['C']['q0'])
+            self.assertEqual(abs1, storage[bs_name + '-q4']['C']['q0'])  # but incorrectly referred to
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())
@@ -182,7 +182,7 @@ class PPParserTestCase(unittest.TestCase):
             nlprojectors=nlprojectors_str
         )
 
-        app = AtomicPseudopotentialsParser(ATOMIC_PP.format(**params)).atomic_pseudopotential()
+        app = AtomicPseudopotentialsParser(ATOMIC_PP.format(**params)).atomic_pseudopotential_variant()
 
         self.assertEqual(params['symbol'], app.symbol)
         self.assertEqual(params['names'], ' '.join(app.names))
@@ -198,7 +198,7 @@ class PPParserTestCase(unittest.TestCase):
     def test_parse_pp_ok(self):
         storage = PseudopotentialsStorage()
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
-            storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials())
+            storage.update(AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants())
 
         name = 'GTH-BLYP'
         symbols = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
@@ -207,8 +207,8 @@ class PPParserTestCase(unittest.TestCase):
             self.assertIn(name, storage)
             self.assertIn(symbol, storage[name])
 
-            app = storage[name][symbol]
+            app = storage[name][symbol]['q0']  # again: wrong variant since no detection
 
             name_pair = '{}-q{}'.format(name, sum(app.nelec))
             self.assertIn(name_pair, storage)  # the full version is also there
-            self.assertEqual(app, storage[name_pair][symbol])
+            self.assertEqual(app, storage[name_pair][symbol]['q0'])

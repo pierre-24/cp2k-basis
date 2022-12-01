@@ -23,10 +23,12 @@ def main():
 
     if args.type == 'B':
         storage = BasisSetsStorage()
-        storage.update(AtomicBasisSetsParser(args.source.read()).iter_atomic_basis_set_variants(), filter_name)
+        storage.update(
+            AtomicBasisSetsParser(args.source.read()).iter_atomic_basis_set_variants(), filter_name)
     else:
         storage = PseudopotentialsStorage()
-        storage.update(AtomicPseudopotentialsParser(args.source.read()).iter_atomic_pseudopotentials(), filter_name)
+        storage.update(
+            AtomicPseudopotentialsParser(args.source.read()).iter_atomic_pseudopotential_variants(), filter_name)
 
     for name in storage:
         print_availability(name, list(storage[name]))

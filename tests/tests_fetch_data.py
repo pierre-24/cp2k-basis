@@ -29,7 +29,7 @@ class FetchDataTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
         self.pp_storage_parsed = PseudopotentialsStorage()
         with (pathlib.Path(__file__).parent / 'POTENTIALS_EXAMPLE').open() as f:
             self.pp_storage_parsed.update(
-                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotentials(),
+                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants(),
                 filter_name
             )
 
