@@ -95,13 +95,17 @@ export class Controller  {
             });
         });
 
-        this.$elementsClear = document.querySelector('#elementsClear');
-        this.$elementsClear.addEventListener('click', () => {
+        this.$clear = document.querySelector('#clearButton');
+        this.$clear.addEventListener('click', () => {
             document.querySelectorAll('.cell-element').forEach($e => {
                 $e.classList.remove('selected');
             });
 
             this.futureSelectedElements = [];
+
+            this.$basisSetSelect.value = null;
+            this.$pseudoSelect.value = null;
+
             this.update();
         });
 
@@ -187,12 +191,16 @@ export class Controller  {
         this.$basisSetResult.value = data;
         if(metadata.length > 0)
             this.$basisSetMetadata.innerHTML = this.infoTpl(...metadata);
+        else
+            this.$basisSetMetadata.innerText = '';
     }
 
     _updateOutputPseudo(data, metadata) {
         this.$pseudoResult.value = data;
         if(metadata.length > 0)
             this.$pseudoMetadata.innerHTML = this.infoTpl(...metadata);
+        else
+            this.$pseudoMetadata.innerText = '';
     }
 
     _updateOutputInput() {

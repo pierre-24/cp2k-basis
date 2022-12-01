@@ -50,4 +50,5 @@ module.exports = function(grunt) {
 
     tasks.forEach((task) => {grunt.loadNpmTasks(task); });
     grunt.registerTask('default', ['jshint', 'less', 'uglify']);
+    grunt.registerTask('watch', ['watch']);
 };
