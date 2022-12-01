@@ -84,6 +84,7 @@ Options:
 | Option     | Argument | Description                                                                                                                        |
 |------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
 | `elements` | String   | Restrict the output to a subset of elements. If some elements are not defined for this basis set/pseudopotential, a 404 is raised. |
+| `header`   | Boolean  | Add an header to `result.data` (default is true)                                                                                   |
 
 
 Output:

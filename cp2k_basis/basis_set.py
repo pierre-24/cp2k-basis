@@ -136,8 +136,8 @@ class AtomicBasisSet(BaseAtomicDataObject):
         return '[{}]'.format(self._representation(True))
 
     def __str__(self) -> str:
-        r = '# {} {} {} -> {}\n'.format(
-            self.symbol, self.names[0], self.full_representation(), self.contracted_representation())
+        r = '# {} [{}|{}]\n'.format(
+            self.symbol, self._representation(False, sep=''), self._representation(True, sep=''))
         r += ' {}  {}\n {}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
 
         r += ''.join(str(c) for c in self.contractions)

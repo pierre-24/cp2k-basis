@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import flask
@@ -130,7 +131,7 @@ class BaseFamilyStorageDataAPI(MethodView):
     textual_source: str = ''
 
     @parser.use_kwargs({'name': field_name}, location='view_args')
-    @parser.use_kwargs({'elements': field_elements}, location='query')
+    @parser.use_kwargs({'elements': field_elements, 'header': fields.Bool()}, location='query')
     def get(self, **kwargs):
         storage: Storage = flask.current_app.config['{}S_STORAGE'.format(self.source)]
 
@@ -146,16 +147,28 @@ class BaseFamilyStorageDataAPI(MethodView):
             atomic_data_objects = list(family_storage.values())
         else:
             atomic_data_objects = []
-            for symbol in elements:
+            for symbol in elements.iter_sorted():
                 try:
                     atomic_data_objects.append(family_storage[symbol])
                 except KeyError:
                     raise NotFound('{} `{}` does not exist for atom {}'.format(self.textual_source, name, symbol))
 
+        header = ''
+
+        if kwargs.get('header', True):
+            header = '# URL: {}\n# DATETIME: {}\n# ---\n'.format(
+                flask.url_for(
+                    'api.{}-data'.format('basis' if self.source == 'BASIS_SET' else 'pseudo'),
+                    name=name,
+                    _external=True
+                ) + ('' if not elements else '?elements={}'.format(','.join(elements.iter_sorted()))),
+                datetime.datetime.now().strftime('%d/%m/%Y @ %H:%M')
+            )
+
         query = dict(type=self.source, name=name)
         result = dict(
-            data=''.join(str(obj) for obj in atomic_data_objects),
-            elements=list(obj.symbol for obj in atomic_data_objects),
+            data=header + ''.join(str(obj) for obj in atomic_data_objects),
+            elements=list(elements.iter_sorted()),
             alternate_names=dict(
                 (obj.symbol, list(filter(lambda x: x != name, obj.names))) for obj in atomic_data_objects),
             metadata=family_storage.metadata

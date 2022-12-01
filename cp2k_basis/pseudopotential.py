@@ -92,7 +92,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         self.nlprojectors = nlprojectors
 
     def __str__(self) -> str:
-        r = '#\n{}  {}\n  {}\n'.format(
+        r = '{}  {}\n  {}\n'.format(
             self.symbol, ' '.join(self.names), ' '.join('{:>4}'.format(x) for x in self.nelec))
 
         # local part

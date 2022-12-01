@@ -161,6 +161,10 @@ class ElementSet:
         for i in self.elements:
             yield Z_TO_SYMB[i]
 
+    def iter_sorted(self) -> Iterable[str]:
+        for i in sorted(self.elements):
+            yield Z_TO_SYMB[i]
+
     def __repr__(self):
         return '<ElementSet({})>'.format(', '.join(Z_TO_SYMB[i] for i in self.elements))
 
