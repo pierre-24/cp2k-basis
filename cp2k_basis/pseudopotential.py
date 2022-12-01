@@ -132,7 +132,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
             contraction.dump_hdf5(group, i)
 
     @classmethod
-    def read_hdf5(cls, symbol: str, group: h5py.Group):
+    def read_hdf5(cls, family_name: h5py.Group, symbol: str):
         logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']

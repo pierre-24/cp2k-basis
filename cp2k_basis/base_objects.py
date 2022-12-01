@@ -1,4 +1,3 @@
-import pathlib
 import re
 
 import h5py
@@ -12,12 +11,11 @@ from cp2k_basis.elements import ElementSet, SYMB_TO_Z
 string_dt = h5py.special_dtype(vlen=str)
 
 
-class BaseAtomicDataObject:
-    """Base atomic data object.
-    """
-
-    def __init__(self, symbol: str, names: List[str]):
+class BaseAtomicVariantDataObject:
+    def __init__(self, symbol: str, family_name: str, variant: str, names: List[str]):
         self.symbol = symbol
+        self.family_name = family_name
+        self.variant = variant
         self.names = names
 
     def dump_hdf5(self, group: h5py.Group):
@@ -28,6 +26,8 @@ class BaseAtomicDataObject:
         ds_names[:] = self.names
 
     def _read_info(self, group: h5py.Group, name_size: int):
+        """Read names
+        """
 
         ds_names = group['names']
 
@@ -37,14 +37,57 @@ class BaseAtomicDataObject:
         self.names = list(n.decode('utf8') for n in ds_names)
 
     @classmethod
-    def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'BaseAtomicDataObject':
+    def read_hdf5(cls, family_name: str, symbol: str, variant: str, group: h5py.Group) -> 'BaseAtomicVariantDataObject':
         """Create from HDF5"""
 
         raise NotImplementedError()
 
 
-class AtomicDataException(Exception):
-    pass
+class BaseAtomicDataObject:
+    """Base atomic data object, stores `BaseAtomicVariantDataObject`
+    """
+
+    object_type = BaseAtomicVariantDataObject
+
+    def __init__(self, symbol: str, family_name: str):
+        self.symbol = symbol
+        self.family_name = family_name
+        self.variants: Dict[str, BaseAtomicVariantDataObject] = {}
+
+    def add(self, obj: BaseAtomicVariantDataObject):
+        if type(obj) is not self.object_type:
+            raise TypeError('`obj` must be of type {}'.format(self.object_type))
+
+        if obj.variant in self.variants:
+            raise ValueError('`{}` already exists for symbol {}'.format(obj.variant, obj.symbol))
+
+        self.variants[obj.variant] = obj
+
+    def __str__(self) -> str:
+        return ''.join(str(bs) for bs in self.variants.values())
+
+    def __getitem__(self, item: str) -> BaseAtomicVariantDataObject:
+        return self.variants[item]
+
+    def __contains__(self, item: str) -> bool:
+        return item in self.variants
+
+    def __iter__(self) -> Iterable[str]:
+        yield from self.variants.keys()
+
+    def dump_hdf5(self, group: h5py.Group):
+        """Dump in HDF5"""
+
+        for key, data in self.variants.items():
+            subgroup = group.create_group(key)
+            data.dump_hdf5(subgroup)
+
+    @classmethod
+    def read_hdf5(cls, family_name: str, symbol: str, group: h5py.Group) -> Iterable[BaseAtomicVariantDataObject]:
+        """Yield a set of variant for a given symbol"""
+
+        for key, variant_group in group.items():
+            yield cls.object_type.read_hdf5(family_name, symbol, key, variant_group)
 
 
 class BaseFamilyStorage:
@@ -58,14 +101,12 @@ class BaseFamilyStorage:
         self.data_objects: Dict[str, BaseAtomicDataObject] = {}
         self.metadata = metadata if metadata else {}
 
-    def add(self, obj: BaseAtomicDataObject):
-        if type(obj) is not self.object_type:
-            raise TypeError('`obj` must be of type {}'.format(self.object_type))
+    def add(self, obj: BaseAtomicVariantDataObject):
 
-        if obj.symbol in self.data_objects:
-            raise AtomicDataException('`{}` already exists for symbol {}'.format(self.name, obj.symbol))
+        if obj.symbol not in self.data_objects:
+            self.data_objects[obj.symbol] = self.object_type(obj.symbol, self.name)
 
-        self.data_objects[obj.symbol] = obj
+        self.data_objects[obj.symbol].add(obj)
 
     def __str__(self) -> str:
         return ''.join(str(bs) for bs in self.data_objects.values())
@@ -104,23 +145,24 @@ class BaseFamilyStorage:
                 if value:
                     group.attrs[key] = value
 
-    @classmethod
-    def read_hdf5(cls, group: h5py.Group) -> 'BaseFamilyStorage':
-        """Extract from HDF5"""
-
-        name = pathlib.Path(group.name).name
-        o = cls(name)
-
-        for key, basis_group in group.items():
-            o.add(cls.object_type.read_hdf5(key, basis_group))
+    @staticmethod
+    def _read_metadata_hdf5(group: h5py.Group) -> dict:
+        metadata = {}
 
         for key, values in group.attrs.items():
             if type(values) == numpy.ndarray:
-                o.metadata[key] = list(values)
+                metadata[key] = list(values)
             else:
-                o.metadata[key] = values
+                metadata[key] = values
 
-        return o
+        return metadata
+
+    @classmethod
+    def read_hdf5(cls, family_name, group: h5py.Group) -> Iterable[BaseAtomicVariantDataObject]:
+        """Yield a set of variants of the same family from HDF5"""
+
+        for key, basis_group in group.items():
+            yield from cls.object_type.read_hdf5(family_name, key, basis_group)
 
 
 class StorageException(Exception):
@@ -141,7 +183,7 @@ class Storage:
 
     def update(
         self,
-        data_objects: Iterable[BaseAtomicDataObject],
+        data_objects: Iterable[BaseAtomicVariantDataObject],
         filter_name: Union[Callable[[Iterable[str]], Iterable[str]], 'FilterName'] = lambda x: x,
         add_metadata: Callable[[BaseFamilyStorage], None] = None
     ):
@@ -207,13 +249,10 @@ class Storage:
         obj = cls()
 
         for key, group in main_group.items():
-            family = obj.object_type.read_hdf5(group)
+            obj.update(obj.object_type.read_hdf5(key, group), lambda x: [key])
 
-            # copy content
-            obj.update(family.data_objects.values(), lambda x: [key])
-
-            # copy metadata
-            obj.families[key].metadata = family.metadata
+            # add metadata
+            obj.families[key].metadata = BaseFamilyStorage._read_metadata_hdf5(group)
 
         return obj
 
