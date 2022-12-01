@@ -82,11 +82,11 @@ class BaseAtomicDataObject:
             data.dump_hdf5(subgroup)
 
     @classmethod
-    def iter_hdf5_variants(cls, symbol: str, group: h5py.Group) -> Iterable[BaseAtomicVariantDataObject]:
+    def iter_hdf5_variants(cls, symbol: str, group: h5py.Group) -> Iterable[Tuple[BaseAtomicVariantDataObject, str]]:
         """Yield a set of variant for a given symbol"""
 
         for key, variant_group in group.items():
-            yield cls.object_type.read_hdf5(symbol, variant_group)
+            yield cls.object_type.read_hdf5(symbol, variant_group), key
 
 
 class BaseFamilyStorage:
@@ -157,7 +157,7 @@ class BaseFamilyStorage:
         return metadata
 
     @classmethod
-    def iter_hdf5_variants(cls, group: h5py.Group) -> Iterable[BaseAtomicVariantDataObject]:
+    def iter_hdf5_variants(cls, group: h5py.Group) -> Iterable[Tuple[BaseAtomicVariantDataObject, str]]:
         """Yield a set of variants of the same family from HDF5"""
 
         for key, basis_group in group.items():
@@ -188,13 +188,6 @@ class Storage:
         add_metadata: Callable[[BaseFamilyStorage], None] = None
     ):
         for obj in data_objects:
-
-            # prepare reverse
-            symbol = obj.symbol
-            if symbol not in self.families_per_element:
-                self.families_per_element[symbol] = []
-
-            # add to storage & reverse
             names = list(filter_name(obj.names))
 
             try:
@@ -203,15 +196,23 @@ class Storage:
                 variant = 'q0'
 
             for name in names:
-                if name not in self.families:
-                    self.families[name] = self.object_type(name)
-                    self.elements_per_family[name] = []
-                    if add_metadata:
-                        add_metadata(self.families[name])
+                self._update(obj, name, variant)
+                if add_metadata:
+                    add_metadata(self.families[name])
 
-                self.families[name].add(obj, variant)
-                self.elements_per_family[name].append(symbol)
-                self.families_per_element[symbol].append(name)
+    def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
+
+        symbol = obj.symbol
+        if symbol not in self.families_per_element:
+            self.families_per_element[symbol] = []
+
+        if name not in self.families:
+            self.families[name] = self.object_type(name)
+            self.elements_per_family[name] = []
+
+        self.families[name].add(obj, variant)
+        self.elements_per_family[name].append(symbol)
+        self.families_per_element[symbol].append(name)
 
     def __repr__(self):
         return '<Storage({})>'.format(repr(self.name))
@@ -254,7 +255,8 @@ class Storage:
         obj = cls()
 
         for key, group in main_group.items():
-            obj.update(obj.object_type.iter_hdf5_variants(group), lambda x: [key])
+            for obj_variant, variant in obj.object_type.iter_hdf5_variants(group):
+                obj._update(obj_variant, key, variant)
 
             # add metadata
             obj.families[key].metadata = BaseFamilyStorage._read_metadata_hdf5(group)

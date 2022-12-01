@@ -46,14 +46,14 @@ class Contraction:
         self.coefficients = coefficients
 
     def __str__(self) -> str:
-        r = ' {} {} {} {} {}\n'.format(
+        r = '{} {} {} {} {}\n'.format(
             self.principle_n,
             self.l_min,
             self.l_max,
             self.nfunc,
             ' '.join(str(x) for x in self.nshell))
 
-        fmt = '{:>20.12f}' + ' {: .12f}' * sum(self.nshell) + '\n'
+        fmt = '{:>16.12f}' + ' {: .12f}' * sum(self.nshell) + '\n'
         for i in range(self.nfunc):
             r += fmt.format(self.exponents[i], *self.coefficients[i])
 
@@ -133,7 +133,7 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
     def __str__(self) -> str:
         r = '# {} [{}|{}]\n'.format(
             self.symbol, self._representation(False, sep=''), self._representation(True, sep=''))
-        r += ' {}  {}\n {}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
+        r += '{}  {}\n{}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
 
         r += ''.join(str(c) for c in self.contractions)
 

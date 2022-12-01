@@ -92,8 +92,8 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
         self.nlprojectors = nlprojectors
 
     def __str__(self) -> str:
-        r = '{}  {}\n  {}\n'.format(
-            self.symbol, ' '.join(self.names), ' '.join('{:>4}'.format(x) for x in self.nelec))
+        r = '{}  {}\n{}\n'.format(
+            self.symbol, ' '.join(self.names), ' '.join('{}'.format(x) for x in self.nelec))
 
         # local part
         n = self.lcoefficients.shape[0]
