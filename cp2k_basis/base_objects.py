@@ -103,7 +103,7 @@ class BaseFamilyStorage:
     def add(self, obj: BaseAtomicVariantDataObject, variant: str):
 
         if obj.symbol not in self.data_objects:
-            self.data_objects[obj.symbol] = self.object_type(obj.symbol, self.name)
+            self.data_objects[obj.symbol] = self.object_type(self.name, obj.symbol)
 
         self.data_objects[obj.symbol].add(obj, variant)
 

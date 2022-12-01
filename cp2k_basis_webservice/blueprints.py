@@ -169,8 +169,6 @@ class BaseFamilyStorageDataAPI(MethodView):
         result = dict(
             data=header + ''.join(str(obj) for obj in atomic_data_objects),
             elements=list(obj.symbol for obj in atomic_data_objects),
-            alternate_names=dict(
-                (obj.symbol, list(filter(lambda x: x != name, obj.names))) for obj in atomic_data_objects),
             metadata=family_storage.metadata
         )
 

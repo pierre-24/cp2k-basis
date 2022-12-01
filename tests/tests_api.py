@@ -109,14 +109,6 @@ class BasisSetAPITestCase(FlaskAppMixture):
         )
 
         self.assertEqual(
-            data['result']['alternate_names'],
-            dict(
-                (d.symbol, list(filter(lambda x: x != self.basis_name, d.names)))
-                for d in flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].data_objects.values()
-            )
-        )
-
-        self.assertEqual(
             data['result']['metadata'],
             flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata
         )
@@ -202,14 +194,6 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(
             sorted(data['result']['elements']),
             sorted(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
-        )
-
-        self.assertEqual(
-            data['result']['alternate_names'],
-            dict(
-                (d.symbol, list(filter(lambda x: x != self.pseudo_name, d.names)))
-                for d in flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].data_objects.values()
-            )
         )
 
         self.assertEqual(
