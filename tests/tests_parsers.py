@@ -92,7 +92,7 @@ class BSParserTestCase(unittest.TestCase):
             coefs=coefs_str
         )
 
-        abs = AtomicBasisSetsParser(SINGLE_ABS.format(**params)).atomic_basis_set()
+        abs = AtomicBasisSetsParser(SINGLE_ABS.format(**params)).atomic_basis_set_variant()
 
         self.assertEqual(params['names'], ' '.join(abs.names))
         self.assertEqual(params['symbol'], abs.symbol)
@@ -115,7 +115,7 @@ class BSParserTestCase(unittest.TestCase):
         storage = BasisSetsStorage()
 
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
-            storage.update(AtomicBasisSetsParser(f.read()).iter_atomic_basis_sets())
+            storage.update(AtomicBasisSetsParser(f.read()).iter_atomic_basis_set_variants())
 
         # check basis sets for C
         repr_C = (
@@ -130,10 +130,10 @@ class BSParserTestCase(unittest.TestCase):
         for bs_name, ncont, full, contracted in repr_C:
             self.assertIn(bs_name, storage)
             self.assertIn('C', storage[bs_name])
-            abs1 = storage[bs_name]['C']
+            abs1 = storage[bs_name]['C']['q0']
 
             self.assertIn(bs_name + '-q4', storage)  # the -q4 version is also there
-            self.assertEqual(abs1, storage[bs_name + '-q4']['C'])
+            self.assertEqual(abs1, storage[bs_name + '-q4']['C']['q0'])
 
             self.assertEqual(ncont, len(abs1.contractions))
             self.assertEqual(full, abs1.full_representation())

@@ -84,7 +84,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
         lcoefficients: numpy.ndarray,
         nlprojectors: List[NonLocalProjector]
     ):
-        super().__init__(symbol, names)
+        super().__init__(names, symbol)
 
         self.nelec = nelec
         self.lradius = lradius
@@ -132,7 +132,7 @@ class AtomicPseudopotential(BaseAtomicDataObject):
             contraction.dump_hdf5(group, i)
 
     @classmethod
-    def read_hdf5(cls, family_name: h5py.Group, symbol: str):
+    def iter_hdf5_variants(cls, symbol: str):
         logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']

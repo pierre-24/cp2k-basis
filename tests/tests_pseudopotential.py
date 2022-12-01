@@ -79,7 +79,7 @@ class PseudoTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         # read back
         with h5py.File(path) as f:
-            ppf2 = PseudopotentialFamily.read_hdf5(f['pseudopotentials/{}'.format(self.name)])
+            ppf2 = PseudopotentialFamily.iter_hdf5_variants()
 
             # check metadata
             self.assertEqual(ppf1.metadata, ppf2.metadata)

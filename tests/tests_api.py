@@ -99,7 +99,7 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.basis_name)
         self.assertNotIn('elements', data['query'])
 
-        for abs_ in AtomicBasisSetsParser(data['result']['data']).iter_atomic_basis_sets():
+        for abs_ in AtomicBasisSetsParser(data['result']['data']).iter_atomic_basis_set_variants():
             self.assertIn(
                 abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
 

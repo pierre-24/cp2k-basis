@@ -23,7 +23,7 @@ def main():
 
     if args.type == 'B':
         storage = BasisSetsStorage()
-        storage.update(AtomicBasisSetsParser(args.source.read()).iter_atomic_basis_sets(), filter_name)
+        storage.update(AtomicBasisSetsParser(args.source.read()).iter_atomic_basis_set_variants(), filter_name)
     else:
         storage = PseudopotentialsStorage()
         storage.update(AtomicPseudopotentialsParser(args.source.read()).iter_atomic_pseudopotentials(), filter_name)

@@ -5,7 +5,7 @@ from typing import List, Iterable
 
 from cp2k_basis import logger
 from cp2k_basis.parser import BaseParser, TokenType
-from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Storage
+from cp2k_basis.base_objects import BaseAtomicVariantDataObject, BaseAtomicDataObject, BaseFamilyStorage, Storage
 
 L_TO_SHELL = {
     0: 's',
@@ -102,13 +102,8 @@ class Contraction:
         return cls(principle_n, l_min, l_max, nfunc, nshell, dset_exp_coefs[:, 0], dset_exp_coefs[:, 1:])
 
 
-class AtomicBasisSet(BaseAtomicDataObject):
-    def __init__(
-        self,
-        symbol: str,
-        names: List[str],
-        contractions: List[Contraction]
-    ):
+class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
+    def __init__(self, symbol: str, names: List[str], contractions: List[Contraction]):
         super().__init__(symbol, names)
         self.contractions = contractions
 
@@ -161,8 +156,8 @@ class AtomicBasisSet(BaseAtomicDataObject):
             contraction.dump_hdf5(group, i)
 
     @classmethod
-    def read_hdf5(cls, family_name: h5py.Group, symbol: str) -> 'AtomicBasisSet':
-        logger.info('read basis set for {} in {}'.format(symbol, group.name))
+    def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSetVariant':
+        logger.info('read basis set in {}'.format(group.name))
 
         # checks
         ds_info = group['info']
@@ -187,6 +182,10 @@ class AtomicBasisSet(BaseAtomicDataObject):
         return obj
 
 
+class AtomicBasisSet(BaseAtomicDataObject):
+    object_type = AtomicBasisSetVariant
+
+
 class BasisSet(BaseFamilyStorage):
     """Set of basis set for a given atom
     """
@@ -201,7 +200,7 @@ class BasisSetsStorage(Storage):
 
 class AtomicBasisSetsParser(BaseParser):
 
-    def iter_atomic_basis_sets(self) -> Iterable[AtomicBasisSet]:
+    def iter_atomic_basis_set_variants(self) -> Iterable[AtomicBasisSetVariant]:
         """Basis set
         BASIS_SETS := ATOMIC_BASIS_SET* EOS
         """
@@ -209,13 +208,13 @@ class AtomicBasisSetsParser(BaseParser):
         self.skip()
 
         while self.current_token.type != TokenType.EOS:
-            yield self.atomic_basis_set()
+            yield self.atomic_basis_set_variant()
 
             self.skip()
 
         self.eat(TokenType.EOS)
 
-    def atomic_basis_set(self) -> AtomicBasisSet:
+    def atomic_basis_set_variant(self) -> AtomicBasisSetVariant:
         """
         ATOMIC_BASIS_SET := WORD SPACE WORD (SPACE WORD)* NL INT NL CONTRACTION*
         """
@@ -250,11 +249,7 @@ class AtomicBasisSetsParser(BaseParser):
             logger.debug('read contraction {}'.format(i))
             contractions.append(self.contraction())
 
-        return AtomicBasisSet(
-            symbol,
-            names,
-            contractions
-        )
+        return AtomicBasisSetVariant(symbol, names, contractions)
 
     def contraction(self) -> Contraction:
         """

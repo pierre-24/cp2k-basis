@@ -1,12 +1,12 @@
 import numpy
 
-from cp2k_basis.basis_set import AtomicBasisSet
+from cp2k_basis.basis_set import AtomicBasisSetVariant
 from cp2k_basis.pseudopotential import AtomicPseudopotential
 
 
 class CompareAtomicDataObjectMixin:
 
-    def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSet, abs2: AtomicBasisSet):
+    def assertAtomicBasisSetEqual(self, abs1: AtomicBasisSetVariant, abs2: AtomicBasisSetVariant):
         self.assertEqual(abs2.names, abs1.names)
         self.assertEqual(abs2.symbol, abs1.symbol)
         self.assertEqual(len(abs2.contractions), len(abs1.contractions))

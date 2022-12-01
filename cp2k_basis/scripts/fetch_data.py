@@ -62,7 +62,7 @@ def fetch_data(data_sources: dict) -> List[Storage]:
 
             # fetch data and store them
             if file['type'] == 'BASIS_SETS':
-                iterator = AtomicBasisSetsParser(response.content.decode('utf8')).iter_atomic_basis_sets()
+                iterator = AtomicBasisSetsParser(response.content.decode('utf8')).iter_atomic_basis_set_variants()
                 bs_storage.update(iterator, filter_name, add_metadata)
 
             elif file['type'] == 'POTENTIALS':

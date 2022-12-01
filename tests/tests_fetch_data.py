@@ -22,7 +22,7 @@ class FetchDataTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
         self.bs_storage_parsed = BasisSetsStorage()
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
             self.bs_storage_parsed.update(
-                AtomicBasisSetsParser(f.read()).iter_atomic_basis_sets(),
+                AtomicBasisSetsParser(f.read()).iter_atomic_basis_set_variants(),
                 filter_name
             )
 

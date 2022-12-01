@@ -27,7 +27,7 @@ class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         with (pathlib.Path(__file__).parent / 'BASIS_EXAMPLE').open() as f:
             self.storage.update(
-                AtomicBasisSetsParser(f.read()).iter_atomic_basis_sets(),
+                AtomicBasisSetsParser(f.read()).iter_atomic_basis_set_variants(),
                 filter_name=prune_and_rename,
                 add_metadata=add_metadata
             )
@@ -44,7 +44,7 @@ class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         parser = AtomicBasisSetsParser(str(abs1))
         parser.skip()  # skip comment
-        abs2 = parser.atomic_basis_set()
+        abs2 = parser.atomic_basis_set_variant()
 
         self.assertAtomicBasisSetEqual(abs1, abs2)
 
@@ -54,7 +54,7 @@ class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         parser = AtomicBasisSetsParser(str(bs1))
         bs2 = BasisSet(name)
-        for abs_ in parser.iter_atomic_basis_sets():
+        for abs_ in parser.iter_atomic_basis_set_variants():
             self.assertIn(name, abs_.names)
             bs2.add(abs_)
 
@@ -72,7 +72,7 @@ class BSTestCase(unittest.TestCase, CompareAtomicDataObjectMixin):
 
         # read it back and compare
         with h5py.File(path) as f:
-            bs2 = BasisSet.read_hdf5(f['basis_sets/{}'.format(name)])
+            bs2 = BasisSet.iter_hdf5_variants()
 
             # check metadata
             self.assertEqual(bs1.metadata, bs2.metadata)
