@@ -73,12 +73,19 @@
                     {% for i in range(10) %}
                     {{ cEmpty() }}
                     {% endfor %}
-                    {{ cElement(5) }}
-                    {{ cElement(6) }}
-                    {{ cElement(7) }}
-                    {{ cElement(8) }}
-                    {{ cElement(9) }}
-                    {{ cElement(10) }}
+                    {% for i in range(5, 11) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {{ cElement(11) }}
+                    {{ cElement(12) }}
+                    {% for i in range(10) %}
+                    {{ cEmpty() }}
+                    {% endfor %}
+                    {% for i in range(13, 19) %}
+                        {{ cElement(i) }}
+                    {% endfor %}
                 </tr>
                 <tr>
                     {% for i in range(19, 37) %}
