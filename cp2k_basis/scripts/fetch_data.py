@@ -5,7 +5,7 @@ https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_file_format.md 
 """
 
 import pathlib
-from typing import List
+from typing import Tuple
 
 import h5py
 import yaml
@@ -19,7 +19,7 @@ from cp2k_basis.base_objects import FilterFirst, FilterUnique, Storage, AddMetad
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
 
 
-def fetch_data(data_sources: dict) -> List[Storage]:
+def fetch_data(data_sources: dict) -> Tuple[Storage, Storage]:
     """Fetch data from files that are found in repositories.
     """
 
@@ -66,7 +66,7 @@ def fetch_data(data_sources: dict) -> List[Storage]:
                     response.content.decode('utf8')).iter_atomic_pseudopotential_variants()
                 pp_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
-    return [bs_storage, pp_storage]
+    return bs_storage, pp_storage
 
 
 def main():
@@ -80,6 +80,9 @@ def main():
     # load data
     data_sources = yaml.load(args.source, yaml.Loader)
     bs_storage, pp_storage = fetch_data(data_sources)
+
+    bs_storage.tree()
+    pp_storage.tree()
 
     # write library
     logger.info('writing in {}'.format(args.output))

@@ -27,7 +27,9 @@ dependencies = [
 ]
 
 [project.scripts]
-cp2k_basis_fetch_data = "cp2k_basis.scripts.fetch_data:main"
+cb_fetch_data = "cp2k_basis.scripts.fetch_data:main"
+cb_explore_library = "cp2k_basis.scripts.explore_library:main"
+cb_explore_file = "cp2k_basis.scripts.explore_file:main"
 
 [tool.setuptools]
 packages = ['cp2k_basis', 'cp2k_basis.scripts']

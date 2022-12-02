@@ -56,6 +56,8 @@ class BSTestCase(unittest.TestCase, BaseDataObjectMixin):
         with h5py.File(path, 'w') as f:
             self.storage.dump_hdf5(f)
 
+        self.storage.tree()
+
         # read back
         with h5py.File(path) as f:
             storage = BasisSetsStorage.read_hdf5(f)

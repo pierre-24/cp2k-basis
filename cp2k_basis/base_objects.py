@@ -1,4 +1,5 @@
 import re
+import sys
 
 import h5py
 
@@ -62,6 +63,9 @@ class BaseAtomicDataObject:
 
         self.variants[variant] = obj
 
+    def __repr__(self):
+        return '<BaseAtomicDataObject({}, {})>'.format(repr(self.family_name), repr(self.symbol))
+
     def __str__(self) -> str:
         return ''.join(str(bs) for bs in self.variants.values())
 
@@ -73,6 +77,17 @@ class BaseAtomicDataObject:
 
     def __iter__(self) -> Iterable[str]:
         yield from self.variants.keys()
+
+    def values(self) -> Iterable[BaseAtomicVariantDataObject]:
+        """Yield all `AtomicDataObjects`
+        """
+
+        yield from self.variants.values()
+
+    def tree(self, out=sys.stdout):
+        """Print a tree"""
+
+        print('   |  +- {}: {}'.format(self.symbol, ', '.join(self.variants.keys())), file=out)
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
@@ -107,6 +122,9 @@ class BaseFamilyStorage:
 
         self.data_objects[obj.symbol].add(obj, variant)
 
+    def __repr__(self):
+        return '<BaseFamilyStorage({})>'.format(repr(self.name))
+
     def __str__(self) -> str:
         return ''.join(str(bs) for bs in self.data_objects.values())
 
@@ -124,6 +142,16 @@ class BaseFamilyStorage:
         """
 
         yield from self.data_objects.values()
+
+    def tree(self, out=sys.stdout):
+        """Print a tree"""
+
+        print('   +- {}\n   |  metadata={}'.format(self.name, repr(self.metadata)), file=out)
+        print('   |  |', file=out)
+        for atomic in self.data_objects.values():
+            atomic.tree(out)
+
+        print('   |', file=out)
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
@@ -246,6 +274,12 @@ class Storage:
         """Yield all `BaseFamilyStorage`"""
         yield from self.families.values()
 
+    def tree(self, out=sys.stdout):
+        """Print a tree"""
+        print('*\n|\n+- {}\n   |'.format(self.name), file=out)
+        for family in self.families.values():
+            family.tree(out)
+
     def get_names_for_elements(self, elements: ElementSet) -> List[str]:
         """Get all defined names, eventually restricted to a subset of elements
         """
@@ -292,8 +326,8 @@ class Filter:
     If you want to avoid this behavior, add a dummy rule at the end: `(re.compile(r'(.*)'), '\\1')`.
     """
 
-    def __init__(self, rules: List[Tuple[re.Pattern, Union[str, None]]]):
-        self.rules = rules
+    def __init__(self, rules: List[Tuple[re.Pattern, Union[str, None]]] = None):
+        self.rules = rules if rules else []
 
     @classmethod
     def create(cls, filter_def: Dict[str, Union[str, None]]):
