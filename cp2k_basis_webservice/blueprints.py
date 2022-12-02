@@ -218,7 +218,8 @@ class BaseMetadataAPI(MethodView):
             raise NotFound('{} `{}` does not exist'.format(self.textual_source, name))
 
         query = dict(type=self.source, name=name)
-        result = family_storage.metadata
+        result = {}
+        result.update(**family_storage.metadata)
         result['elements'] = list(family_storage.data_objects.keys())
 
         return flask.jsonify(
