@@ -59,13 +59,17 @@ class BSTestCase(unittest.TestCase, BaseDataObjectMixin):
         # read back
         with h5py.File(path) as f:
             storage = BasisSetsStorage.read_hdf5(f)
+            self.assertEqual(len(list(self.storage)), len(list(storage)))
 
             for bs_name in self.storage:
                 self.assertIn(bs_name, storage)
                 self.assertEqual(self.storage[bs_name].metadata, storage[bs_name].metadata)
+                self.assertEqual(len(list(self.storage[bs_name])), len(list(storage[bs_name])))
 
                 for symbol in self.storage[bs_name]:
                     self.assertIn(symbol, self.storage[bs_name])
+                    self.assertEqual(len(list(self.storage[bs_name][symbol])), len(list(storage[bs_name][symbol])))
+
                     for variant in self.storage[bs_name][symbol]:
                         self.assertAtomicBasisSetEqual(
                             storage[bs_name][symbol][variant], self.storage[bs_name][symbol][variant])

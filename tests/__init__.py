@@ -14,7 +14,7 @@ class BaseDataObjectMixin:
     filter_name = FilterUnique([(re.compile(r'(.*)(-q.*)'), '\\1')])
     filter_variant = FilterFirst([(re.compile(r'.*-(q.*)'), '\\1')])
 
-    def read_basis_set_from_file(self, path: pathlib.Path, add_m=None):
+    def read_basis_set_from_file(self, path: pathlib.Path, add_m=None) -> BasisSetsStorage:
 
         bs_storage_parsed = BasisSetsStorage()
         with path.open() as f:
@@ -27,7 +27,7 @@ class BaseDataObjectMixin:
 
         return bs_storage_parsed
 
-    def read_pp_from_file(self, path: pathlib.Path, add_m=None):
+    def read_pp_from_file(self, path: pathlib.Path, add_m=None) -> PseudopotentialsStorage:
         pp_storage_parsed = PseudopotentialsStorage()
         with path.open() as f:
             pp_storage_parsed.update(

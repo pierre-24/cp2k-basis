@@ -48,6 +48,20 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
             for variant in bs1[symbol]:
                 self.assertAtomicPseudoEqual(bs1[symbol][variant], bs2[symbol][variant])
 
+    def test_multi_variant_ok(self):
+        name = 'GTH-PBE'
+        storage = self.read_pp_from_file(pathlib.Path(__file__).parent / 'POTENTIAL_MULTI_VARIANT')
+
+        self.assertEqual(len(list(storage)), 1)
+
+        variants = list(storage[name]['Na'])
+        self.assertEqual(len(variants), 2)
+        self.assertEqual(sorted(variants), ['q1', 'q9'])
+
+        variants = list(storage[name]['Mg'])
+        self.assertEqual(len(variants), 2)
+        self.assertEqual(sorted(variants), ['q10', 'q2'])
+
     def test_storage_dump_hdf5_ok(self):
         path = tempfile.mktemp()
 
@@ -58,13 +72,17 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
         # read back
         with h5py.File(path) as f:
             storage = PseudopotentialsStorage.read_hdf5(f)
+            self.assertEqual(len(list(self.storage)), len(list(storage)))
 
-            for bs_name in self.storage:
-                self.assertIn(bs_name, storage)
-                self.assertEqual(self.storage[bs_name].metadata, storage[bs_name].metadata)
+            for pp_name in self.storage:
+                self.assertIn(pp_name, storage)
+                self.assertEqual(self.storage[pp_name].metadata, storage[pp_name].metadata)
+                self.assertEqual(len(list(self.storage[pp_name])), len(list(storage[pp_name])))
 
-                for symbol in self.storage[bs_name]:
-                    self.assertIn(symbol, storage[bs_name])
-                    for variant in self.storage[bs_name][symbol]:
+                for symbol in self.storage[pp_name]:
+                    self.assertIn(symbol, storage[pp_name])
+                    self.assertEqual(len(list(self.storage[pp_name][symbol])), len(list(storage[pp_name][symbol])))
+
+                    for variant in self.storage[pp_name][symbol]:
                         self.assertAtomicPseudoEqual(
-                            storage[bs_name][symbol][variant], self.storage[bs_name][symbol][variant])
+                            storage[pp_name][symbol][variant], self.storage[pp_name][symbol][variant])
