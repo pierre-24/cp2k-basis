@@ -1,15 +1,16 @@
 # `library.h5` file format
 
 A library file is stored in the [HDF5 format](https://www.hdfgroup.org/solutions/hdf5/), which divide the data in groups (i.e., "folders") and datasets (i.e., "files"), the latter being array of data.
-Groups and datasets can present metadata.
+Groups and datasets can have attributes.
 
 The basis set library root contains at least two main (storage) groups: `basis_sets` and `pseudopotentials`.
 They are detailed below.
 
 ## The `basis_sets` group
 
-This group contains one subgroup per basis set (the `basis sey` group), for wich the name is the basis set name.
-In each `basis set` group, there is one subgroup for each atom (the `atomic basis set` group).
+This group contains one subgroup per basis set (the `basis set` group), for wich the name is the basis set name.
+In each `basis set` group, there is one subgroup for each atom (the `atomic bs` group).
+Finally, in that `atomic bs` subgroup, there is one `atomic bs variant` group for each variant.
 Thus, the following structure is valid:
 
 ```
@@ -20,17 +21,29 @@ Thus, the following structure is valid:
    +- SZV-MOLOPT-GTH/
    |  |
    |  +- C/
+   |  |  |
+   |  |  +- q4/
+   |  |
    |  +- H/
+   |  |  |
+   |  |  +- q1/
+   |  |
    |  +- ...
    |
    +- DZVP-MOLOPT-GTH/
       |
       +- C/
+      |  |
+      |  +- q4/
+      |
       +- H/
+      |  |
+      |  +- q1/
+      |
       +- ...
 ```
 
-Each `atomic basis set` group is composed of the following datasets, which are all mandatory:
+Each `atomic bs variant` group is composed of the following datasets, which are all mandatory:
 
 | Name                        | Shape                   | Attributes           | Info                                                                                              |
 |-----------------------------|-------------------------|----------------------|---------------------------------------------------------------------------------------------------|
@@ -46,7 +59,7 @@ Thus, the following structure, e.g., is valid:
 ```
 *
 |
-+ basis_sets/TZVP-GTH/C/      # contains two contractions
++ basis_sets/TZVP-GTH/C/q4/   # contains two contractions
   |
   +- info                     # contains (2, 2)
   +- names                    # contains (TZVP-GTH-q4, TZVP-GTH)
@@ -62,6 +75,8 @@ Thus, the following structure, e.g., is valid:
 
 Again, this group contains one subgroup per pseudopotential familly (the `pp family` group), which name is the family name.
 In each `pp family` group, there is one subgroup for each basis set (the `atomic pp` group).
+Finally, in that `atomic pp` subgroup, there is one `atomic pp variant` group for each variant.
+
 Thus, the following structure is valid:
 
 ```
@@ -72,17 +87,25 @@ Thus, the following structure is valid:
    +- GTH-BLYP/
    |  |
    |  +- C/
+   |  |  |
+   |  |  +- q4/
+   |  |
    |  +- H/
+   |  |  |
+   |  |  +- q1/
+   |  |
    |  +- ...
    |
    +- GTH-PBE/
       |
       +- C/
-      +- H/
+      |  |
+      |  +- q4/
+      |
       +- ...
 ```
 
-Each `atomic pp` group is composed of the following datasets, which are all mandatory:
+Each `atomic pp variant` group is composed of the following datasets, which are all mandatory:
 
 | Name                           | Shape      | Attributes          | Info                                                                                                                                                                                      |
 |--------------------------------|------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -98,7 +121,7 @@ The following structure, e.g., is valid:
 ```
 *
 |
-+- pseudopotentials/GTH-BLYP/Ne/
++- pseudopotentials/GTH-BLYP/Ne/q8/
    |
    +- info                        # contains (2, 2, 2, 2, 6)
    |                              # and has attribute nelec=2

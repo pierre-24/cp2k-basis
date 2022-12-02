@@ -225,13 +225,14 @@ Obtain metadata about a basis set or pseudopotential. There is no option.
 
 Output:
 
-| Field               | Type           | Description                                                  |
-|---------------------|----------------|--------------------------------------------------------------|
-| `query.type`        | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                             |
-| `query.name`        | string         | The name you requested                                       |
-| `result.elements`   | list of string | Elements for which the basis set/pseudopotential are defined |
-| `result.references` | list of string | List of URL to articles or repositories                      |
-| `result.source`     | string         | URL to the file which was used to create the data            |
+| Field                | Type           | Description                                                  |
+|----------------------|----------------|--------------------------------------------------------------|
+| `query.type`         | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                             |
+| `query.name`         | string         | The name you requested                                       |
+| `result.elements`    | list of string | Elements for which the basis set/pseudopotential are defined |
+| `result.description` | string         | Small description.                                           |
+| `result.references`  | list of string | List of URL to articles or repositories                      |
+| `result.source`      | string         | URL to the file which was used to create the data            |
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadata):
 

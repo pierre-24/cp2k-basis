@@ -22,7 +22,7 @@ class Config:
     PREFERRED_URL_SCHEME = 'http'
 
     # library
-    LIBRARY = 'library.h5'
+    LIBRARY = 'library/library.h5'
 
     # to be filled by `load_library()`
     BASIS_SETS_STORAGE = None
