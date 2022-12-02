@@ -9,9 +9,10 @@
 #
 #   + name: name of the file,
 #   + type: give the type of data found in the file, can be either `BASIS_SETS` or `PSEUDOPOTENTIALS`,
-#   + filter_name: set of rule to modify or discard names,
+#   + family_name: set of rule to modify or discard names,
 #     as a dictionary where the key is a REGEX matching a name,
-#     and the value is its replacement (empty values means that the name is discarded).
+#     and the value is its replacement (null value means that the name is discarded).
+#   + variant: fetch variant, on the same principle as with `family_name`.
 #   + metadata: set of metadata to be added, as a dictionary of list, where the key is the name of the metadata
 #     and the value is a dictionary of rules, where the key is a REGEX matching the name, and its value
 #     is the value of the metadata.
@@ -25,25 +26,29 @@
   files:
     - name: BASIS_MOLOPT
       type: BASIS_SETS
-      filter_name:
-        '^.*-q\d{1,2}$': ''  # remove -q* version
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [https://dx.doi.org/10.1063/1.2770708]
         description:
-          'SZV-MOLOPT-GTH': Single zeta valence [1s1p] MOLOPT basis set for gas and condensed phase and GTH potentials.
-          'DZVP-MOLOPT-GTH': Double zeta valence + 1 set polarization [2s2p1d] MOLOPT basis set for gas and condensed phase and GTH potentials.
-          'TZVP-MOLOPT-GTH': Triple zeta valence + 1 set polarization [3s2p1d] MOLOPT basis set for gas and condensed phase and GTH potentials.
-          'TZV2P-MOLOPT-GTH': Triple zeta valence + 2 set polarization [3s3p2d] MOLOPT basis set for gas and condensed phase and GTH potentials.
-          'TZV2PX-MOLOPT-GTH': Triple zeta valence + 2 set polarization and 1f [3s3p2d1f] MOLOPT basis set for gas and condensed phase and GTH potentials.
-          'SZV-MOLOPT-SR-GTH': Single zeta valence MOLOPT basis set for solids (SR=short-range, with less diffuse basis functions) and GTH potentials.
-          'DZVP-MOLOPT-SR-GTH': Double zeta valence + 1 set polarization MOLOPT basis set for solids (SR=short-range, with less diffuse basis functions) and GTH potentials.
+          'SZV-MOLOPT-GTH': A single zeta valence MOLOPT basis set, for gas and condensed phase and GTH potentials.
+          'DZVP-MOLOPT-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH potentials.
+          'TZVP-MOLOPT-GTH': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH potentials.
+          'TZV2P-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for gas and condensed phase and GTH potentials.
+          'TZV2PX-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) and 1f MOLOPT basis set, for gas and condensed phase and GTH potentials.
+          'SZV-MOLOPT-SR-GTH': A single zeta valence MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH potentials.
+          'DZVP-MOLOPT-SR-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH potentials.
           # fallback:
           '.*': MOLOPT basis set.
     - name: GTH_BASIS_SETS
       type: BASIS_SETS
-      filter_name:
-        '^.*-q\d{1,2}$': ''  # remove -q* version
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [https://dx.doi.org/10.1016/j.cpc.2004.12.014]  # Quickstep paper, in which they were originally described
@@ -57,16 +62,18 @@
           'QZV3P-GTH': A quadruple zeta valence (+ 3 set of polarization) basis set for GTH potentials.
           'aug-DZVP-GTH': An augmented double zeta valence (+ 1 set of polarization) basis set for GTH potentials.
           'aug-TZVP-GTH': An augmented triple zeta valence (+ 1 set of polarization) basis set for GTH potentials.
-          'aug-TZV2P-GTH': An augmented triple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
-          'aug-QZV2P-GTH': An augmented quadruple zeta valence (+ 2 set of polarization) basis set for GTH potentials.
-          'aug-QZV3P-GTH': An augmented quadruple zeta valence (+ 3 set of polarization) basis set for GTH potentials.
+          'aug-TZV2P-GTH': An augmented triple zeta valence (+ 2 sets of polarization) basis set for GTH potentials.
+          'aug-QZV2P-GTH': An augmented quadruple zeta valence (+ 2 sets of polarization) basis set for GTH potentials.
+          'aug-QZV3P-GTH': An augmented quadruple zeta valence (+ 3 sets of polarization) basis set for GTH potentials.
           # fallback:
           '.*': A basis set for GTH potentials.
     - name: GTH_POTENTIALS
       type: POTENTIALS
-      filter_name:
-        '^.*-q\d{1,2}$': ''  # remove -q* version
-        '^GTH-PBESol$': ''  # remove PBEsol, avail in other files
+      family_name:
+        '^GTH-PBESol(-.*)?$': null  # remove PBEsol, avail in other files
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [https://dx.doi.org/10.1103/PhysRevB.54.1703, https://dx.doi.org/10.1103/PhysRevB.58.3641, https://dx.doi.org/10.1007/s00214-005-0655-y, https://github.com/cp2k/cp2k-data]

@@ -28,10 +28,10 @@ The response is in JSON, and always contains two main fields:
 {
   "query": {
     "type": "TYPE",
-    ...
+    (...)
   },
   "result": {
-    ...
+    (...)
   }
 }
 ```
@@ -99,6 +99,7 @@ curl https://cp2k-basis.pierrebeaujean.net/api/data
           "Al",
           (...)
         ],
+        (...)
       }
     }
   }
@@ -168,52 +169,46 @@ Options:
 
 Output:
 
-| Field                    | Type           | Description                                                                                                           |
-|--------------------------|----------------|-----------------------------------------------------------------------------------------------------------------------|
-| `query.type`             | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                                                                                      |
-| `query.name`             | string         | The name you requested                                                                                                |
-| `query.elements`         | list of string | Value of the `elements` option, if provided                                                                           |
-| `result.data`            | string         | The resulting basis set or pseudopotential, in CP2K format                                                            |
-| `result.elements`        | list of string | Elements for which there is data (matches the option `elements` if set)                                               |
-| `result.alternate_names` | dictionary     | For each element, list of alternate (generally of the form `<name>-qX` with `X` the number of valence electron) names |
-| `result.metadata`        | dictionary     | Dictionary of metadata about this pseudopotential/basis set. See below for content.                                   |
+| Field             | Type           | Description                                                                                                 |
+|-------------------|----------------|-------------------------------------------------------------------------------------------------------------|
+| `query.type`      | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                                                                            |
+| `query.name`      | string         | The name you requested                                                                                      |
+| `query.elements`  | list of string | Value of the `elements` option, if provided                                                                 |
+| `result.data`     | string         | The resulting basis set or pseudopotential, in CP2K format                                                  |
+| `result.elements` | list of string | Elements for which there is data (matches the option `elements` if set)                                     |
+| `result.variants` | dictionary     | For each element, dictionary containing all variants and the corresponding name to be used for such variant |
+| `result.metadata` | dictionary     | Dictionary of metadata about this pseudopotential/basis set. See below for content.                         |
 
-[Example](https://cp2k-basis.pierrebeaujean.net/api/basis/DZVP-GTH/data?elements=H,C):
+[Example](https://cp2k-basis.pierrebeaujean.net/api/basis/SZV-MOLOPT-SR-GTH/data?elements=Rh):
 
 ```bash
-curl https://cp2k-basis.pierrebeaujean.net/api/basis/DZVP-GTH/data?elements=H,C
+curl https://cp2k-basis.pierrebeaujean.net/api/basis/SZV-MOLOPT-SR-GTH/data?elements=Rh
 ```
 
 ```json
 {
   "query": {
     "elements": [
-      "H",
-      "C"
+      "Rh"
     ],
-    "name": "DZVP-GTH",
+    "name": "SZV-MOLOPT-SR-GTH",
     "type": "BASIS_SET"
   },
   "result": {
-    "alternate_names": {
-      "C": [
-        "DZVP-GTH-q4"
-      ],
-      "H": [
-        "DZVP-GTH-q1"
-      ]
-    },
-    "data": "# URL: https://cp2k-basis.pierrebeaujean.net/api/basis/DZVP-GTH/data?elements=H,C\n# DATETIME: 01/12/2022 @ 12:36\n# ---\n# H [8s1p|2s1p]\n H  DZVP-GTH-q1 DZVP-GTH\n 2\n 1 0 0 4 2\n      8.374435000900 -0.028338046100  0.000000000000\n      1.805868146000 -0.133381005200  0.000000000000\n      0.485252832800 -0.399567606300  0.000000000000\n      0.165823693200 -0.553102754100  1.000000000000\n 2 1 1 1 1\n      0.727000000000  1.000000000000\n# C [8s8p1d|2s2p1d]\n C  DZVP-GTH-q4 DZVP-GTH\n 2\n 2 0 1 4 2 2\n      4.336237643600  0.149079787200  0.000000000000 -0.087812361900  0.000000000000\n      1.288183851300 -0.029264003100  0.000000000000 -0.277556030000  0.000000000000\n      0.403776714900 -0.688204051000  0.000000000000 -0.471229509300  0.000000000000\n      0.118787765700 -0.396442690600  1.000000000000 -0.405803929100  1.000000000000\n 3 2 2 1 1\n      0.550000000000  1.000000000000\n",
+    "data": "# URL: http://127.0.0.1:5000/api/basis/SZV-MOLOPT-SR-GTH/data?elements=Rh\n# DATETIME: 02/12/2022 @ 17:18\n# ---\n# Rh [12s6p6d|2s1p1d]\nRh  SZV-MOLOPT-SR-GTH SZV-MOLOPT-SR-GTH-q17\n1\n2 0 2 6 2 1 1\n  3.157817444361  0.760084070950  0.239207051701 -0.336193318541 -0.176446839307\n  2.683291075925 -0.255650224037 -0.091067207483  0.373953992584  0.261743358411\n  1.140786095845 -1.025626679377 -0.520689753906  0.300684698668  0.174717739794\n  0.492081007160 -0.234415477939 -0.274976137245  0.141457244144  0.188746290944\n  0.192543904978  0.046321838032  0.534686741279  0.007751787318  0.112894420897\n  0.066486620394  0.135748106274  0.896548625743  0.000117823467  0.021703317232\n# Rh [6s6p6d|1s1p1d]\nRh  SZV-MOLOPT-SR-GTH-q9\n1\n2 0 2 6 1 1 1\n  3.902721449032  0.016652865171 -0.008699428728 -0.112417659954\n  1.999830271997 -0.133395648426  0.046572987907  0.348017742874\n  0.879887627395  0.373099930807 -0.153463590375  0.381775351795\n  0.363794442257  0.298777744612 -0.052550610965  0.335875585916\n  0.140096726529 -0.924610879301  0.949493319446  0.146687236468\n  0.042562039477 -0.455102584336  0.423881871378  0.013082339937\n",
     "elements": [
-      "H",
-      "C"
+      "Rh"
     ],
     "metadata": {
-      "description": "A double zeta valence (+ 1 set of polarization) basis set for GTH potentials.",
-      "references": [
-        "https://dx.doi.org/10.1016/j.cpc.2004.12.014"
-      ],
-      "source": "https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/GTH_BASIS_SETS"
+      "description": "A single zeta valence MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH potentials.",
+      "references": ["https://dx.doi.org/10.1063/1.2770708"],
+      "source": "https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/BASIS_MOLOPT"
+    },
+    "variants": {
+      "Rh": {
+        "q17": "SZV-MOLOPT-SR-GTH-q17",
+        "q9": "SZV-MOLOPT-SR-GTH-q9"
+      }
     }
   }
 }
@@ -225,13 +220,14 @@ Obtain metadata about a basis set or pseudopotential. There is no option.
 
 Output:
 
-| Field               | Type           | Description                                                  |
-|---------------------|----------------|--------------------------------------------------------------|
-| `query.type`        | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                             |
-| `query.name`        | string         | The name you requested                                       |
-| `result.elements`   | list of string | Elements for which the basis set/pseudopotential are defined |
-| `result.references` | list of string | List of URL to articles or repositories                      |
-| `result.source`     | string         | URL to the file which was used to create the data            |
+| Field                | Type           | Description                                                  |
+|----------------------|----------------|--------------------------------------------------------------|
+| `query.type`         | string         | `BASIS_SET` or `PSEUDOPOTENTIAL`                             |
+| `query.name`         | string         | The name you requested                                       |
+| `result.elements`    | list of string | Elements for which the basis set/pseudopotential are defined |
+| `result.description` | string         | Small description.                                           |
+| `result.references`  | list of string | List of URL to articles or repositories                      |
+| `result.source`      | string         | URL to the file which was used to create the data            |
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadata):
 

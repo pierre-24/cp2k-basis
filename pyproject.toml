@@ -6,14 +6,17 @@ authors = [
 ]
 description = "Just a project to have an overview of the content of CP2K basis sets and potentials."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
     'numpy',
@@ -22,11 +25,14 @@ dependencies = [
     'requests',
     'Flask>=2.0',
     'Flask-Limiter',
-    'webargs'
+    'webargs',
+    'more-itertools'
 ]
 
 [project.scripts]
-cp2k_basis_fetch_data = "cp2k_basis.scripts.fetch_data:main"
+cb_fetch_data = "cp2k_basis.scripts.fetch_data:main"
+cb_explore_library = "cp2k_basis.scripts.explore_library:main"
+cb_explore_file = "cp2k_basis.scripts.explore_file:main"
 
 [tool.setuptools]
 packages = ['cp2k_basis', 'cp2k_basis.scripts']

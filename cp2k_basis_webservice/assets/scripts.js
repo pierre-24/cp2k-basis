@@ -31,9 +31,9 @@ export class Controller  {
 
         this.elementsSelected = [];
         this.basisSetSelected = null;
-        this.basisSetNames = {};
+        this.basisSetVariants = {};
         this.pseudoSelected = null;
-        this.pseudoNames = {};
+        this.pseudoVariants = {};
 
         this.infoTpl = template`<strong>Name:</strong> ${0}<br><strong>Description:</strong> ${1}`;
 
@@ -206,19 +206,36 @@ export class Controller  {
     _updateOutputInput() {
         let kinds = '';
         this.elementsSelected.forEach(e => {
-            let kind = `&KIND ${e}\n`;
-            if(this.basisSetSelected.length > 0) {
-                let n = this.basisSetSelected;
-                if (e in this.basisSetNames && this.basisSetNames[e].length > 0)
-                    n = this.basisSetNames[e][0];
-                kind += `  BASIS_SET ${n}\n`;
-            }
 
-            if(this.pseudoSelected.length > 0) {
-                let n = this.pseudoSelected;
-                if(e in this.pseudoNames && this.pseudoNames[e].length > 0)
-                    n = this.pseudoNames[e][0];
-                kind += `  POTENTIAL ${n}\n`;
+            let variants = {};
+            if(this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0)
+                variants = Object.keys(this.basisSetVariants[e]);
+            else if(this.basisSetSelected.length === 0 && this.pseudoSelected.length > 0)
+                variants = Object.keys(this.pseudoVariants[e]);
+            else if(this.basisSetSelected.length > 0 && this.pseudoSelected.length > 0)
+                variants = Object.keys(this.basisSetVariants[e]).filter(v => v in this.pseudoVariants[e]);
+
+            let kind = `&KIND ${e}\n`;
+            if(variants.length === 0) {
+                kind += `# No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
+            } else {
+                /* by default, select the variant with the largest q, since it is the mostly available
+                * */
+                let variant = `q` + Math.max(...variants.map(e => parseInt(e.substring(1))));
+
+                if(this.basisSetSelected.length > 0) {
+                    kind += `  BASIS_SET ${this.basisSetVariants[e][variant]}`;
+                    if(variants.length > 1)
+                        kind += ` # or ${variants.filter(v => v !== variant).map(v => this.basisSetVariants[e][v])}`;
+                    kind += '\n';
+                }
+
+                if(this.pseudoSelected.length > 0) {
+                    kind += `  POTENTIAL ${this.pseudoVariants[e][variant]}`;
+                    if(variants.length > 1)
+                        kind += ` # or ${variants.filter(v => v !== variant).map(v => this.pseudoVariants[e][v])}`;
+                    kind += '\n';
+                }
             }
 
             kind += '&END KIND';
@@ -255,13 +272,13 @@ export class Controller  {
             if (this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
                 apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
                     this._updateOutputBasisSet(data.result.data, [data.query.name, data.result.metadata.description]);
-                    this.basisSetNames = data.result.alternate_names;
+                    this.basisSetVariants = data.result.variants;
                     this._updateOutputInput();
                 });
             } else if(this.pseudoSelected.length > 0 && this.basisSetSelected.length === 0)  {
                 apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`).then(data => {
                     this._updateOutputPseudo(data.result.data, [data.query.name, data.result.metadata.description]);
-                    this.pseudoNames = data.result.alternate_names;
+                    this.pseudoVariants = data.result.variants;
                     this._updateOutputInput();
                 });
             } else if (this.basisSetSelected.length > 0 && this.pseudoSelected.length > 0) {
@@ -271,8 +288,8 @@ export class Controller  {
                 ]).then(([data_basis, data_pseudo]) => {
                     this._updateOutputBasisSet(data_basis.result.data, [data_basis.query.name, data_basis.result.metadata.description]);
                     this._updateOutputPseudo(data_pseudo.result.data, [data_pseudo.query.name, data_pseudo.result.metadata.description]);
-                    this.basisSetNames = data_basis.result.alternate_names;
-                    this.pseudoNames = data_pseudo.result.alternate_names;
+                    this.basisSetVariants = data_basis.result.variants;
+                    this.pseudoVariants = data_pseudo.result.variants;
                     this._updateOutputInput();
                 });
             }

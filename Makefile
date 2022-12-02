@@ -1,4 +1,7 @@
 install:
+	pip install -e .
+
+install-dev:
 	pip-sync
 
 front:

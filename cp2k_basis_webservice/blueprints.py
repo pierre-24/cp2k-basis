@@ -165,12 +165,15 @@ class BaseFamilyStorageDataAPI(MethodView):
                 datetime.datetime.now().strftime('%d/%m/%Y @ %H:%M')
             )
 
+        variants = {}
+        for obj in atomic_data_objects:
+            variants[obj.symbol] = dict((v, obj[v].preferred_name(name, v)) for v in obj)
+
         query = dict(type=self.source, name=name)
         result = dict(
             data=header + ''.join(str(obj) for obj in atomic_data_objects),
             elements=list(obj.symbol for obj in atomic_data_objects),
-            alternate_names=dict(
-                (obj.symbol, list(filter(lambda x: x != name, obj.names))) for obj in atomic_data_objects),
+            variants=variants,
             metadata=family_storage.metadata
         )
 
@@ -215,7 +218,8 @@ class BaseMetadataAPI(MethodView):
             raise NotFound('{} `{}` does not exist'.format(self.textual_source, name))
 
         query = dict(type=self.source, name=name)
-        result = family_storage.metadata
+        result = {}
+        result.update(**family_storage.metadata)
         result['elements'] = list(family_storage.data_objects.keys())
 
         return flask.jsonify(

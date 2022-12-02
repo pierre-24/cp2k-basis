@@ -9,6 +9,8 @@ from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser
 
 import flask
 
+from tests import BaseDataObjectMixin
+
 
 class FlaskAppMixture(TestCase):
     def setUp(self) -> None:
@@ -85,7 +87,7 @@ class GeneralAPITestCase(FlaskAppMixture):
         self.assertEqual(data['result']['pseudopotentials'], ['GTH-BLYP'])
 
 
-class BasisSetAPITestCase(FlaskAppMixture):
+class BasisSetAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
     def setUp(self) -> None:
         super().setUp()
         self.basis_name = 'SZV-MOLOPT-GTH'
@@ -99,27 +101,21 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.basis_name)
         self.assertNotIn('elements', data['query'])
 
-        for abs_ in AtomicBasisSetsParser(data['result']['data']).iter_atomic_basis_sets():
-            self.assertIn(
-                abs_.symbol, flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
+        basis_set = flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name]
 
-        self.assertEqual(
-            sorted(data['result']['elements']),
-            sorted(flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name])
-        )
+        for abs_ in AtomicBasisSetsParser(data['result']['data']).iter_atomic_basis_set_variants():
+            self.assertIn(abs_.symbol, basis_set)
+            self.assertAtomicBasisSetEqual(abs_, basis_set[abs_.symbol]['q1' if abs_.symbol == 'H' else 'q4'])
 
-        self.assertEqual(
-            data['result']['alternate_names'],
-            dict(
-                (d.symbol, list(filter(lambda x: x != self.basis_name, d.names)))
-                for d in flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].data_objects.values()
-            )
-        )
+        self.assertEqual(sorted(data['result']['elements']), sorted(basis_set))
+        self.assertEqual(data['result']['metadata'], basis_set.metadata)
 
-        self.assertEqual(
-            data['result']['metadata'],
-            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata
-        )
+        variants = {}
+        for symbol in data['result']['elements']:
+            variants[symbol] = dict(
+                (v, basis_set[symbol][v].preferred_name(self.basis_name, v)) for v in basis_set[symbol])
+
+        self.assertEqual(data['result']['variants'], variants)
 
     def test_basis_data_wrong_basis_ko(self):
         response = self.client.get(flask.url_for('api.basis-data', name='xx'))
@@ -179,7 +175,7 @@ class BasisSetAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 404)
 
 
-class PseudopotentialAPITestCase(FlaskAppMixture):
+class PseudopotentialAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
 
     def setUp(self) -> None:
         super().setUp()
@@ -195,27 +191,21 @@ class PseudopotentialAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['name'], self.pseudo_name)
         self.assertNotIn('elements', data['query'])
 
-        for app in AtomicPseudopotentialsParser(data['result']['data']).iter_atomic_pseudopotentials():
-            self.assertIn(
-                app.symbol, flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
+        pseudo_family = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name]
 
-        self.assertEqual(
-            sorted(data['result']['elements']),
-            sorted(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name])
-        )
+        for app in AtomicPseudopotentialsParser(data['result']['data']).iter_atomic_pseudopotential_variants():
+            self.assertIn(app.symbol, pseudo_family)
+            self.assertAtomicPseudoEqual(app, pseudo_family[app.symbol]['q{}'.format(sum(app.nelec))])
 
-        self.assertEqual(
-            data['result']['alternate_names'],
-            dict(
-                (d.symbol, list(filter(lambda x: x != self.pseudo_name, d.names)))
-                for d in flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].data_objects.values()
-            )
-        )
+        self.assertEqual(sorted(data['result']['elements']), sorted(pseudo_family))
+        self.assertEqual(data['result']['metadata'], pseudo_family.metadata)
 
-        self.assertEqual(
-            data['result']['metadata'],
-            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata
-        )
+        variants = {}
+        for symbol in data['result']['elements']:
+            variants[symbol] = dict(
+                (v, pseudo_family[symbol][v].preferred_name(self.pseudo_name, v)) for v in pseudo_family[symbol])
+
+        self.assertEqual(data['result']['variants'], variants)
 
     def test_pseudo_data_wrong_pseudo_ko(self):
         response = self.client.get(flask.url_for('api.pseudo-data', name='xx'))
