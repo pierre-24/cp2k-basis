@@ -42,7 +42,7 @@ module.exports = function(grunt) {
                 tasks: ['jshint', 'uglify']
             },
             css: {
-                files: [`${input_dir}/style.less`],
+                files: ['<%= less.src %>'],
                 tasks: ['less']
             }
         }
