@@ -34,6 +34,7 @@ class BSTestCase(unittest.TestCase, BaseDataObjectMixin):
         abs2 = parser.atomic_basis_set_variant()
 
         self.assertAtomicBasisSetEqual(abs1, abs2)
+        self.assertEqual(abs1.preferred_name('TZV2PX-MOLOPT-GTH', 'q4'), 'TZV2PX-MOLOPT-GTH-q4')
 
     def test_basis_set_str_ok(self):
         name = 'TZV2PX-MOLOPT-GTH'
@@ -55,8 +56,6 @@ class BSTestCase(unittest.TestCase, BaseDataObjectMixin):
         # write h5file
         with h5py.File(path, 'w') as f:
             self.storage.dump_hdf5(f)
-
-        self.storage.tree()
 
         # read back
         with h5py.File(path) as f:

@@ -11,4 +11,5 @@ The API routes are detailed [here](./docs/api.md).
 
 If you are interested, you can first [install and run the webserver](./docs/install.md#install-and-run).
 Then, contributions [are warmly welcomed](./docs/install.md#contribute).
+
 You can also check out [the rest of the documentation](./docs/).

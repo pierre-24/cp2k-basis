@@ -18,6 +18,19 @@ class BaseAtomicVariantDataObject:
         self.symbol = symbol
         self.names = names
 
+    def preferred_name(self, family_name: str, variant: str) -> str:
+        """Select one of the `self.names`, hopefully containing the family name and the variant.
+        If not, try to select one that contains the variant, and if not, return the first name.
+        """
+
+        try:
+            return next(filter(lambda x: variant in x and family_name in x, self.names))
+        except StopIteration:
+            try:
+                return next(filter(lambda x: variant in x, self.names))
+            except StopIteration:
+                return self.names[0]
+
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 

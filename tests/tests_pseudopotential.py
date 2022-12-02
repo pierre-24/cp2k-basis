@@ -33,6 +33,7 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
         app2 = parser.atomic_pseudopotential_variant()
 
         self.assertAtomicPseudoEqual(app1, app2)
+        self.assertEqual(app1.preferred_name('GTH-BLYP', 'q8'), 'GTH-BLYP-q8')
 
     def test_pseudopotential_family_str_ok(self):
         bs1 = self.storage[self.name]
