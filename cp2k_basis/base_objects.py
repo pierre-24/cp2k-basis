@@ -1,10 +1,10 @@
 import re
-from enum import Enum
 
 import h5py
 
 from typing import Dict, Iterable, Union, Any, List, Callable, Tuple, Iterator
 
+import more_itertools
 import numpy
 
 from cp2k_basis.elements import ElementSet, SYMB_TO_Z
@@ -187,6 +187,18 @@ class Storage:
         filter_variant: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: iter(['q0']),
         add_metadata: Callable[[BaseFamilyStorage], None] = None
     ):
+        """Add a set of variant to the storage.
+
+        Use `filter_name` to extract the family names from `data_object.names`.
+
+        Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "q0" if
+        there is none).
+
+        Use `add_metadat` to add metadata to the family if any.
+        """
+
+        names_added = set()
+
         for obj in data_objects:
             names = list(filter_name(obj.names))
 
@@ -196,9 +208,13 @@ class Storage:
                 variant = 'q0'
 
             for name in names:
+                names_added.add(name)
+
                 self._update(obj, name, variant)
-                if add_metadata:
-                    add_metadata(self.families[name])
+
+        if add_metadata:
+            for name in names_added:
+                add_metadata(self.families[name])
 
     def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
 
@@ -264,48 +280,54 @@ class Storage:
         return obj
 
 
-class FilterStrategy(Enum):
-    No = 'N'
-    First = 'FM'
-    Unique = 'AU'
-
-
 class Filter:
-    """Filter a list of string based on a set of rules of the form `(pattern, replacement)`, where `pattern` is a valid
-    `re.Pattern`: 1) if a pattern matches, then its `replacement` is yield instead, and 2) if there is no match,
-    then the value is discarded.
+    """Filter a list of string based on a set of rules of the form `(pattern, replacement)`, where
+    `pattern` is a valid `re.Pattern` and `replacement` is a replacement value.
+
+    For each element in the list, iter on all rules. If a pattern matches, then:
+    + if its replacement is `None`, the element is discarded, or
+    + `pattern.sub(replacement, element)` is yield instead.
+
+    If there is no match after all the rules have been tried, then the value is also discarded.
+    If you want to avoid this behavior, add a dummy rule at the end: `(re.compile(r'(.*)'), '\\1')`.
     """
 
-    def __init__(self, rules: List[Tuple[re.Pattern, str]], strategy: FilterStrategy = FilterStrategy.No):
+    def __init__(self, rules: List[Tuple[re.Pattern, Union[str, None]]]):
         self.rules = rules
-        self.strategy = strategy
 
     @classmethod
-    def create(cls, filter_def: Dict[str, str], strategy: FilterStrategy = FilterStrategy.No):
+    def create(cls, filter_def: Dict[str, Union[str, None]]):
         rules = []
         for pattern, replacement in filter_def.items():
             rules.append((re.compile(pattern), replacement))
 
-        return cls(rules, strategy)
+        return cls(rules)
 
     def __call__(self, iterable: Iterator[str]) -> Iterator[str]:
-        previous = set()
-
-        for name in iterable:
+        for element in iterable:
             for rule_pattern, value in self.rules:
-                if rule_pattern.match(name):
-                    v = rule_pattern.sub(value, name)
-                    if self.strategy == FilterStrategy.Unique:
-                        if v not in previous:
-                            previous.add(v)
-                            yield v
-                    else:
-                        yield v
-
-                    if self.strategy == FilterStrategy.Unique:
-                        return
-
+                if rule_pattern.match(element):
+                    if value is not None:
+                        yield rule_pattern.sub(value, element)
                     break
+
+
+class FilterFirst(Filter):
+    """Only get 1 or 0 result"""
+
+    def __call__(self, iterable: Iterator[str]) -> Iterator[str]:
+        try:
+            yield next(super().__call__(iterable))
+        except StopIteration:
+            return
+
+
+class FilterUnique(Filter):
+    """Remove duplicate
+    """
+
+    def __call__(self, iterable: Iterator[str]) -> Iterator[str]:
+        yield from more_itertools.unique_everseen(super().__call__(iterable))
 
 
 class AddMetadata:

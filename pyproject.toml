@@ -22,7 +22,8 @@ dependencies = [
     'requests',
     'Flask>=2.0',
     'Flask-Limiter',
-    'webargs'
+    'webargs',
+    'more-itertools'
 ]
 
 [project.scripts]

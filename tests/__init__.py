@@ -3,7 +3,7 @@ import re
 
 import numpy
 
-from cp2k_basis.base_objects import Filter, FilterStrategy
+from cp2k_basis.base_objects import FilterUnique, FilterFirst
 from cp2k_basis.basis_set import AtomicBasisSetVariant, BasisSetsStorage, AtomicBasisSetsParser
 from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant, AtomicPseudopotentialsParser, \
     PseudopotentialsStorage
@@ -11,8 +11,8 @@ from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant, AtomicPseud
 
 class BaseDataObjectMixin:
 
-    filter_name = Filter([(re.compile(r'(.*)(-q.*)'), '\\1')], strategy=FilterStrategy.Unique)
-    filter_variant = Filter([(re.compile(r'.*-(q.*)'), '\\1')], strategy=FilterStrategy.First)
+    filter_name = FilterUnique([(re.compile(r'(.*)(-q.*)'), '\\1')])
+    filter_variant = FilterFirst([(re.compile(r'.*-(q.*)'), '\\1')])
 
     def read_basis_set_from_file(self, path: pathlib.Path, add_m=None):
 

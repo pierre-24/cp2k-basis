@@ -15,7 +15,7 @@ import re
 
 from cp2k_basis import logger
 from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
-from cp2k_basis.base_objects import Filter, Storage, AddMetadata, FilterStrategy
+from cp2k_basis.base_objects import FilterFirst, FilterUnique, Storage, AddMetadata
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
 
 
@@ -41,13 +41,13 @@ def fetch_data(data_sources: dict) -> List[Storage]:
             response = requests.get(full_url)
 
             # build the rules for the name
-            filter_name = Filter([(re.compile(r'.*'), '\\0')])
+            filter_name = FilterUnique([(re.compile(r'.*'), '\\0')])
             if 'family_name' in file:
-                filter_name = Filter.create(file['family_name'], strategy=FilterStrategy.Unique)
+                filter_name = FilterUnique.create(file['family_name'])
 
-            filter_variant = Filter([(re.compile(r'.*'), 'q0')])
+            filter_variant = FilterFirst([(re.compile(r'.*'), 'q0')])
             if 'variant' in file:
-                filter_variant = Filter.create(file['variant'], strategy=FilterStrategy.First)
+                filter_variant = FilterFirst.create(file['variant'])
 
             # build the rules for the metadata
             add_metadata = AddMetadata({})

@@ -12,7 +12,6 @@ python -m venv virtualenv
 source venv/bin/activate
 
 # install dependencies
-pip3 install pip-tools
 make install
 
 # build front
@@ -50,8 +49,22 @@ And then you can run the webservice.
 
 Contributions, either with [issues](https://github.com/pierre-24/cp2k_basis/issues) or [pull requests](https://github.com/pierre-24/cp2k_basis/pulls) are welcomed.
 
-If you can to contribute, this is the usual deal: 
-start by [forking](https://guides.github.com/activities/forking/), then clone your fork and follow the installation instructions above.
+If you want to contribute, this is the usual deal: 
+start by [forking](https://guides.github.com/activities/forking/), then clone your fork and use the following install procedure instead.
+
+```bash
+cd cp2k-basis
+
+# definitely recommended in this case: use a virtualenv!
+python -m venv virtualenv
+source venv/bin/activate
+
+# install also dev dependencies
+pip install pip-tools
+make install-dev
+
+# ... then build front and run (see above)
+```
 
 Don't forget to work on a separate branch, and to run the linting and tests:
 
