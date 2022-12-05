@@ -24,11 +24,11 @@ def extract_from_file(
         content: str, file_def: dict, bs_storage: BasisSetsStorage, pp_storage: PseudopotentialsStorage, base_url: str):
 
     # build the rules for the name
-    filter_name = FilterUnique([(re.compile(r'$(.*)^'), '\\1')])
+    filter_name = FilterUnique([(re.compile(r'^(.*)$'), '\\1')])
     if 'family_name' in file_def:
         filter_name = FilterUnique.create(file_def['family_name'])
 
-    filter_variant = FilterFirst([(re.compile(r'$.*^'), 'q0')])
+    filter_variant = FilterFirst([(re.compile(r'^.*$'), 'q0')])
     if 'variant' in file_def:
         filter_variant = FilterFirst.create(file_def['variant'])
 

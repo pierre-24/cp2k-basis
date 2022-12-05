@@ -8,6 +8,7 @@ from typing import Dict, Iterable, Union, Any, List, Callable, Tuple, Iterator
 import more_itertools
 import numpy
 
+from cp2k_basis import logger
 from cp2k_basis.elements import ElementSet, SYMB_TO_Z
 
 string_dt = h5py.special_dtype(vlen=str)
@@ -247,6 +248,8 @@ class Storage:
                 variant = next(filter_variant(obj.names))
             except StopIteration:
                 variant = 'q0'
+
+            logger.info('adding {} (variant={})'.format(', '.join(obj.names), variant))
 
             for name in names:
                 names_added.add(name)
