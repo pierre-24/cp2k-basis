@@ -26,7 +26,8 @@ dependencies = [
     'Flask>=2.0',
     'Flask-Limiter',
     'webargs',
-    'more-itertools'
+    'more-itertools',
+    'patch-ng'
 ]
 
 [project.scripts]

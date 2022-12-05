@@ -235,7 +235,7 @@ class Storage:
         Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "q0" if
         there is none).
 
-        Use `add_metadat` to add metadata to the family if any.
+        Use `add_metadata` to add metadata to the family if any.
         """
 
         names_added = set()
