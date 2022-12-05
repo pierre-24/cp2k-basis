@@ -133,29 +133,36 @@
 
             <div class="blk">
                 <h2>Basis set</h2>
-                <p class="copy-button-ctn">
+                <div class="floating-buttons-ctn">
                     <textarea class="form-control form-control-sm" readonly id="basisSetResult"></textarea>
-                    <button class="btn btn-secondary copy-button" data-textarea="basisSetResult"></button>
-                    <button class="btn btn-secondary info-button" id="basisSetResult"></button>
-                </p>
-                <p id="basisSetMetadata"></p>
+                    <div class="floating-buttons">
+                        <button class="btn btn-secondary copy-button" data-textarea="#basisSetResult" id="basisSetCopyBtn"></button>
+                        <button class="btn btn-secondary info-button" id="basisSetInfoBtn" data-bs-toggle="collapse" data-bs-target="#basisSetMetadata"></button>
+                    </div>
+                </div>
+                <div id="basisSetMetadata" class="collapse metadata"></div>
             </div>
 
             <div class="blk">
                 <h2>Pseudopotential</h2>
-                <p class="copy-button-ctn">
+                <div class="floating-buttons-ctn">
                     <textarea class="form-control form-control-sm" readonly id="pseudoResult"></textarea>
-                    <button class="btn btn-secondary copy-button" data-textarea="pseudoResult"></button>
-                </p>
-                <p id="pseudoMetadata"></p>
+                    <div class="floating-buttons">
+                        <button class="btn btn-secondary copy-button" data-textarea="#pseudoResult" id="pseudoCopyBtn"></button>
+                        <button class="btn btn-secondary info-button" id="pseudoInfoBtn" data-bs-toggle="collapse" data-bs-target="#pseudoMetadata"></button>
+                    </div>
+                </div>
+                <div id="pseudoMetadata" class="collapse metadata"></div>
             </div>
 
             <div class="blk">
                 <h2>Input file</h2>
-                <p class="copy-button-ctn">
+                <div class="floating-buttons-ctn">
                     <textarea class="form-control form-control-sm" readonly id="inputResult"></textarea>
-                    <button class="btn btn-secondary copy-button" data-textarea="inputResult"></button>
-                </p>
+                    <div class="floating-buttons">
+                        <button class="btn btn-secondary copy-button" data-textarea="inputResult"></button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -35,7 +35,13 @@ export class Controller  {
         this.pseudoSelected = null;
         this.pseudoVariants = {};
 
-        this.infoTpl = template`<strong>Name:</strong> ${0}<br><strong>Description:</strong> ${1}`;
+        this.infoTpl = template`
+            <ul>
+                <li><strong>Name:</strong> ${0}</li>
+                <li><strong>Description:</strong> ${1}</li>
+                <li><strong>References:</strong><ul>${2}</ul></li>
+                <li><strong>Source:</strong> <a href="${3}">${3}</a></li>
+            </ul>`;
 
         // interface elements
         this.$basisSetSelect = document.querySelector('#basisSetSelect');
@@ -66,14 +72,14 @@ export class Controller  {
 
         this.$inputResult = document.querySelector('#inputResult');
 
-        // copy buttons
+        // buttons
         document.querySelectorAll('.copy-button').forEach($e => {
             let $node = document.createElement('i');
             $node.classList.add('bi', 'bi-clipboard');
             $e.append($node);
 
            $e.addEventListener('click', () => {
-               let $src = document.querySelector('#' + $e.dataset.textarea);
+               let $src = document.querySelector($e.dataset.textarea);
                navigator.clipboard.writeText($src.value);
 
                let $icon = $e.querySelector('i.bi-clipboard');
@@ -86,6 +92,13 @@ export class Controller  {
                }, 3000);
            });
         });
+
+        document.querySelectorAll('.info-button').forEach($e => {
+            let $node = document.createElement('i');
+            $node.classList.add('bi', 'bi-info-square');
+            $e.append($node);
+        });
+
 
         // cell elements
         document.querySelectorAll('.cell-element').forEach($e => {
@@ -192,7 +205,7 @@ export class Controller  {
         if(metadata.length > 0)
             this.$basisSetMetadata.innerHTML = this.infoTpl(...metadata);
         else
-            this.$basisSetMetadata.innerText = '';
+            this.$basisSetMetadata.innerText = 'Select a basis set to get info.';
     }
 
     _updateOutputPseudo(data, metadata) {
@@ -200,7 +213,7 @@ export class Controller  {
         if(metadata.length > 0)
             this.$pseudoMetadata.innerHTML = this.infoTpl(...metadata);
         else
-            this.$pseudoMetadata.innerText = '';
+            this.$pseudoMetadata.innerText = 'Select a pseudopotential to get info.';
     }
 
     _updateOutputInput() {
@@ -249,6 +262,15 @@ export class Controller  {
         this.$inputResult.value = kinds;
     }
 
+    _fetchMetadata(query, mt) {
+        return [
+            query.name,
+            mt.description,
+            mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n'),
+            mt.source
+        ];
+    }
+
     _updateOutputs() {
         this.$inputResult.value = 'Select element(s).';
 
@@ -256,7 +278,10 @@ export class Controller  {
             this._updateOutputBasisSet('Select a basis set.', []);
         else if(this.elementsSelected.length === 0) {
             apiCall(`/basis/${this.basisSetSelected}/metadata`).then(data => {
-                this._updateOutputBasisSet('Select element(s)', [data.query.name, data.result.description]);
+                this._updateOutputBasisSet(
+                    'Select element(s)',
+                    this._fetchMetadata(data.query, data.result)
+                );
             });
         }
 
@@ -264,20 +289,29 @@ export class Controller  {
             this._updateOutputPseudo('Select a pseudopotential.', []);
         else if(this.elementsSelected.length === 0) {
             apiCall(`/pseudopotentials/${this.pseudoSelected}/metadata`).then(data => {
-                this._updateOutputPseudo('Select element(s)', [data.query.name, data.result.description]);
+                this._updateOutputPseudo(
+                    'Select element(s)',
+                    this._fetchMetadata(data.query, data.result)
+                );
             });
         }
 
         if(this.elementsSelected.length > 0)  {
             if (this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
                 apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
-                    this._updateOutputBasisSet(data.result.data, [data.query.name, data.result.metadata.description]);
+                    this._updateOutputBasisSet(
+                        data.result.data,
+                        this._fetchMetadata(data.query, data.result.metadata)
+                    );
                     this.basisSetVariants = data.result.variants;
                     this._updateOutputInput();
                 });
             } else if(this.pseudoSelected.length > 0 && this.basisSetSelected.length === 0)  {
                 apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`).then(data => {
-                    this._updateOutputPseudo(data.result.data, [data.query.name, data.result.metadata.description]);
+                    this._updateOutputPseudo(
+                        data.result.data,
+                        this._fetchMetadata(data.query, data.result.metadata)
+                    );
                     this.pseudoVariants = data.result.variants;
                     this._updateOutputInput();
                 });
@@ -286,8 +320,15 @@ export class Controller  {
                     apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`),
                     apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`)
                 ]).then(([data_basis, data_pseudo]) => {
-                    this._updateOutputBasisSet(data_basis.result.data, [data_basis.query.name, data_basis.result.metadata.description]);
-                    this._updateOutputPseudo(data_pseudo.result.data, [data_pseudo.query.name, data_pseudo.result.metadata.description]);
+                    this._updateOutputBasisSet(
+                        data_basis.result.data,
+                        this._fetchMetadata(data_basis.query, data_basis.result.metadata)
+                    );
+
+                    this._updateOutputPseudo(
+                        data_pseudo.result.data,
+                        this._fetchMetadata(data_pseudo.query, data_pseudo.result.metadata)
+                    );
                     this.basisSetVariants = data_basis.result.variants;
                     this.pseudoVariants = data_pseudo.result.variants;
                     this._updateOutputInput();
