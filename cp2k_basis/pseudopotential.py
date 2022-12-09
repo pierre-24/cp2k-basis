@@ -116,7 +116,7 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
-        l_logger.info('dump pseudopotential for {} in {}'.format(self.symbol, group.name))
+        l_logger.info('dump atomic pseudopotential variant for {} in {}'.format(self.symbol, group.name))
 
         super().dump_hdf5(group)
 
@@ -136,7 +136,7 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicPseudopotentialVariant':
-        l_logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
+        l_logger.info('read atomic pseudopotential variant for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']
         ds_radius_coefs = group[AtomicPseudopotentialVariant.HDF5_DS_RADIUS_COEF]

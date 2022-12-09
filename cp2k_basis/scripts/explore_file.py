@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 
 import yaml
 
@@ -15,6 +16,7 @@ def main():
 
     args = parser.parse_args()
 
+    pwd = pathlib.Path(args.source.name).parent
     bs_storage = BasisSetsStorage()
     pp_storage = PseudopotentialsStorage()
 
@@ -24,8 +26,8 @@ def main():
         if file_def.get('disabled', False):
             continue
 
-        with open(file_def['name']) as f:
-            extract_from_file(f.read(), file_def, bs_storage, pp_storage, '')
+        with open(pwd / file_def['name']) as f:
+            extract_from_file(f.read(), file_def, bs_storage, pp_storage, '', pwd)
 
     bs_storage.tree()
     pp_storage.tree()

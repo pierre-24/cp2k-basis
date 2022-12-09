@@ -23,7 +23,13 @@ l_logger = logger.getChild('fetch_data')
 
 
 def extract_from_file(
-        content: str, file_def: dict, bs_storage: BasisSetsStorage, pp_storage: PseudopotentialsStorage, base_url: str):
+        content: str,
+        file_def: dict,
+        bs_storage: BasisSetsStorage,
+        pp_storage: PseudopotentialsStorage,
+        base_url: str,
+        pwd: pathlib.Path = pathlib.Path('.')
+):
 
     # build the rules for the name
     filter_name = FilterUnique([(re.compile(r'^(.*)$'), '\\1')])
@@ -44,7 +50,7 @@ def extract_from_file(
     # apply patch, if any
     if 'patch' in file_def:
         l_logger.info('will apply patch `{}`'.format(file_def['patch']))
-        with open(file_def['patch']) as f:
+        with open(pwd / file_def['patch']) as f:
             content = diffpatch.apply_patch(content, f.read())
 
     # fetch data and store them
@@ -57,7 +63,7 @@ def extract_from_file(
         pp_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
 
-def fetch_data(data_sources: dict) -> Tuple[Storage, Storage]:
+def fetch_data(data_sources: dict, pwd: pathlib.Path = pathlib.Path('.')) -> Tuple[Storage, Storage]:
     """Fetch data from files that are found in repositories.
     """
 
@@ -77,11 +83,11 @@ def fetch_data(data_sources: dict) -> Tuple[Storage, Storage]:
                 continue
 
             full_url = base_url + file_def['name']
-            logger.info('fetch {} [{}]'.format(full_url, file_def['type']))
+            l_logger.info('fetch {} [{}]'.format(full_url, file_def['type']))
 
             response = requests.get(full_url)
 
-            extract_from_file(response.content.decode('utf8'), file_def, bs_storage, pp_storage, base_url)
+            extract_from_file(response.content.decode('utf8'), file_def, bs_storage, pp_storage, base_url, pwd)
 
     return bs_storage, pp_storage
 
@@ -94,9 +100,11 @@ def main():
 
     args = parser.parse_args()
 
+    pwd = pathlib.Path(args.source.name).parent
+
     # load data
     data_sources = yaml.load(args.source, yaml.Loader)
-    bs_storage, pp_storage = fetch_data(data_sources)
+    bs_storage, pp_storage = fetch_data(data_sources, pwd)
 
     bs_storage.tree()
     pp_storage.tree()

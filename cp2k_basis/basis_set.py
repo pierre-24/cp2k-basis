@@ -148,7 +148,7 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
-        l_logger.info('dump basis set for {} in {}'.format(self.symbol, group.name))
+        l_logger.info('dump atomic basis set variant for {} in {}'.format(self.symbol, group.name))
 
         super().dump_hdf5(group)
 
@@ -160,7 +160,7 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSetVariant':
-        l_logger.info('read basis set in {}'.format(group.name))
+        l_logger.info('read atomic basis set variant in {}'.format(group.name))
 
         # checks
         ds_info = group['info']
