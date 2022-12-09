@@ -14,6 +14,9 @@ from cp2k_basis.elements import ElementSet, SYMB_TO_Z
 string_dt = h5py.special_dtype(vlen=str)
 
 
+l_logger = logger.getChild('base_objects')
+
+
 class BaseAtomicVariantDataObject:
     def __init__(self, symbol: str, names: List[str]):
         self.symbol = symbol
@@ -249,7 +252,7 @@ class Storage:
             except StopIteration:
                 variant = 'q0'
 
-            logger.info('adding {} (variant={})'.format(', '.join(obj.names), variant))
+            l_logger.info('adding {} (variant={} => {})'.format(repr(names), repr(obj.names), variant))
 
             for name in names:
                 names_added.add(name)

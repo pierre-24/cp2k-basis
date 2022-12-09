@@ -8,6 +8,9 @@ from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Sto
 from cp2k_basis.parser import BaseParser, TokenType
 
 
+l_logger = logger.getChild('pseudopotentials')
+
+
 class NonLocalProjector:
 
     HDF5_DS_RADIUS_COEFS = 'nlprojector_{}_radius_coefs'
@@ -113,7 +116,7 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
-        logger.info('dump pseudopotential for {} in {}'.format(self.symbol, group.name))
+        l_logger.info('dump pseudopotential for {} in {}'.format(self.symbol, group.name))
 
         super().dump_hdf5(group)
 
@@ -133,7 +136,7 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicPseudopotentialVariant':
-        logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
+        l_logger.info('read pseudopotential for {} in {}'.format(symbol, group.name))
 
         ds_info = group['info']
         ds_radius_coefs = group[AtomicPseudopotentialVariant.HDF5_DS_RADIUS_COEF]
@@ -194,7 +197,7 @@ class AtomicPseudopotentialsParser(BaseParser):
             try:
                 yield self.atomic_pseudopotential_variant()
             except PPNotAvail as e:
-                logger.info('NOT AVAILABLE: {}'.format(e))
+                l_logger.info('NOT AVAILABLE: {}'.format(e))
                 pass
 
             self.skip()
@@ -224,7 +227,7 @@ class AtomicPseudopotentialsParser(BaseParser):
             names.append(self.current_token.value)
             self.next()
 
-        logger.info('parse pseudopotential for {} in {}'.format(symbol, ', '.join(names)))
+        l_logger.info('parse pseudopotential for {} in {}'.format(symbol, ', '.join(names)))
 
         self.eat(TokenType.NL)
         self.skip()
@@ -266,7 +269,7 @@ class AtomicPseudopotentialsParser(BaseParser):
             self.skip()
 
             for proj_i in range(n_nlprojectors):
-                logger.debug('read nlprojector {}'.format(proj_i))
+                l_logger.debug('read nlprojector {}'.format(proj_i))
                 nlprojectors.append(self.nlprojector())
 
         return AtomicPseudopotentialVariant(

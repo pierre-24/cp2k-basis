@@ -17,6 +17,9 @@ L_TO_SHELL = {
 }
 
 
+l_logger = logger.getChild('basis_set')
+
+
 class Contraction:
     HDF5_DS_INFO = 'contraction_{}_info'
     HDF5_DS_EXP_COEFS = 'contraction_{}_exp_coefs'
@@ -145,7 +148,7 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""
 
-        logger.info('dump basis set for {} in {}'.format(self.symbol, group.name))
+        l_logger.info('dump basis set for {} in {}'.format(self.symbol, group.name))
 
         super().dump_hdf5(group)
 
@@ -157,7 +160,7 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'AtomicBasisSetVariant':
-        logger.info('read basis set in {}'.format(group.name))
+        l_logger.info('read basis set in {}'.format(group.name))
 
         # checks
         ds_info = group['info']
@@ -235,7 +238,7 @@ class AtomicBasisSetsParser(BaseParser):
                 names.append(self.current_token.value)
                 self.next()
 
-        logger.info('parse basis set for {} in {}'.format(symbol, ', '.join(names)))
+        l_logger.info('parse basis set for {} in {}'.format(symbol, ', '.join(names)))
 
         self.eat(TokenType.NL)
         self.skip()
@@ -246,7 +249,7 @@ class AtomicBasisSetsParser(BaseParser):
 
         contractions = []
         for i in range(num_contraction):
-            logger.debug('read contraction {}'.format(i))
+            l_logger.debug('read contraction {}'.format(i))
             contractions.append(self.contraction())
 
         return AtomicBasisSetVariant(symbol, names, contractions)

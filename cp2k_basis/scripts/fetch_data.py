@@ -19,6 +19,8 @@ from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
 from cp2k_basis.base_objects import FilterFirst, FilterUnique, Storage, AddMetadata
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
 
+l_logger = logger.getChild('fetch_data')
+
 
 def extract_from_file(
         content: str, file_def: dict, bs_storage: BasisSetsStorage, pp_storage: PseudopotentialsStorage, base_url: str):
@@ -41,6 +43,7 @@ def extract_from_file(
 
     # apply patch, if any
     if 'patch' in file_def:
+        l_logger.info('will apply patch `{}`'.format(file_def['patch']))
         with open(file_def['patch']) as f:
             content = diffpatch.apply_patch(content, f.read())
 
