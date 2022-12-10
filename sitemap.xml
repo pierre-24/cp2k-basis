@@ -26,7 +26,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/library_build/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://pierre-24.github.io/cp2k-basis/library_file_format/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/webserver/</loc>
          <lastmod>2022-12-10</lastmod>
          <changefreq>daily</changefreq>
     </url>
