@@ -1,5 +1,8 @@
 # REST API reference
 
+!!! info
+    A public API is available at `https://cp2k-basis.pierrebeaujean.net/api/`.
+
 ## Preamble
 
 ### Request
@@ -12,6 +15,7 @@ Options are added as query string: `/api/example?option1=value&option2=value`.
 ### On the `elements` option
 
 Every time the option `elements` can be used,
+
 + you can use a list of comma separated atomic symbols, e.g., `C,H,N,O`,
 + but also ranges, e.g., `H,C-O`, and
 + Z numbers can be used instead of symbols, e,g., `H,6-8`.

@@ -1,28 +1,29 @@
-# `library.h5` file format
+# The `library.h5` file format
 
-A library file is stored in the [HDF5 format](https://www.hdfgroup.org/solutions/hdf5/), which divide the data in groups (i.e., "folders") and datasets (i.e., "files"), the latter being array of data.
-Groups and datasets can have attributes.
+!!! info
+    A library file is in the [HDF5 format](https://www.hdfgroup.org/solutions/hdf5/), which divide the data in groups (i.e., "folders") and datasets (i.e., "files"), the latter being array of data.
+    Groups and datasets can have attributes.
 
 The basis set library root contains at least two main (storage) groups: `basis_sets` and `pseudopotentials`.
 They are detailed below.
 
 ## The `basis_sets` group
 
-This group contains one subgroup per basis set (the `basis set` group), for wich the name is the basis set name.
-In each `basis set` group, there is one subgroup for each atom (the `atomic bs` group).
+This group contains one subgroup per basis set (a `basis set` group), for which the name is the basis set name.
+In each `basis set` group, there is one subgroup for each atom (a `atomic bs` group).
 Finally, in that `atomic bs` subgroup, there is one `atomic bs variant` group for each variant.
 Thus, the following structure is valid:
 
 ```
 *
 |
-+- basis_sets/
++- basis_sets/         # `basis_sets` group
    |
-   +- SZV-MOLOPT-GTH/
+   +- SZV-MOLOPT-GTH/  # a `basis set` group
    |  |
-   |  +- C/
+   |  +- C/            # an `atomic bs` group
    |  |  |
-   |  |  +- q4/
+   |  |  +- q4/        # an `atomic bs variant` group (see below)
    |  |
    |  +- H/
    |  |  |
@@ -73,8 +74,8 @@ Thus, the following structure, e.g., is valid:
 
 ## The `pseudopotentials` group
 
-Again, this group contains one subgroup per pseudopotential familly (the `pp family` group), which name is the family name.
-In each `pp family` group, there is one subgroup for each basis set (the `atomic pp` group).
+Again, this group contains one subgroup per pseudopotential familly (a `pp family` group), which name is the family name.
+In each `pp family` group, there is one subgroup for each basis set (a `atomic pp` group).
 Finally, in that `atomic pp` subgroup, there is one `atomic pp variant` group for each variant.
 
 Thus, the following structure is valid:
@@ -82,13 +83,13 @@ Thus, the following structure is valid:
 ```
 *
 |
-+- pseudopotentials/
++- pseudopotentials/   # the `pseudopotentials` group
    |
-   +- GTH-BLYP/
+   +- GTH-BLYP/        # a `pp family group`
    |  |
-   |  +- C/
+   |  +- C/            # an `atomic pp` group
    |  |  |
-   |  |  +- q4/
+   |  |  +- q4/        # an `atomic pp variant` group (see below)
    |  |
    |  +- H/
    |  |  |
@@ -144,3 +145,5 @@ Each `basis set` and `pp familly` group might also have the following attributes
 | `references`  | `array` | One-dimensional array of URLs to reference papers (DOI) or sources. |
 
 Those attributes are optional: if an attribute is missing, an empty value can be assumed.
+
+

@@ -10,9 +10,11 @@ nav:
     - About: about.md
     - For the users:
           - On basis sets and GTH pseudopotentials in CP2K: basis_sets_and_pseudos.md
-          - API: api.md
+          - Using the web interface: webserver.md
+          - REST API reference: api.md
     - For the developers:
           - Install and contribute: install.md
+          - Build, use and improve the library: library_build.md
           - Library file format: library_file_format.md
 
 theme:

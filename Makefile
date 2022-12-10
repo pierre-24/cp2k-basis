@@ -4,8 +4,11 @@ install:
 install-dev:
 	pip-sync
 
-doc:
-	mkdocs build
+install-front:
+	npm i
+
+doc-serve:
+	mkdocs serve
 
 front:
 	npm i
