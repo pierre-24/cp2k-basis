@@ -22,6 +22,8 @@ theme:
 
 markdown_extensions:
     - admonition
+    - pymdownx.arithmatex:
+        generic: true
     - pymdownx.highlight
     - pymdownx.superfences
     - pymdownx.snippets:
@@ -32,3 +34,10 @@ markdown_extensions:
 plugins:
     - search
     - mkdocstrings
+
+extra_css:
+  - https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js
+  - do-katex.js
