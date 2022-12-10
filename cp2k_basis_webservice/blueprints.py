@@ -42,7 +42,7 @@ class IndexView(RenderTemplateView):
         ctx = super().get_context_data(**kwargs)
 
         ctx.update(
-            site_name=cp2k_basis.__name__,
+            site_name='cp2k-basis',
             site_version=cp2k_basis.__version__,
             z_to_symb=Z_TO_SYMB,
             bs_per_name=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
@@ -91,9 +91,15 @@ class AllDataAPI(MethodView):
             query=dict(type='ALL'),
             result=dict(
                 basis_sets=dict(
-                    per_name=bs_storage.elements_per_family, per_element=bs_storage.families_per_element),
+                    per_name=bs_storage.elements_per_family,
+                    per_element=bs_storage.families_per_element,
+                    build_date=bs_storage.date_build
+                ),
                 pseudopotentials=dict(
-                    per_name=pp_storage.elements_per_family, per_element=pp_storage.families_per_element)
+                    per_name=pp_storage.elements_per_family,
+                    per_element=pp_storage.families_per_element,
+                    build_date=pp_storage.date_build
+                )
             )
         )
 
@@ -154,15 +160,17 @@ class BaseFamilyStorageDataAPI(MethodView):
                     raise NotFound('{} `{}` does not exist for atom {}'.format(self.textual_source, name, symbol))
 
         header = ''
+        TPL_DATETIME = '%d/%m/%Y @ %H:%M'
 
         if kwargs.get('header', True):
-            header = '# URL: {}\n# DATETIME: {}\n# ---\n'.format(
+            header = '# URL: {}\n# BUILD: {}\n# FETCHED: {}\n# ---\n'.format(
                 flask.url_for(
                     'api.{}-data'.format('basis' if self.source == 'BASIS_SET' else 'pseudo'),
                     name=name,
                     _external=True
                 ) + ('?elements={}'.format(','.join(elements.iter_sorted())) if elements else ''),
-                datetime.datetime.now().strftime('%d/%m/%Y @ %H:%M')
+                datetime.datetime.fromisoformat(storage.date_build).strftime('%d/%m/%Y @ %H:%M') if storage.date_build else '?',  # noqa
+                datetime.datetime.now().strftime(TPL_DATETIME),
             )
 
         variants = {}

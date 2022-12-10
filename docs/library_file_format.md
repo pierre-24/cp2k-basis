@@ -136,6 +136,8 @@ The following structure, e.g., is valid:
 
 ## Metadata
 
+The file may have the `date_build` attribute, indicating when it was created.
+
 Each `basis set` and `pp familly` group might also have the following attributes:
 
 | Name          | Type    | Description                                                         |

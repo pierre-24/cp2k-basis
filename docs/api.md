@@ -54,11 +54,11 @@ There is no option.
 
 Output:
 
-| Field                     | Type       | Description                                                                                                                                                                           |
-|---------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `query.type`              | string     | Always `ALL`                                                                                                                                                                          |
-| `result.basis_sets`       | dictionary | Contains two fields: `per_name`, which lists elements available for a given basis set, and `per_elements`, which lists all basis set names available for a given element.             |
-| `result.pseudopotentials` | dictionary | Contains two fields: `per_name`, which lists elements available for a given pseudopotential, and `per_elements`, which lists all pseudopotential names available for a given element. |
+| Field                     | Type       | Description                                                                                                                                                                                                                                               |
+|---------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `query.type`              | string     | Always `ALL`                                                                                                                                                                                                                                              |
+| `result.basis_sets`       | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `per_name`, which lists elements available for a given basis set, and `per_elements`, which lists all basis set names available for a given element.             |
+| `result.pseudopotentials` | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `per_name`, which lists elements available for a given pseudopotential, and `per_elements`, which lists all pseudopotential names available for a given element. |
 
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/data):

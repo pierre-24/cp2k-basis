@@ -93,49 +93,49 @@
     - name: LnPP1_POTENTIALS
       type: POTENTIALS
       family_name:
-        '^(.*)(-q\d{1,2})$': '\1-nc'
+        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [ https://doi.org/10.1021/acs.jctc.9b00553, https://doi.org/10.1021/acs.jctc.1c00026 ]
         description:
-          '.*': Norm-conserving pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
+          '.*': GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
     - name: BASIS_MOLOPT_LnPP1
       patch: BASIS_MOLOPT_LnPP1.patch
       type: BASIS_SETS
       family_name:
-        '^(.*)(-q\d{1,2})$': '\1-nc'
+        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [ https://doi.org/10.1021/acs.jctc.9b00553 ]
         description:
-          '.*': Norm-conserving MOLOPT basis set (double zeta) to explore Lanthanide chemistry in complex environments, optimized for PBE.
+          '.*': MOLOPT basis set (double zeta) to explore Lanthanide chemistry in complex environments, optimized for PBE.
     - name: AcPP1_POTENTIALS
       type: POTENTIALS
       family_name:
-        '^(.*)(-q\d{1,2})$': '\1-nc'
+        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
-          '.*': [ https://doi.org/10.1021/acs.jctc.9b00553, https://doi.org/10.1021/acs.jctc.1c00026 ]
+          '.*': [ https://doi.org/10.1021/acs.jctc.9b00553, https://doi.org/10.1021/acs.jctc.1c00026]
         description:
-          '.*': Norm-conserving pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
+          '.*': GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
     - name: BASIS_MOLOPT_AcPP1
       type: BASIS_SETS
       patch: BASIS_MOLOPT_AcPP1.patch
       family_name:
-        '^(.*)(-q\d{1,2})$': '\1-nc'
+        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
       metadata:
         references:
           '.*': [ https://doi.org/10.1021/acs.jctc.1c00026 ]
         description:
-          '.*': Norm-conserving MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
+          '.*': MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
     - name: POTENTIAL_UZH
       patch: POTENTIAL_UZH.patch
       type: POTENTIALS

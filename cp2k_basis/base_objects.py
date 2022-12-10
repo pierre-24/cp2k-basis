@@ -224,6 +224,7 @@ class Storage:
         self.families: Dict[str, BaseFamilyStorage] = {}
         self.families_per_element: Dict[str, List[str]] = {}
         self.elements_per_family: Dict[str, List[str]] = {}
+        self.date_build = None
 
     def update(
         self,
@@ -315,6 +316,7 @@ class Storage:
 
     def dump_hdf5(self, f: h5py.File):
         main_group = f.require_group(self.name)
+
         for key, data_object in self.families.items():
             data_object.dump_hdf5(main_group.require_group(key))
 
@@ -322,6 +324,8 @@ class Storage:
     def read_hdf5(cls, f: h5py.File):
         main_group = f[cls.name]
         obj = cls()
+
+        obj.date_build = f.attrs.get('date_build', None)
 
         for key, group in main_group.items():
             for obj_variant, variant in obj.object_type.iter_hdf5_variants(group):

@@ -3,7 +3,7 @@ Fetch the basis sets and pseudopotentials as described in the input, and pack th
 See https://github.com/pierre-24/cp2k-basis/blob/master/library/DATA_SOURCES.yml for a description of the input, and
 https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_file_format.md for a description of the output.
 """
-
+import datetime
 import pathlib
 from typing import Tuple
 import diffpatch
@@ -103,6 +103,7 @@ def main():
     pwd = pathlib.Path(args.source.name).parent
 
     # load data
+    l_logger.info('reading {}'.format(args.source.name))
     data_sources = yaml.load(args.source, yaml.Loader)
     bs_storage, pp_storage = fetch_data(data_sources, pwd)
 
@@ -110,8 +111,9 @@ def main():
     pp_storage.tree()
 
     # write library
-    logger.info('writing in {}'.format(args.output))
+    l_logger.info('writing in {}'.format(args.output))
     with h5py.File(args.output, 'w') as f:
+        f.attrs['date_build'] = datetime.datetime.now().isoformat()
         bs_storage.dump_hdf5(f)
         pp_storage.dump_hdf5(f)
 
