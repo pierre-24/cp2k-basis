@@ -4,6 +4,8 @@
 
 First, install node. It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) to do so.
 
+Then:
+
 ```bash
 # clone 
 git clone https://github.com/pierre-24/cp2k-basis.git

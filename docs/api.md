@@ -12,6 +12,8 @@ Each of them has a name (`<name>`).
 
 Options are added as query string: `/api/example?option1=value&option2=value`.
 
+All routes are addressed to `GET` requests.
+
 ### On the `elements` option
 
 Every time the option `elements` can be used,
