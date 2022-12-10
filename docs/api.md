@@ -1,7 +1,7 @@
 # REST API reference
 
 !!! info
-    A public API is available at `https://cp2k-basis.pierrebeaujean.net/api/`.
+    A public version is available at `https://cp2k-basis.pierrebeaujean.net/api/`.
 
 ## Preamble
 
@@ -12,7 +12,7 @@ Each of them has a name (`<name>`).
 
 Options are added as query string: `/api/example?option1=value&option2=value`.
 
-All routes are addressed to `GET` requests.
+All routes are addressed by `GET` requests.
 
 ### On the `elements` option
 
