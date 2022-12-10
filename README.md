@@ -1,15 +1,15 @@
 # `cp2k-basis`
 
-Just a project to have an overview of the content of CP2K basis sets and potentials.
-See [`DATA_SOURCES.yml`](library/DATA_SOURCES.yml) for a list of the files used to build the current library.
-
 **Live version now available at <https://cp2k-basis.pierrebeaujean.net>.**
 
-## Usage
+A library to parse CP2K basis sets and GTH pseudopotentials, which also comes with a webserver to find out and select a basis set and its matching pseudopotential for your CP2K calculations.
 
-The API routes are detailed [here](./docs/api.md).
+See [`library/`](https://github.com/pierre-24/cp2k-basis/tree/master/library) for a list of the files used to build the current library.
 
-If you are interested, you can first [install and run the webserver](./docs/install.md#install-and-run).
-Then, contributions [are warmly welcomed](./docs/install.md#contribute).
+The API routes are detailed [here](https://pierre-24.github.io/cp2k-basis/api/).
 
-You can also check out [the rest of the documentation](./docs/).
+## Contribution
+
+Check [the documentation](https://pierre-24.github.io/cp2k-basis/):
+if you are interested, you can first [install and run the webserver](https://pierre-24.github.io/cp2k-basis/install/#install-and-run).
+Then, contributions [are warmly welcomed](https://pierre-24.github.io/cp2k-basis/install/#contribute).

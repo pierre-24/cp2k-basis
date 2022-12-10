@@ -1,4 +1,4 @@
-# More info on basis sets and pseudopotentials in CP2K
+# On basis sets and GTH pseudopotentials in CP2K
 
 To be continued, but:
 

@@ -47,7 +47,7 @@ And then you can run the webservice.
 
 ## Contribute
 
-Contributions, either with [issues](https://github.com/pierre-24/cp2k_basis/issues) or [pull requests](https://github.com/pierre-24/cp2k_basis/pulls) are welcomed.
+Contributions, either with [issues](https://github.com/pierre-24/cp2k-basis/issues) or [pull requests](https://github.com/pierre-24/cp2k-basis/pulls) are welcomed.
 
 If you want to contribute, this is the usual deal: 
 start by [forking](https://guides.github.com/activities/forking/), then clone your fork and use the following install procedure instead.

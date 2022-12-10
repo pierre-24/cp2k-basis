@@ -4,6 +4,9 @@ install:
 install-dev:
 	pip-sync
 
+doc:
+	mkdocs build
+
 front:
 	npm i
 	npm run grunt
