@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/about/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/api/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/basis_sets_and_pseudos/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/install/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://pierre-24.github.io/cp2k-basis/library_file_format/</loc>
+         <lastmod>2022-12-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
