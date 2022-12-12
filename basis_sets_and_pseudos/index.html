@@ -309,31 +309,18 @@
     Basis sets
   </a>
   
-    <nav class="md-nav" aria-label="Basis sets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basis-functions" class="md-nav__link">
-    Basis functions
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#improving-the-basis-set-by-adding-more-basis-functions" class="md-nav__link">
-    Improving the basis set by adding more basis functions
+      
+        <li class="md-nav__item">
+  <a href="#gth-pseudopotentials" class="md-nav__link">
+    GTH pseudopotentials
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pseudopotentials" class="md-nav__link">
-    Pseudopotentials
+  <a href="#pairing-gth-pseudopotentials-with-basis-sets" class="md-nav__link">
+    Pairing GTH pseudopotentials with basis sets
   </a>
   
 </li>
@@ -488,31 +475,18 @@
     Basis sets
   </a>
   
-    <nav class="md-nav" aria-label="Basis sets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basis-functions" class="md-nav__link">
-    Basis functions
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#improving-the-basis-set-by-adding-more-basis-functions" class="md-nav__link">
-    Improving the basis set by adding more basis functions
+      
+        <li class="md-nav__item">
+  <a href="#gth-pseudopotentials" class="md-nav__link">
+    GTH pseudopotentials
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pseudopotentials" class="md-nav__link">
-    Pseudopotentials
+  <a href="#pairing-gth-pseudopotentials-with-basis-sets" class="md-nav__link">
+    Pairing GTH pseudopotentials with basis sets
   </a>
   
 </li>
@@ -538,11 +512,13 @@
 
 
 <h1 id="on-basis-sets-and-gth-pseudopotentials-in-cp2k">On basis sets and GTH pseudopotentials in CP2K<a class="headerlink" href="#on-basis-sets-and-gth-pseudopotentials-in-cp2k" title="Permanent link">¤</a></h1>
-<p>For the latest CP2K review, see <a href="https://dx.doi.org/10.1063%2F5.0007045">https://dx.doi.org/10.1063%2F5.0007045</a> (May 2020).</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>For the latest CP2K review, see <a href="https://dx.doi.org/10.1063/5.0007045">10.1063/5.0007045</a> (May 2020).</p>
+</div>
 <h2 id="basis-sets">Basis sets<a class="headerlink" href="#basis-sets" title="Permanent link">¤</a></h2>
 <p>Solving the Schrödinger equation generally resort to the use of the LCAO (<em>linear combination of atomic orbitals</em>) approximation.
 For computational reasons, while STO (slater-type orbitals, <span class="arithmatex">\(\propto e^{r}\)</span>) should be used, GTO (gaussian type orbitals, <span class="arithmatex">\(\propto e^{r^2}\)</span>) are preferred.</p>
-<h3 id="basis-functions">Basis functions<a class="headerlink" href="#basis-functions" title="Permanent link">¤</a></h3>
 <p>In CP2K (as in other quantum chemistry programs), <strong>basis functions</strong> (i.e., atomic orbitals) are defined as:</p>
 <div class="arithmatex">\[\psi_{i,\ell m} (\mathbf r) = R_{i,\ell}(\mathbf r)\,Y_{\ell m}(\theta,\phi),\]</div>
 <p>where <span class="arithmatex">\(R(r)\)</span> is the radial part, and <span class="arithmatex">\(Y_{\ell m}\)</span> is a <a href="https://en.wikipedia.org/wiki/Spherical_harmonics">spherical harmonic</a> (<span class="arithmatex">\(\ell\)</span> is the angular momentum and <span class="arithmatex">\(m\in[-\ell,\ell]\)</span>) for the angular part.
@@ -558,7 +534,6 @@ Since the radial part is the same for each possible orbital in a shell (i.e., ea
 <p>This is the case, e.g., in the (in)famous STO-3G (3 gaussians for each basis function) in which so-called "SP" basis functions are found, defined by using a common exponent but different contraction coefficient for each of the 3 gaussians defining the actual s-type and p-type basis function.</p>
 <p>MOLOPT basis sets (see below) are built on this principle.</p>
 </div>
-<h3 id="improving-the-basis-set-by-adding-more-basis-functions">Improving the basis set by adding more basis functions<a class="headerlink" href="#improving-the-basis-set-by-adding-more-basis-functions" title="Permanent link">¤</a></h3>
 <p>Multiple-<span class="arithmatex">\(\zeta\)</span> basis sets use <span class="arithmatex">\(\zeta\)</span> basis functions for each atomic orbitals in the atom. 
 For example, double-<span class="arithmatex">\(\zeta\)</span> basis sets use two basis function for each atomic orbital (e.g., a total of 10 basis function for the carbon).
 They may be grouped to share the same exponent, or not.</p>
@@ -574,20 +549,43 @@ They may be grouped to share the same exponent, or not.</p>
 <p>For example, in a double-zeta basis set defined by 3 gaussian per basis function, the result for carbn would be <code>(12s,6p)</code> and <code>[3s,2p]</code>. 
 The form <code>[12s6p|3s2p]</code>, combining the two is also found.</p>
 </div>
-<h2 id="pseudopotentials">Pseudopotentials<a class="headerlink" href="#pseudopotentials" title="Permanent link">¤</a></h2>
-<p>CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
+<p>However, for reasons that will become clear in the next section, CP2K does not only use all-electron basis sets.</p>
+<h2 id="gth-pseudopotentials">GTH pseudopotentials<a class="headerlink" href="#gth-pseudopotentials" title="Permanent link">¤</a></h2>
+<p>Indeed, CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
 To perform a PW calculation, one needs to include all possible basis sets below a given threshold. 
-Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation).
+Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation!).
 However, area where the electron density is rapidly changing requires PW with small wavelengths/high energy to be well described (i.e., large Fourier components), so high threshold, which would make the calculation impossible in practice.</p>
-<p>But the area where such changes are important are mostly located near the nuclei, "thanks" to the ionic potential <span class="arithmatex">\(V(r) = - \frac{Z}{r}\)</span>.
-Hopefully, core and valence shell are generally well (spatially and energetically) separated, and the core electrons are relatively unperturbed by the surrounding.
-So the idea behind <a href="https://en.wikipedia.org/wiki/Pseudopotential">pseudopotentials</a> is to replace the effect of the nuclei and the core electrons (which are considered <em>frozen</em>) by an effective potential, and the valence electrons basis functions by ones with fewer nodes (but with the same behavior outside the core region).
-Pseudopotentials are built from reference atomic calculations, which allow to account for some relativistic effects if the reference is calculated with such methods.</p>
-<div class="arithmatex">\[V(r) = \sum_\ell |Y_{\ell m}\rangle V_\ell(r) \langle Y_{\ell m} |.\]</div>
-<p><a href="https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf">https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf</a></p>
+<p>But the area where such changes are important are mostly located near the nuclei, "thanks" its ionic potential <span class="arithmatex">\(V(r) = - \frac{Z}{r}\)</span>.
+Hopefully, core and valence shell are generally well (spatially and energetically) separated, and core electrons are relatively unperturbed by the surrounding (chemically inert).</p>
+<p>So the idea behind <a href="https://en.wikipedia.org/wiki/Pseudopotential">pseudopotentials</a> is to replace the effect of the nuclei and the core electrons (which are considered <em>frozen</em>) by an effective potential (below a given threshold <span class="arithmatex">\(r_c\)</span>), and the valence electrons basis functions by ones with fewer nodes (since they do not need to be orthogonal to the, now removed, valence orbital), but with the same behavior outside the core region (for <span class="arithmatex">\(r &gt; r_c\)</span>).</p>
+<details class="example">
+<summary>Derivation of a pseudopotential</summary>
+<p>Say one has a set of (orthogonal) core states <span class="arithmatex">\(\{|\chi_n\rangle\}\)</span> (with their corresponding eigenvalue <span class="arithmatex">\(\{E_n\}\)</span>).
+The goal is to construct a pseudo-state <span class="arithmatex">\(|\phi\rangle\)</span> for a valence state <span class="arithmatex">\(|\psi\rangle\)</span> (with its corresponding eigenvalue <span class="arithmatex">\(E\)</span>), in the form:</p>
+<div class="arithmatex">\[|\psi\rangle = |\phi\rangle + \sum a_n |\chi_n\rangle.\]</div>
+<p>Since the core and valence state must be orthogonal, <span class="arithmatex">\(\langle \chi_m | \psi \rangle = 0 = \langle \chi_m | \phi \rangle + a_m\)</span>, so that</p>
+<div class="arithmatex">\[|\psi\rangle = |\phi\rangle - \sum |\chi_n\rangle \langle \chi_n | \phi\rangle.\]</div>
+<p>Substituting in Schrödinger equation for <span class="arithmatex">\(|\psi\rangle\)</span> gives</p>
+<div class="arithmatex">\[\hat H |\phi\rangle + \sum (E-E_n) |\chi_n\rangle \langle \chi_n | \phi\rangle = E|\phi\rangle.\]</div>
+<p>The pseudo-state thus obeys <span class="arithmatex">\([\hat H + \hat V_{n\ell}]\, |\phi\rangle = E\,|\phi\rangle\)</span> with:</p>
+<div class="arithmatex">\[\hat V_{n\ell} = \sum_n (E-E_n)\,|\chi_n\rangle \langle \chi_n |.\]</div>
+<p>where the energy of <span class="arithmatex">\(|\phi\rangle\)</span> is the same as the one of <span class="arithmatex">\(|\psi\rangle\)</span>, thanks to the pseudopotential <span class="arithmatex">\(\hat V_{n\ell}\)</span>.
+This extra potential depends on <span class="arithmatex">\(\ell\)</span> due to its spherical symmetry.
+Furthermore, since <span class="arithmatex">\(E &gt; E_n\)</span>, it is a repulsive potenial.</p>
+</details>
+<p>In practice, pseudopotential expressions are separated into a fully nonlocal form, thanks to the Kleinman-Bylander Transformation (see <a href="https://dx.doi.org/10.1103/PhysRevLett.48.1425">10.1103/PhysRevLett.48.1425</a>).
+Latter on, Goedecker, Teter and Hutter (GTH, see <a href="https://dx.doi.org/10.1103/PhysRevB.54.1703">10.1103/PhysRevB.54.1703</a>) derived expressions those two parts which are suited for real and Fourier space integration and only requires a few adjustable parameters (in blue):</p>
+<div class="arithmatex">\[\hat V_{PP} = \hat V_{loc} +  \sum_{\ell}^{\textcolor{blue}{\ell_{max}}}\sum_{ij}^{\textcolor{blue}{N}} \textcolor{blue}{h_{\ell,ij}} \,|p_{\ell,i}\rangle \langle p_{\ell,j}|,\]</div>
+<p>with</p>
+<div class="arithmatex">\[V_{loc}(r) = -\frac{Z'}{r}\,\text{erf}\left[\frac{\bar r}{\sqrt 2}\right] + \exp\left[-\frac{\bar r^2}{2}\right] \sum_{i=1}^4 \textcolor{blue}{C_i}\,\bar r^{2i-2}, \text{ with } \bar r = \frac{r}{\textcolor{blue}{r_c}},\]</div>
+<p>and </p>
+<div class="arithmatex">\[p_{\ell,i}(r) = N_{\ell,i}(r)\,\exp\left[-\frac{\bar r^2}{2}\right], \text{ with } \bar r = \frac{r}{\textcolor{blue}{r_{nl,\ell}}}.\]</div>
+<p>In the former, <span class="arithmatex">\(Z'\)</span> is the ionic charge (i.e., the charge of the nucleus minus the one of the core electrons), while in the latter, <span class="arithmatex">\(N_\ell(r)\)</span> is a combination of spherical harmonic multiplied by a <span class="arithmatex">\(\ell\)</span>-dependent radial function.</p>
+<p>All the parameters in blue, together with the number of core electrons in each shell, <strong>define a GTH pseudopotential</strong> in CP2K (see, e.g., <a href="https://dx.doi.org/10.1007/s00214-005-0655-y">10.1007/s00214-005-0655-y</a>).</p>
+<h2 id="pairing-gth-pseudopotentials-with-basis-sets">Pairing GTH pseudopotentials with basis sets<a class="headerlink" href="#pairing-gth-pseudopotentials-with-basis-sets" title="Permanent link">¤</a></h2>
+<p>From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that contains smooth (pseudo-) basis functions.</p>
 <p>To be continued, but:</p>
 <ul>
-<li>Finish pseudos;</li>
 <li>Present the naming rule(s) of basis sets and pseudopontials;</li>
 <li>Try to indicate which basis set goes with witch potential.</li>
 <li>Parser?</li>
