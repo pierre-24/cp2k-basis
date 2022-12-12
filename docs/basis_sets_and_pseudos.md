@@ -1,13 +1,12 @@
 # On basis sets and GTH pseudopotentials in CP2K
 
-For the latest CP2K review, see [https://dx.doi.org/10.1063%2F5.0007045](https://dx.doi.org/10.1063%2F5.0007045) (May 2020).
+!!! info
+    For the latest CP2K review, see [10.1063/5.0007045](https://dx.doi.org/10.1063/5.0007045) (May 2020).
 
 ## Basis sets
 
 Solving the Schrödinger equation generally resort to the use of the LCAO (*linear combination of atomic orbitals*) approximation.
 For computational reasons, while STO (slater-type orbitals, $\propto e^{r}$) should be used, GTO (gaussian type orbitals, $\propto e^{r^2}$) are preferred.
-
-### Basis functions
 
 In CP2K (as in other quantum chemistry programs), **basis functions** (i.e., atomic orbitals) are defined as:
 
@@ -31,8 +30,6 @@ Since the radial part is the same for each possible orbital in a shell (i.e., ea
     
     MOLOPT basis sets (see below) are built on this principle.
 
-### Improving the basis set by adding more basis functions
-
 Multiple-$\zeta$ basis sets use $\zeta$ basis functions for each atomic orbitals in the atom. 
 For example, double-$\zeta$ basis sets use two basis function for each atomic orbital (e.g., a total of 10 basis function for the carbon).
 They may be grouped to share the same exponent, or not.
@@ -50,26 +47,67 @@ Thus, the number of basis function for a given atom is very different from one b
     For example, in a double-zeta basis set defined by 3 gaussian per basis function, the result for carbn would be `(12s,6p)` and `[3s,2p]`. 
     The form `[12s6p|3s2p]`, combining the two is also found.
 
-## Pseudopotentials
+However, for reasons that will become clear in the next section, CP2K does not only use all-electron basis sets.
 
-CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
+## GTH pseudopotentials
+
+Indeed, CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
 To perform a PW calculation, one needs to include all possible basis sets below a given threshold. 
-Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation).
+Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation!).
 However, area where the electron density is rapidly changing requires PW with small wavelengths/high energy to be well described (i.e., large Fourier components), so high threshold, which would make the calculation impossible in practice.
 
-But the area where such changes are important are mostly located near the nuclei, "thanks" to the ionic potential $V(r) = - \frac{Z}{r}$.
-Hopefully, core and valence shell are generally well (spatially and energetically) separated, and the core electrons are relatively unperturbed by the surrounding.
-So the idea behind [pseudopotentials](https://en.wikipedia.org/wiki/Pseudopotential) is to replace the effect of the nuclei and the core electrons (which are considered *frozen*) by an effective potential, and the valence electrons basis functions by ones with fewer nodes (but with the same behavior outside the core region).
-Pseudopotentials are built from reference atomic calculations, which allow to account for some relativistic effects if the reference is calculated with such methods.
+But the area where such changes are important are mostly located near the nuclei, "thanks" its ionic potential $V(r) = - \frac{Z}{r}$.
+Hopefully, core and valence shell are generally well (spatially and energetically) separated, and core electrons are relatively unperturbed by the surrounding (chemically inert).
 
-$$V(r) = \sum_\ell |Y_{\ell m}\rangle V_\ell(r) \langle Y_{\ell m} |.$$
+So the idea behind [pseudopotentials](https://en.wikipedia.org/wiki/Pseudopotential) is to replace the effect of the nuclei and the core electrons (which are considered *frozen*) by an effective potential (below a given threshold $r_c$), and the valence electrons basis functions by ones with fewer nodes (since they do not need to be orthogonal to the, now removed, valence orbital), but with the same behavior outside the core region (for $r > r_c$).
 
+??? example  "Derivation of a pseudopotential"
 
-<https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf>
+    Say one has a set of (orthogonal) core states $\{|\chi_n\rangle\}$ (with their corresponding eigenvalue $\{E_n\}$).
+    The goal is to construct a pseudo-state $|\phi\rangle$ for a valence state $|\psi\rangle$ (with its corresponding eigenvalue $E$), in the form:
+    
+    $$|\psi\rangle = |\phi\rangle + \sum a_n |\chi_n\rangle.$$
+
+    Since the core and valence state must be orthogonal, $\langle \chi_m | \psi \rangle = 0 = \langle \chi_m | \phi \rangle + a_m$, so that
+
+    $$|\psi\rangle = |\phi\rangle - \sum |\chi_n\rangle \langle \chi_n | \phi\rangle.$$
+
+    Substituting in Schrödinger equation for $|\psi\rangle$ gives
+
+    $$\hat H |\phi\rangle + \sum (E-E_n) |\chi_n\rangle \langle \chi_n | \phi\rangle = E|\phi\rangle.$$
+    
+    The pseudo-state thus obeys $[\hat H + \hat V_{n\ell}]\, |\phi\rangle = E\,|\phi\rangle$ with:
+
+    $$\hat V_{n\ell} = \sum_n (E-E_n)\,|\chi_n\rangle \langle \chi_n |.$$
+
+    where the energy of $|\phi\rangle$ is the same as the one of $|\psi\rangle$, thanks to the pseudopotential $\hat V_{n\ell}$.
+    This extra potential depends on $\ell$ due to its spherical symmetry.
+    Furthermore, since $E > E_n$, it is a repulsive potenial.
+
+In practice, pseudopotential expressions are separated into a fully nonlocal form, thanks to the Kleinman-Bylander Transformation (see [10.1103/PhysRevLett.48.1425](https://dx.doi.org/10.1103/PhysRevLett.48.1425)).
+Latter on, Goedecker, Teter and Hutter (GTH, see [10.1103/PhysRevB.54.1703](https://dx.doi.org/10.1103/PhysRevB.54.1703)) derived expressions those two parts which are suited for real and Fourier space integration and only requires a few adjustable parameters (in blue):
+
+$$\hat V_{PP} = \hat V_{loc} +  \sum_{\ell}^{\textcolor{blue}{\ell_{max}}}\sum_{ij}^{\textcolor{blue}{N}} \textcolor{blue}{h_{\ell,ij}} \,|p_{\ell,i}\rangle \langle p_{\ell,j}|,$$
+
+with
+
+$$V_{loc}(r) = -\frac{Z'}{r}\,\text{erf}\left[\frac{\bar r}{\sqrt 2}\right] + \exp\left[-\frac{\bar r^2}{2}\right] \sum_{i=1}^4 \textcolor{blue}{C_i}\,\bar r^{2i-2}, \text{ with } \bar r = \frac{r}{\textcolor{blue}{r_c}},$$
+
+and 
+
+$$p_{\ell,i}(r) = N_{\ell,i}(r)\,\exp\left[-\frac{\bar r^2}{2}\right], \text{ with } \bar r = \frac{r}{\textcolor{blue}{r_{nl,\ell}}}.$$
+
+In the former, $Z'$ is the ionic charge (i.e., the charge of the nucleus minus the one of the core electrons), while in the latter, $N_\ell(r)$ is a combination of spherical harmonic multiplied by a $\ell$-dependent radial function.
+
+All the parameters in blue, together with the number of core electrons in each shell, **define a GTH pseudopotential** in CP2K (see, e.g., [10.1007/s00214-005-0655-y](https://dx.doi.org/10.1007/s00214-005-0655-y)).
+
+## Pairing GTH pseudopotentials with basis sets
+
+From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that contains smooth (pseudo-) basis functions.
+
 
 To be continued, but:
 
-+ Finish pseudos;
 + Present the naming rule(s) of basis sets and pseudopontials;
 + Try to indicate which basis set goes with witch potential.
 + Parser?
