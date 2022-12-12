@@ -538,18 +538,20 @@
 
 
 <h1 id="on-basis-sets-and-gth-pseudopotentials-in-cp2k">On basis sets and GTH pseudopotentials in CP2K<a class="headerlink" href="#on-basis-sets-and-gth-pseudopotentials-in-cp2k" title="Permanent link">¤</a></h1>
+<p>For the latest CP2K review, see <a href="https://dx.doi.org/10.1063%2F5.0007045">https://dx.doi.org/10.1063%2F5.0007045</a> (May 2020).</p>
 <h2 id="basis-sets">Basis sets<a class="headerlink" href="#basis-sets" title="Permanent link">¤</a></h2>
 <p>Solving the Schrödinger equation generally resort to the use of the LCAO (<em>linear combination of atomic orbitals</em>) approximation.
-For computational reasons, while STO (slater-type orbitals, <span class="arithmatex">\(\propto e^{r}\)</span>) should be used, GTO (gaussian type orbitals) are preferred.</p>
+For computational reasons, while STO (slater-type orbitals, <span class="arithmatex">\(\propto e^{r}\)</span>) should be used, GTO (gaussian type orbitals, <span class="arithmatex">\(\propto e^{r^2}\)</span>) are preferred.</p>
 <h3 id="basis-functions">Basis functions<a class="headerlink" href="#basis-functions" title="Permanent link">¤</a></h3>
-<p>The expression of a spherical primitive GTO centered in <span class="arithmatex">\(\mathbf A\)</span> is given by:</p>
-<div class="arithmatex">\[g_{u,\ell m}(\mathbf A, \mathbf r) = |\mathbf r|^\ell\,e^{-\alpha_u (\mathbf r-\mathbf A)^2}\,Y_{\ell m}(\mathbf r - \mathbf A),\]</div>
-<p>where <span class="arithmatex">\(\alpha_u\)</span> is <strong>the exponent</strong> and <span class="arithmatex">\(Y_{\ell m}\)</span> is a <a href="https://en.wikipedia.org/wiki/Spherical_harmonics">spherical harmonic</a> (<span class="arithmatex">\(\ell\)</span> is the angular momentum and <span class="arithmatex">\(m\in[-\ell,\ell]\)</span>).
-Generally, an atomic orbital <span class="arithmatex">\(\psi_{\ell m}\)</span>, also called a <strong>basis function</strong>, is given by a set of contracted primitives:</p>
-<div class="arithmatex">\[\psi_{\ell m} (\mathbf A, \mathbf r) = \sum_u d_u\,g_{u,\ell m}(\mathbf A, \mathbf r),\]</div>
-<p>where <span class="arithmatex">\(d_u\)</span> form a set of <strong>contraction coefficients</strong>.</p>
-<p>In CP2K (as in other quantum chemistry programs), basis sets are defined by a set of contractions, each for a given shell <span class="arithmatex">\(\ell\)</span> (s-type, p-type, d-type, etc) containing primitives (so a list of exponents and their corresponding contraction coefficients).
-The same coefficients and exponents are used for each atomic orbital in a shell (i.e., each possible value of <span class="arithmatex">\(m\)</span>).</p>
+<p>In CP2K (as in other quantum chemistry programs), <strong>basis functions</strong> (i.e., atomic orbitals) are defined as:</p>
+<div class="arithmatex">\[\psi_{i,\ell m} (\mathbf r) = R_{i,\ell}(\mathbf r)\,Y_{\ell m}(\theta,\phi),\]</div>
+<p>where <span class="arithmatex">\(R(r)\)</span> is the radial part, and <span class="arithmatex">\(Y_{\ell m}\)</span> is a <a href="https://en.wikipedia.org/wiki/Spherical_harmonics">spherical harmonic</a> (<span class="arithmatex">\(\ell\)</span> is the angular momentum and <span class="arithmatex">\(m\in[-\ell,\ell]\)</span>) for the angular part.
+A weighted sum of <strong>primitives</strong> (Gaussian functions) is used for this part:</p>
+<div class="arithmatex">\[R_{i,\ell}(r) = r^\ell\,\sum_{j} c_{ij}\,e^{-\alpha_j\,r^2},\]</div>
+<p>where <span class="arithmatex">\(\alpha_{j}\)</span> is the <strong>exponent</strong>, while <span class="arithmatex">\(c_{ij}\)</span> is the corresponding <strong>contraction coefficient</strong>. 
+The two numbers defines the primitive <span class="arithmatex">\(j\)</span> in the basis function <span class="arithmatex">\(\psi_i\)</span>.</p>
+<p>Thus, a basis sets is a library of contractions for each shell (s-type [<span class="arithmatex">\(\ell=0\)</span>], p-type [<span class="arithmatex">\(\ell=1\)</span>], d-type [<span class="arithmatex">\(\ell=2\)</span>], etc) of a given atom, containing the definition of the primitives (so a list of exponents and their corresponding contraction coefficients).
+Since the radial part is the same for each possible orbital in a shell (i.e., each possible value of <span class="arithmatex">\(m\)</span>), this is sufficient to define a basis set.</p>
 <div class="admonition note">
 <p class="admonition-title">But basis function can be grouped!</p>
 <p>Some basis functions (even with different <span class="arithmatex">\(\ell\)</span>) may be grouped to share the same exponent. </p>
@@ -563,20 +565,29 @@ They may be grouped to share the same exponent, or not.</p>
 <p>On top of that, two other kind of basis function might be added:</p>
 <ol>
 <li><em>polarization functions</em>, which have a larger angular momentum than those of the ground state of the atom (e.g., d-type basis functions for the carbon), and</li>
-<li><em>diffuse functions</em>, which have very small exponents (corresponding to very "large" gaussians).</li>
+<li><em>diffuse functions</em>, which have very small exponents (corresponding to very "large" Gaussian functions).</li>
 </ol>
 <p>Thus, the number of basis function for a given atom is very different from one basis set to the other.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>One way to ease the communication is to report, for each shell, the number of primitives (uncontracted set) and the number of basis functions (contracted set) in the form <code>(uncontracted set)</code>, <code>[contracted set]</code>.</p>
-<p>For example, in a double-zeta basis set defined by 3 gaussian per basis function, the result would be <code>(12s,6p)</code> and <code>[3s,2p]</code>. 
-The form <code>[12s6p|3s2p]</code> is also found, and reported by the webserver.</p>
+<p>One way to ease the communication is to report, for each shell, the number of primitives (uncontracted set) in the form <code>(uncontracted set)</code>, and the number of basis functions (contracted set) in the form <code>[contracted set]</code>.</p>
+<p>For example, in a double-zeta basis set defined by 3 gaussian per basis function, the result for carbn would be <code>(12s,6p)</code> and <code>[3s,2p]</code>. 
+The form <code>[12s6p|3s2p]</code>, combining the two is also found.</p>
 </div>
 <h2 id="pseudopotentials">Pseudopotentials<a class="headerlink" href="#pseudopotentials" title="Permanent link">¤</a></h2>
-<p>See <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.54.1703">https://journals.aps.org/prb/abstract/10.1103/PhysRevB.54.1703</a>, <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.58.3641">https://journals.aps.org/prb/abstract/10.1103/PhysRevB.58.3641</a>, <a href="http://www.physics.metu.edu.tr/~hande/teaching/741-lectures/lecture-08.pdf">http://www.physics.metu.edu.tr/~hande/teaching/741-lectures/lecture-08.pdf</a></p>
+<p>CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
+To perform a PW calculation, one needs to include all possible basis sets below a given threshold. 
+Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation).
+However, area where the electron density is rapidly changing requires PW with small wavelengths/high energy to be well described (i.e., large Fourier components), so high threshold, which would make the calculation impossible in practice.</p>
+<p>But the area where such changes are important are mostly located near the nuclei, "thanks" to the ionic potential <span class="arithmatex">\(V(r) = - \frac{Z}{r}\)</span>.
+Hopefully, core and valence shell are generally well (spatially and energetically) separated, and the core electrons are relatively unperturbed by the surrounding.
+So the idea behind <a href="https://en.wikipedia.org/wiki/Pseudopotential">pseudopotentials</a> is to replace the effect of the nuclei and the core electrons (which are considered <em>frozen</em>) by an effective potential, and the valence electrons basis functions by ones with fewer nodes (but with the same behavior outside the core region).
+Pseudopotentials are built from reference atomic calculations, which allow to account for some relativistic effects if the reference is calculated with such methods.</p>
+<div class="arithmatex">\[V(r) = \sum_\ell |Y_{\ell m}\rangle V_\ell(r) \langle Y_{\ell m} |.\]</div>
+<p><a href="https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf">https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf</a></p>
 <p>To be continued, but:</p>
 <ul>
-<li>Introduce both basis sets and pseudos;</li>
+<li>Finish pseudos;</li>
 <li>Present the naming rule(s) of basis sets and pseudopontials;</li>
 <li>Try to indicate which basis set goes with witch potential.</li>
 <li>Parser?</li>
