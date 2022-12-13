@@ -2,6 +2,7 @@
 
 !!! info
     For the latest CP2K review, see [10.1063/5.0007045](https://dx.doi.org/10.1063/5.0007045) (May 2020).
+    The GPW method is described, e.g., [here](https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf).
 
 ## Basis sets
 
@@ -51,43 +52,43 @@ However, for reasons that will become clear in the next section, CP2K does not o
 
 ## GTH pseudopotentials
 
-Indeed, CP2K notoriously use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW and GAPW methods.
-To perform a PW calculation, one needs to include all possible basis sets below a given threshold. 
-Increasing this threshold will monotonously improve the quality of the result (and the length of the calculation!).
+Indeed, CP2K is able use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW (and GAPW) method.
+To perform a such calculation, one needs to include all possible PW below a given threshold. 
+In fact, increasing this threshold will monotonously improve the quality of the result (and the length of the calculation!).
 However, area where the electron density is rapidly changing requires PW with small wavelengths/high energy to be well described (i.e., large Fourier components), so high threshold, which would make the calculation impossible in practice.
+In practice, area where such changes are important are mostly located near the nuclei, "thanks" its ionic potential $V(r) = - \frac{Z}{r}$.
 
-But the area where such changes are important are mostly located near the nuclei, "thanks" its ionic potential $V(r) = - \frac{Z}{r}$.
 Hopefully, core and valence shell are generally well (spatially and energetically) separated, and core electrons are relatively unperturbed by the surrounding (chemically inert).
 
 So the idea behind [pseudopotentials](https://en.wikipedia.org/wiki/Pseudopotential) is to replace the effect of the nuclei and the core electrons (which are considered *frozen*) by an effective potential (below a given threshold $r_c$), and the valence electrons basis functions by ones with fewer nodes (since they do not need to be orthogonal to the, now removed, valence orbital), but with the same behavior outside the core region (for $r > r_c$).
 
 ??? example  "Derivation of a pseudopotential"
 
-    Say one has a set of (orthogonal) core states $\{|\chi_n\rangle\}$ (with their corresponding eigenvalue $\{E_n\}$).
+    Say one has a set of  (orthogonal) core states $\{|\chi_n\rangle\}$ (with their corresponding eigenvalue $\{E_n\}$).
     The goal is to construct a pseudo-state $|\phi\rangle$ for a valence state $|\psi\rangle$ (with its corresponding eigenvalue $E$), in the form:
     
-    $$|\psi\rangle = |\phi\rangle + \sum a_n |\chi_n\rangle.$$
+    $$|\psi\rangle = |\phi\rangle + \sum_n a_n |\chi_n\rangle.$$
 
     Since the core and valence state must be orthogonal, $\langle \chi_m | \psi \rangle = 0 = \langle \chi_m | \phi \rangle + a_m$, so that
 
-    $$|\psi\rangle = |\phi\rangle - \sum |\chi_n\rangle \langle \chi_n | \phi\rangle.$$
+    $$|\psi\rangle = |\phi\rangle - \sum_n |\chi_n\rangle \langle \chi_n | \phi\rangle.$$
 
     Substituting in Schrödinger equation for $|\psi\rangle$ gives
 
-    $$\hat H |\phi\rangle + \sum (E-E_n) |\chi_n\rangle \langle \chi_n | \phi\rangle = E|\phi\rangle.$$
+    $$\hat H |\phi\rangle + \sum_n (E-E_n) |\chi_n\rangle \langle \chi_n | \phi\rangle = E|\phi\rangle.$$
     
     The pseudo-state thus obeys $[\hat H + \hat V_{n\ell}]\, |\phi\rangle = E\,|\phi\rangle$ with:
 
-    $$\hat V_{n\ell} = \sum_n (E-E_n)\,|\chi_n\rangle \langle \chi_n |.$$
+    $$\hat V_{n\ell} = \sum_{n\ell} (E-E_{n\ell})\,|\chi_{n\ell}\rangle \langle \chi_{n\ell} |.$$
 
     where the energy of $|\phi\rangle$ is the same as the one of $|\psi\rangle$, thanks to the pseudopotential $\hat V_{n\ell}$.
-    This extra potential depends on $\ell$ due to its spherical symmetry.
-    Furthermore, since $E > E_n$, it is a repulsive potenial.
+    This extra potential depends on the quantum numbers $n$ and $\ell$ due to its spherical symmetry.
+    Furthermore, since $E > E_{n\ell}$, it is a repulsive potenial.
 
 In practice, pseudopotential expressions are separated into a fully nonlocal form, thanks to the Kleinman-Bylander Transformation (see [10.1103/PhysRevLett.48.1425](https://dx.doi.org/10.1103/PhysRevLett.48.1425)).
 Latter on, Goedecker, Teter and Hutter (GTH, see [10.1103/PhysRevB.54.1703](https://dx.doi.org/10.1103/PhysRevB.54.1703)) derived expressions those two parts which are suited for real and Fourier space integration and only requires a few adjustable parameters (in blue):
 
-$$\hat V_{PP} = \hat V_{loc} +  \sum_{\ell}^{\textcolor{blue}{\ell_{max}}}\sum_{ij}^{\textcolor{blue}{N}} \textcolor{blue}{h_{\ell,ij}} \,|p_{\ell,i}\rangle \langle p_{\ell,j}|,$$
+$$\hat V_{PP} = \hat V_{loc} +  \sum_{\ell}^{\textcolor{blue}{\ell_{max}}} \hat V_{nl,\ell},$$
 
 with
 
@@ -95,11 +96,12 @@ $$V_{loc}(r) = -\frac{Z'}{r}\,\text{erf}\left[\frac{\bar r}{\sqrt 2}\right] + \e
 
 and 
 
-$$p_{\ell,i}(r) = N_{\ell,i}(r)\,\exp\left[-\frac{\bar r^2}{2}\right], \text{ with } \bar r = \frac{r}{\textcolor{blue}{r_{nl,\ell}}}.$$
+$$V_{nl,\ell} = \sum_{ij}^{\textcolor{blue}{N}} \textcolor{blue}{h_{\ell,ij}} \,|p_{\ell,i}\rangle \langle p_{\ell,j}|, \text{ with } p_{\ell,i}(r) = N_{\ell,i}(r)\,\exp\left[-\frac{\bar r^2}{2}\right] \text{ and } \bar r = \frac{r}{\textcolor{blue}{r_{nl,\ell}}}.$$
 
 In the former, $Z'$ is the ionic charge (i.e., the charge of the nucleus minus the one of the core electrons), while in the latter, $N_\ell(r)$ is a combination of spherical harmonic multiplied by a $\ell$-dependent radial function.
 
 All the parameters in blue, together with the number of core electrons in each shell, **define a GTH pseudopotential** in CP2K (see, e.g., [10.1007/s00214-005-0655-y](https://dx.doi.org/10.1007/s00214-005-0655-y)).
+In particular, they are given as a local part plus a set of nonlinear projectors.
 
 ## Pairing GTH pseudopotentials with basis sets
 
