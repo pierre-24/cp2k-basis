@@ -30,10 +30,11 @@ jobs:
       run: |
         pip3 install pip-tools
         make install-dev
-        make front
+        make install-front
     - name: Lint
       run: |
         make lint
+        npm run grunt jshint
     - name: Test
       run: |
         TEST_FETCH_DATA=1 make test
