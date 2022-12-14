@@ -6,7 +6,7 @@ For the rest, go to the [basis set exchange](https://www.basissetexchange.org/) 
 ## What?
 
 !!! info
-    If you are not familiar with the concept of basis set and pseudopotentials, check out [this introduction](basis_sets_and_pseudos.md).
+    If you are not familiar with the concept of basis set and pseudopotentials, check out [this introduction](users/basis_sets_and_pseudos.md).
 
 ### Why CP2K?
 
@@ -19,9 +19,9 @@ The [basis set exchange](https://www.basissetexchange.org/) (BSE), developed by 
 It even provides an output for CP2K. 
 In fact, this project has no intention of replacing the BSE, and users should happily continue to use it to fetch ECP and all-electrons basis sets.
 
-However, CP2K calculations [can also use a pair of matching GTH potentials and corresponding basis sets](basis_sets_and_pseudos.md), which are not available on the BSE.
+However, CP2K calculations [can also use a pair of matching GTH potentials and corresponding basis sets](users/basis_sets_and_pseudos.md), which are not available on the BSE.
 This is actually one of the first thing you learn [when you try to use the CP2K program](https://www.cp2k.org/howto).
-This is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials [with a web interface similar to the BSE](webserver.md).
+This is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials [with a web interface similar to the BSE](users/webserver.md).
 
 Behind the scene, it also provides [a library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis) to read, write and store CP2K basis sets and potentials.
 
@@ -47,4 +47,4 @@ My name is [Pierre Beaujean](https://pierrebeaujean.net), and I'm a Ph.D. in qua
 I'm the main (and only) developer of this project, used in our lab.
 I use CP2K in the frame of my post-doctoral research, and I developed this project for all the reasons listed above.
 
-I'm happy to [welcome your contributions](install.md#install-and-contribute)!
+I'm happy to [welcome your contributions](developers/install.md#install-and-contribute)!

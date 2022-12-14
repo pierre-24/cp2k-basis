@@ -137,7 +137,7 @@ Names of pseudopotentials and basis sets help to achieve this association:
     However, [the web interface of this project](webserver.md) proposes an easier way to build your own taylor-made `BASIS_SET` and `GTH_POTENTIALS` files.
     This is equivalent, since the data are obtained from the same source and just presented with a shiny interface ;)
 
-    If you are interested, the format of those two files is described [here](bs_and_pseudo_file_format.md)
+    If you are interested, the format of those two files is described [here](../developers/bs_and_pseudo_file_format.md)
 
 
 ## Working with all-electron basis sets
