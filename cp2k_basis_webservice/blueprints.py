@@ -12,6 +12,7 @@ from webargs.flaskparser import FlaskParser
 import cp2k_basis
 from cp2k_basis.elements import ElementSetField, Z_TO_SYMB
 from cp2k_basis.base_objects import Storage
+from cp2k_basis_webservice import limiter, Config
 
 
 class RenderTemplateView(MethodView):
@@ -83,6 +84,8 @@ parser = FlaskParser()
 
 
 class AllDataAPI(MethodView):
+    decorators = [limiter.limit(Config.API_LIMIT)]
+
     def get(self, **kwargs):
         bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
         pp_storage: Storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
@@ -133,6 +136,7 @@ api_blueprint.add_url_rule('/names', view_func=NamesAPI.as_view(name='names'))
 
 
 class BaseFamilyStorageDataAPI(MethodView):
+    decorators = [limiter.limit(Config.API_LIMIT)]
     source: str = ''
     textual_source: str = ''
 
@@ -212,6 +216,7 @@ api_blueprint.add_url_rule(
 
 
 class BaseMetadataAPI(MethodView):
+    decorators = [limiter.limit(Config.API_LIMIT)]
     source: str = ''
     textual_source: str = ''
 

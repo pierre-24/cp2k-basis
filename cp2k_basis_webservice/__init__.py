@@ -21,6 +21,9 @@ class Config:
     SERVER_NAME = '127.0.0.1:5000'
     PREFERRED_URL_SCHEME = 'http'
 
+    # API
+    API_LIMIT = '10/second'
+
     # library
     LIBRARY = 'library/library.h5'
 
