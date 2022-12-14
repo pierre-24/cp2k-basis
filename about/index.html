@@ -351,7 +351,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basis_sets_and_pseudos/" class="md-nav__link">
+      <a href="../users/basis_sets_and_pseudos/" class="md-nav__link">
         On basis sets and GTH pseudopotentials in CP2K
       </a>
     </li>
@@ -365,8 +365,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../webserver/" class="md-nav__link">
-        Using the web interface
+      <a href="../users/webserver/" class="md-nav__link">
+        How to use the web interface?
       </a>
     </li>
   
@@ -379,7 +379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../users/api/" class="md-nav__link">
         REST API reference
       </a>
     </li>
@@ -427,7 +427,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
+      <a href="../developers/install/" class="md-nav__link">
         Install and contribute
       </a>
     </li>
@@ -441,7 +441,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../library_build/" class="md-nav__link">
+      <a href="../developers/library_build/" class="md-nav__link">
         Build, use and improve the library
       </a>
     </li>
@@ -455,7 +455,21 @@
   
   
     <li class="md-nav__item">
-      <a href="../library_file_format/" class="md-nav__link">
+      <a href="../developers/bs_and_pseudo_file_format/" class="md-nav__link">
+        Basis sets and pseudopotentials files format in CP2K
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developers/library_file_format/" class="md-nav__link">
         Library file format
       </a>
     </li>
@@ -569,7 +583,7 @@ For the rest, go to the <a href="https://www.basissetexchange.org/">basis set ex
 <h2 id="what">What?<a class="headerlink" href="#what" title="Permanent link">¤</a></h2>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>If you are not familiar with the concept of basis set and pseudopotentials, check out <a href="../basis_sets_and_pseudos/">this introduction</a>.</p>
+<p>If you are not familiar with the concept of basis set and pseudopotentials, check out <a href="../users/basis_sets_and_pseudos/">this introduction</a>.</p>
 </div>
 <h3 id="why-cp2k">Why CP2K?<a class="headerlink" href="#why-cp2k" title="Permanent link">¤</a></h3>
 <p><a href="https://www.cp2k.org/">CP2K</a> is a quantum chemistry program that can perform atomistic simulations.
@@ -577,10 +591,10 @@ It is especially known for <a href="https://www.cp2k.org/quickstep#gpw">mixing G
 <h3 id="why-this-if-there-is-the-basis-set-exchange">Why this if there is the basis set exchange?<a class="headerlink" href="#why-this-if-there-is-the-basis-set-exchange" title="Permanent link">¤</a></h3>
 <p>The <a href="https://www.basissetexchange.org/">basis set exchange</a> (BSE), developed by <a href="https://molssi.org/">MolSSI</a> is a trustworthy provider of basis sets and effective core potentials (ECP) since a long time ago. 
 It even provides an output for CP2K. 
-In fact, this project has no intention of replacing the BSE, and users should happily continue to use it to fetch ECP and all-electrons basis sets.</p>
-<p>However, CP2K calculations <a href="../basis_sets_and_pseudos/">can also use a pair of matching GTH potentials and corresponding basis sets</a>, which are not available on the BSE.
+In fact, this project has no intention of replacing the BSE, and users should happily continue to use it to fetch ECP and all-electron basis sets (don't forget to use the <code>ALL</code> potential if needed, thought).</p>
+<p>However, CP2K calculations <a href="../users/basis_sets_and_pseudos/">can also use a pair of matching GTH potentials and corresponding basis sets</a>.
 This is actually one of the first thing you learn <a href="https://www.cp2k.org/howto">when you try to use the CP2K program</a>.
-This is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials <a href="../webserver/">with a web interface similar to the BSE</a>.</p>
+They are not available in the BSE, so this is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials <a href="../users/webserver/">with a web interface similar to the BSE</a>.</p>
 <p>Behind the scene, it also provides <a href="https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis">a library</a> to read, write and store CP2K basis sets and potentials.</p>
 <h3 id="alternatives">Alternatives?<a class="headerlink" href="#alternatives" title="Permanent link">¤</a></h3>
 <ul>
@@ -591,13 +605,13 @@ This is where this project is useful, by allowing the users to look through the 
 <h2 id="how">How?<a class="headerlink" href="#how" title="Permanent link">¤</a></h2>
 <p>For the moment, the basis sets and GTH pseudopotentials are taken from the <a href="https://github.com/cp2k/cp2k/tree/master/data"><code>/data</code> directory of the CP2K repository</a>.</p>
 <p>This project is developed using <a href="https://python.org">Python 3</a>, <a href="https://numpy.org/"><code>numpy</code></a> and <a href="https://www.h5py.org/"><code>h5py</code></a> (for the storage).</p>
-<p>The webserver is powered by <a href="https://flask.palletsprojects.com/">Flask 2</a>.</p>
-<p>This documentation is built using <a href="https://www.mkdocs.org/">mkdocs</a>.</p>
+<p>The webserver is powered by <a href="https://flask.palletsprojects.com/"><code>flask</code></a>.</p>
+<p>This documentation is built using <a href="https://www.mkdocs.org/"><code>mkdocs</code></a>.</p>
+<p>If you are interested in that, maybe you want to help? If so, I'm happy to <a href="../developers/install/#install-and-contribute">welcome your contributions</a>!</p>
 <h2 id="who">Who?<a class="headerlink" href="#who" title="Permanent link">¤</a></h2>
 <p>My name is <a href="https://pierrebeaujean.net">Pierre Beaujean</a>, and I'm a Ph.D. in quantum chemistry from the <a href="https://unamur.be">University of Namur</a> (Belgium).
 I'm the main (and only) developer of this project, used in our lab.
 I use CP2K in the frame of my post-doctoral research, and I developed this project for all the reasons listed above.</p>
-<p>I'm happy to <a href="../install/#install-and-contribute">welcome your contributions</a>!</p>
 
 
 
@@ -634,7 +648,7 @@ I use CP2K in the frame of my post-doctoral research, and I developed this proje
       
       
         
-        <a href="../basis_sets_and_pseudos/" class="md-footer__link md-footer__link--next" aria-label="Next: On basis sets and GTH pseudopotentials in CP2K" rel="next">
+        <a href="../users/basis_sets_and_pseudos/" class="md-footer__link md-footer__link--next" aria-label="Next: On basis sets and GTH pseudopotentials in CP2K" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">

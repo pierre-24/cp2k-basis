@@ -10,21 +10,21 @@
       
       
       
-        <link rel="canonical" href="https://pierre-24.github.io/cp2k-basis/library_build/">
+        <link rel="canonical" href="https://pierre-24.github.io/cp2k-basis/developers/library_file_format/">
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>Build, use and improve the library - cp2k-basis</title>
+        <title>Library file format - cp2k-basis</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
         
       
       
@@ -41,11 +41,11 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#building-using-and-improving-the-library" class="md-skip">
+        <a href="#the-libraryh5-file-format" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +84,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="cp2k-basis" class="md-header__button md-logo" aria-label="cp2k-basis" data-md-component="logo">
+    <a href="../.." title="cp2k-basis" class="md-header__button md-logo" aria-label="cp2k-basis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Build, use and improve the library
+              Library file format
             
           </span>
         </div>
@@ -182,7 +182,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="cp2k-basis" class="md-nav__button md-logo" aria-label="cp2k-basis" data-md-component="logo">
+    <a href="../.." title="cp2k-basis" class="md-nav__button md-logo" aria-label="cp2k-basis" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -213,7 +213,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -228,7 +228,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../about/" class="md-nav__link">
+      <a href="../../about/" class="md-nav__link">
         About
       </a>
     </li>
@@ -269,7 +269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basis_sets_and_pseudos/" class="md-nav__link">
+      <a href="../../users/basis_sets_and_pseudos/" class="md-nav__link">
         On basis sets and GTH pseudopotentials in CP2K
       </a>
     </li>
@@ -283,8 +283,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../webserver/" class="md-nav__link">
-        Using the web interface
+      <a href="../../users/webserver/" class="md-nav__link">
+        How to use the web interface?
       </a>
     </li>
   
@@ -297,7 +297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../../users/api/" class="md-nav__link">
         REST API reference
       </a>
     </li>
@@ -359,6 +359,34 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../library_build/" class="md-nav__link">
+        Build, use and improve the library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bs_and_pseudo_file_format/" class="md-nav__link">
+        Basis sets and pseudopotentials files format in CP2K
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -371,12 +399,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Build, use and improve the library
+          Library file format
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Build, use and improve the library
+        Library file format
       </a>
       
         
@@ -395,22 +423,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#building" class="md-nav__link">
-    Building
+  <a href="#the-basis_sets-group" class="md-nav__link">
+    The basis_sets group
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using" class="md-nav__link">
-    Using
+  <a href="#the-pseudopotentials-group" class="md-nav__link">
+    The pseudopotentials group
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#improving" class="md-nav__link">
-    Improving
+  <a href="#metadata" class="md-nav__link">
+    Metadata
   </a>
   
 </li>
@@ -419,20 +447,6 @@
   
 </nav>
       
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../library_file_format/" class="md-nav__link">
-        Library file format
-      </a>
     </li>
   
 
@@ -471,22 +485,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#building" class="md-nav__link">
-    Building
+  <a href="#the-basis_sets-group" class="md-nav__link">
+    The basis_sets group
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using" class="md-nav__link">
-    Using
+  <a href="#the-pseudopotentials-group" class="md-nav__link">
+    The pseudopotentials group
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#improving" class="md-nav__link">
-    Improving
+  <a href="#metadata" class="md-nav__link">
+    Metadata
   </a>
   
 </li>
@@ -505,39 +519,216 @@
                 
                   
 
-  <a href="https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_build.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/pierre-24/cp2k-basis/blob/master/docs/developers/library_file_format.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-<h1 id="building-using-and-improving-the-library">Building, using and improving the library<a class="headerlink" href="#building-using-and-improving-the-library" title="Permanent link">¤</a></h1>
-<p>This page describes how to manipulate the library of basis sets and pseudopotentials.</p>
+<h1 id="the-libraryh5-file-format">The <code>library.h5</code> file format<a class="headerlink" href="#the-libraryh5-file-format" title="Permanent link">¤</a></h1>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>If you want to know how the basis sets and pseudopotentials are actually stored in the file, <a href="../library_file_format/">check out this page</a>.</p>
+<p>A library file is in the <a href="https://www.hdfgroup.org/solutions/hdf5/">HDF5 format</a>, which divide the data in groups (i.e., "folders") and datasets (i.e., "files"), the latter being array of data.
+Groups and datasets can have attributes.</p>
 </div>
-<h2 id="building">Building<a class="headerlink" href="#building" title="Permanent link">¤</a></h2>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>The current library and the source YAML file are available <a href="https://github.com/pierre-24/cp2k-basis/tree/master/library">here</a>.</p>
-</div>
-<p>To be continued, but</p>
-<ul>
-<li>Describe properly the format of the YAML input;</li>
-<li>Describe the <code>cb_fetch_data</code> command.</li>
-</ul>
-<h2 id="using">Using<a class="headerlink" href="#using" title="Permanent link">¤</a></h2>
-<p>Currently, the web interface is the only way to query the library.</p>
-<p>However, you can have a quick overview of the content of the library using:</p>
-<div class="highlight"><pre><span></span><code>cb_explore_library library.h5
+<p>The basis set library root contains at least two main (storage) groups: <code>basis_sets</code> and <code>pseudopotentials</code>.
+They are detailed below.</p>
+<h2 id="the-basis_sets-group">The <code>basis_sets</code> group<a class="headerlink" href="#the-basis_sets-group" title="Permanent link">¤</a></h2>
+<p>This group contains one subgroup per basis set (a <code>basis set</code> group), for which the name is the basis set name.
+In each <code>basis set</code> group, there is one subgroup for each atom (a <code>atomic bs</code> group).
+Finally, in that <code>atomic bs</code> subgroup, there is one <code>atomic bs variant</code> group for each variant.
+Thus, the following structure is valid:</p>
+<div class="highlight"><pre><span></span><code>*
+|
++- basis_sets/         # `basis_sets` group
+   |
+   +- SZV-MOLOPT-GTH/  # a `basis set` group
+   |  |
+   |  +- C/            # an `atomic bs` group
+   |  |  |
+   |  |  +- q4/        # an `atomic bs variant` group (see below)
+   |  |
+   |  +- H/
+   |  |  |
+   |  |  +- q1/
+   |  |
+   |  +- ...
+   |
+   +- DZVP-MOLOPT-GTH/
+      |
+      +- C/
+      |  |
+      |  +- q4/
+      |
+      +- H/
+      |  |
+      |  +- q1/
+      |
+      +- ...
 </code></pre></div>
-<h2 id="improving">Improving<a class="headerlink" href="#improving" title="Permanent link">¤</a></h2>
-<p>To be continued, but:</p>
-<ul>
-<li>Describe how to use <code>cb_explore_file</code> tools.</li>
-<li>Patching and stuffs</li>
-</ul>
+<p>Each <code>atomic bs variant</code> group is composed of the following datasets, which are all mandatory:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Shape</th>
+<th>Attributes</th>
+<th>Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>info</code></td>
+<td><code>(2,)</code></td>
+<td>---</td>
+<td>contains <code>(len(names), len(contractions))</code></td>
+</tr>
+<tr>
+<td><code>names</code></td>
+<td><code>(n,)</code></td>
+<td>---</td>
+<td>contains <code>n=len(names)</code> names</td>
+</tr>
+<tr>
+<td><code>contraction_{i}_info</code></td>
+<td><code>(4+n,)</code></td>
+<td><code>nshell</code> [mandatory]</td>
+<td>contains <code>(principle_n, l_min, l_max, nfunc, nshell[0], ..., nshell[n-1])</code> with <code>n=attrs[nshell]</code></td>
+</tr>
+<tr>
+<td><code>contraction_{i}_exp_coefs</code></td>
+<td><code>(nfunc,1+sum(nshell))</code></td>
+<td>---</td>
+<td>contains exponents in <code>[:, 0]</code> and coefficients in <code>[:, 1:]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The two last datasets are repeated with <code>i=[0:len(contractions)]</code>.</p>
+<p>Thus, the following structure, e.g., is valid:</p>
+<div class="highlight"><pre><span></span><code>*
+|
++ basis_sets/TZVP-GTH/C/q4/   # contains two contractions
+  |
+  +- info                     # contains (2, 2)
+  +- names                    # contains (TZVP-GTH-q4, TZVP-GTH)
+  +- contraction_0_info       # contains (2, 0, 1, 5, 3, 3)
+  |                           # and has attribute nshell=2
+  +- contraction_0_exp_coefs  # of shape (5, 7)
+  +- contraction_1_info       # contains (3, 2, 2, 1, 1)
+  |                           # and has attribute nshell=1
+  +- contraction_1_exp_coefs  # of shape (1, 2)
+</code></pre></div>
+<h2 id="the-pseudopotentials-group">The <code>pseudopotentials</code> group<a class="headerlink" href="#the-pseudopotentials-group" title="Permanent link">¤</a></h2>
+<p>Again, this group contains one subgroup per pseudopotential familly (a <code>pp family</code> group), which name is the family name.
+In each <code>pp family</code> group, there is one subgroup for each basis set (a <code>atomic pp</code> group).
+Finally, in that <code>atomic pp</code> subgroup, there is one <code>atomic pp variant</code> group for each variant.</p>
+<p>Thus, the following structure is valid:</p>
+<div class="highlight"><pre><span></span><code>*
+|
++- pseudopotentials/   # the `pseudopotentials` group
+   |
+   +- GTH-BLYP/        # a `pp family group`
+   |  |
+   |  +- C/            # an `atomic pp` group
+   |  |  |
+   |  |  +- q4/        # an `atomic pp variant` group (see below)
+   |  |
+   |  +- H/
+   |  |  |
+   |  |  +- q1/
+   |  |
+   |  +- ...
+   |
+   +- GTH-PBE/
+      |
+      +- C/
+      |  |
+      |  +- q4/
+      |
+      +- ...
+</code></pre></div>
+<p>Each <code>atomic pp variant</code> group is composed of the following datasets, which are all mandatory:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Shape</th>
+<th>Attributes</th>
+<th>Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>info</code></td>
+<td><code>(3+n,)</code></td>
+<td><code>nelec</code> [mandatory]</td>
+<td>contains <code>(len(names), len(lcoefs), len(nlprojectors), nelec[0], ... nelec[n-1])</code> with <code>n=attrs[nelec]</code></td>
+</tr>
+<tr>
+<td><code>names</code></td>
+<td><code>(n,)</code></td>
+<td>---</td>
+<td>contains <code>n=len(names)</code> names</td>
+</tr>
+<tr>
+<td><code>local_radius_coefs</code></td>
+<td><code>(1+n,)</code></td>
+<td>---</td>
+<td>contains <code>(lradius, lcoef[0],..., lcoefs[n-1])</code> with <code>n=len(lcoefs)</code></td>
+</tr>
+<tr>
+<td><code>nlprojector_{i}_radius_coefs</code></td>
+<td><code>(1+n,)</code></td>
+<td><code>nfunc</code> [mandatory]</td>
+<td>contains <code>(nlradius, nlcoefs[triu(n)[0]], ..., nlcoefs[triu(n)[n-1]])</code> with <code>n=attrs[nfunc]</code> and <code>triu(N)</code> gives the list of the upper triangular indices of a square matrix of size <code>N</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The last dataset is repeated with <code>i=[0:len(nlprojectors)]</code>.</p>
+<p>The following structure, e.g., is valid:</p>
+<div class="highlight"><pre><span></span><code>*
+|
++- pseudopotentials/GTH-BLYP/Ne/q8/
+   |
+   +- info                        # contains (2, 2, 2, 2, 6)
+   |                              # and has attribute nelec=2
+   +- names                       # contains (GTH-BLYP-q8, GTH-BLYP)
+   +- local_radius_coefs          # of shape (3,)
+   +- nlprojector_0_radius_coefs  # of shape (4,)
+   |                              # and has attribute nfunc=2
+   +- nlprojector_1_radius_coefs  # of shape (2,)
+                                  # and has attribute nfunc=1
+</code></pre></div>
+<h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">¤</a></h2>
+<p>The file may have the <code>date_build</code> attribute, indicating when it was created.</p>
+<p>Each <code>basis set</code> and <code>pp familly</code> group might also have the following attributes:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source</code></td>
+<td><code>str</code></td>
+<td>URL to the original file used to build the data</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td>Description of the data</td>
+</tr>
+<tr>
+<td><code>references</code></td>
+<td><code>array</code></td>
+<td>One-dimensional array of URLs to reference papers (DOI) or sources.</td>
+</tr>
+</tbody>
+</table>
+<p>Those attributes are optional: if an attribute is missing, an empty value can be assumed.</p>
 
 
 
@@ -558,7 +749,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../install/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Install and contribute" rel="prev">
+        <a href="../bs_and_pseudo_file_format/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Basis sets and pseudopotentials files format in CP2K" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -567,26 +758,11 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Install and contribute
+              Basis sets and pseudopotentials files format in CP2K
             </div>
           </div>
         </a>
       
-      
-        
-        <a href="../library_file_format/" class="md-footer__link md-footer__link--next" aria-label="Next: Library file format" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Library file format
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
       
     </nav>
   
@@ -611,14 +787,14 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
       
-        <script src="../do-katex.js"></script>
+        <script src="../../do-katex.js"></script>
       
     
     
