@@ -6,3 +6,4 @@ mkdocs
 mkdocs-material
 mkdocstrings
 pymdown-extensions
+bump2version
