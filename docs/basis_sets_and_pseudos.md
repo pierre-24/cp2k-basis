@@ -103,13 +103,52 @@ In the former, $Z'$ is the ionic charge (i.e., the charge of the nucleus minus t
 All the parameters in blue, together with the number of core electrons in each shell, **define a GTH pseudopotential** in CP2K (see, e.g., [10.1007/s00214-005-0655-y](https://dx.doi.org/10.1007/s00214-005-0655-y)).
 In particular, they are given as a local part plus a set of nonlinear projectors.
 
+!!! note
+    It is totally possible, for a given atom, to have pseudopotentials with a different number of core electrons embeded in the potential: while a small number of core electrons ensure a good transferability (but lengthen the calculation), a large number results in a smoother potential.
+
 ## Pairing GTH pseudopotentials with basis sets
 
-From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that contains smooth (pseudo-) basis functions.
+From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that has been designed with the correct amount of core electron removed and that contains smoother (pseudo-) basis functions.
+Names of pseudopotentials and basis sets help to achieve this association:
+
++ GTH pseudopotential are generally named `GTH-<XFC>`, where `<XCF>` is the name of a XC-functional. 
+  It is thus strongly suggested to use them together with the XCF in question.
+
+    For a given atom, such potentials are nicknamed `GTH-<XFC>-q<N>`, where `<N>` is the number of core electrons considered to build the potential.
+    For example, a pseudopotential for carbon is nicknamed `GTH-BLYP-q4`, indicate that this pseudopotential was designed with BLYP, and that it embeded a total of 4 core electrons (all filled shells).
+
++ Basis sets are generally named `<XZ>-<NAME>-<XCF>-GTH` or `<XZ>-GTH-<XCF>` (though this is definitely not an absolute rule!), where `<XZ>` describe the content of the basis set (e.g., `DZ` for double zeta, `TZP` for triple zeta with extra polarization, etc), `<NAME>` is the name of the family (e.g., `MOLOPT`) and `<XCF>` is the name of the XCF used to optimize the basis set. 
+  The `<XCF>` may not be present in the name: for example, `TZVP-MOLOPT-GTH` should work with all XCF, while `TZVP-MOLOPT-PBE-GTH` was specifically designed with PBE.
+  
+    Again, for each atom, a suffix `-q<N>` is added, indicated how much core electron were not considered while building this basis set.
+    For example, for carbon, the nickname `DZVP-MOLOPT-GTH-q4` indicates that this is a double-zeta basis set (plus polarization functions) of the `MOLOPT` family, designed to work with GTH pseudopotentials embedding 4 core electrons.
+
+!!! note "Where are the basis sets and GTH pseudopotentials?"
+    When running a CP2K calculation, you have to provide two files, containing the basis set(s) and pseudopotential(s) used in your calculation:
+
+    ```
+    &DFT
+        BASIS_SET_FILE_NAME  BASIS_SET
+        POTENTIAL_FILE_NAME  GTH_POTENTIALS
+    &END DFT
+    ```
+    
+    Basis sets and pseudopotentials are scattered across different file in the [CP2K `data` folder](https://github.com/cp2k/cp2k/tree/master/data).
+    However, [the web interface of this project](webserver.md) proposes an easier way to build your own taylor-made `BASIS_SET` and `GTH_POTENTIALS` files.
+    This is equivalent, since the data are obtained from the same source and just presented with a shiny interface ;)
+
+    If you are interested, the format of those two files is described [here](bs_and_pseudo_file_format.md)
 
 
-To be continued, but:
+## Working with all-electron basis sets
 
-+ Present the naming rule(s) of basis sets and pseudopontials;
-+ Try to indicate which basis set goes with witch potential.
-+ Parser?
+!!! info
+    The GAPW method is introduced, e.g., [here](https://www.cp2k.org/_media/events:2015_cecam_tutorial:iannuzzi_gpw_gapw_b.pdf) or in [10.1007/s002140050523](https://dx.doi.org/10.1007/s002140050523).
+
+There also exists a special pseudopotential, `ALL`, which should be used for all-electron calculations.
+This is the pseudopotential of choice for GAPW calculations. 
+It can be used with your usual all-electron basis sets (such as STO-3G, e.g., [found in the BSE](http://www.basissetexchange.org/)).
+A curated list is available in the [`EMSL_BAIS_SETS` file](https://github.com/cp2k/cp2k/blob/master/data/EMSL_BASIS_SETS).
+
+Specially designed basis sets were also derived (found in the [`ALL_BASIS_SETS` file](https://github.com/cp2k/cp2k/blob/master/data/ALL_BASIS_SETS)), which contains `ALL` in their name or ends by `-ae`.
+The nickname `-q0` is sometimes used in these basis sets to remind that they are all-electron basis sets.

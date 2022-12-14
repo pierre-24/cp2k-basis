@@ -15,6 +15,7 @@ nav:
     - For the developers:
           - Install and contribute: install.md
           - Build, use and improve the library: library_build.md
+          - Basis sets and pseudopotentials files format in CP2K: bs_and_pseudo_file_format.md
           - Library file format: library_file_format.md
 
 theme:

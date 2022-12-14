@@ -82,7 +82,7 @@ echo "LIBRARY='tests/LIBRARY_EXAMPLE.h5'" > instance/settings.py
 
 The webservice should then be faster to start & reload.
 
-### Contribute
+### Tips to contribute
 
 Don't forget to work on a separate branch, and to run the linting and tests:
 
