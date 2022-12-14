@@ -17,11 +17,11 @@ It is especially known for [mixing Gaussian and plane wave](https://www.cp2k.org
 
 The [basis set exchange](https://www.basissetexchange.org/) (BSE), developed by [MolSSI](https://molssi.org/) is a trustworthy provider of basis sets and effective core potentials (ECP) since a long time ago. 
 It even provides an output for CP2K. 
-In fact, this project has no intention of replacing the BSE, and users should happily continue to use it to fetch ECP and all-electrons basis sets.
+In fact, this project has no intention of replacing the BSE, and users should happily continue to use it to fetch ECP and all-electron basis sets (don't forget to use the `ALL` potential if needed, thought).
 
-However, CP2K calculations [can also use a pair of matching GTH potentials and corresponding basis sets](users/basis_sets_and_pseudos.md), which are not available on the BSE.
+However, CP2K calculations [can also use a pair of matching GTH potentials and corresponding basis sets](users/basis_sets_and_pseudos.md).
 This is actually one of the first thing you learn [when you try to use the CP2K program](https://www.cp2k.org/howto).
-This is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials [with a web interface similar to the BSE](users/webserver.md).
+They are not available in the BSE, so this is where this project is useful, by allowing the users to look through the library of available basis sets and pseudopotentials [with a web interface similar to the BSE](users/webserver.md).
 
 Behind the scene, it also provides [a library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis) to read, write and store CP2K basis sets and potentials.
 
@@ -37,14 +37,14 @@ For the moment, the basis sets and GTH pseudopotentials are taken from the [`/da
 
 This project is developed using [Python 3](https://python.org), [`numpy`](https://numpy.org/) and [`h5py`](https://www.h5py.org/) (for the storage).
 
-The webserver is powered by [Flask 2](https://flask.palletsprojects.com/).
+The webserver is powered by [`flask`](https://flask.palletsprojects.com/).
 
-This documentation is built using [mkdocs](https://www.mkdocs.org/).
+This documentation is built using [`mkdocs`](https://www.mkdocs.org/).
+
+If you are interested in that, maybe you want to help? If so, I'm happy to [welcome your contributions](developers/install.md#install-and-contribute)!
 
 ## Who?
 
 My name is [Pierre Beaujean](https://pierrebeaujean.net), and I'm a Ph.D. in quantum chemistry from the [University of Namur](https://unamur.be) (Belgium).
 I'm the main (and only) developer of this project, used in our lab.
 I use CP2K in the frame of my post-doctoral research, and I developed this project for all the reasons listed above.
-
-I'm happy to [welcome your contributions](developers/install.md#install-and-contribute)!

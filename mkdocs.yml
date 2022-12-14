@@ -10,7 +10,7 @@ nav:
     - About: about.md
     - For the users:
           - On basis sets and GTH pseudopotentials in CP2K: users/basis_sets_and_pseudos.md
-          - Using the web interface: users/webserver.md
+          - How to use the web interface?: users/webserver.md
           - REST API reference: users/api.md
     - For the developers:
           - Install and contribute: developers/install.md

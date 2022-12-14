@@ -108,6 +108,10 @@ In particular, they are given as a local part plus a set of nonlinear projectors
 
 ## Pairing GTH pseudopotentials with basis sets
 
+!!! warning
+    In practice, the number of core electron is dictated by the pseudopotential (in which the info is reported).
+    CP2K will blindly use whatever basis set you give, since it has no way to check the information on the basis set side (not even the names, which are merely conventions).
+
 From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that has been designed with the correct amount of core electron removed and that contains smoother (pseudo-) basis functions.
 Names of pseudopotentials and basis sets help to achieve this association:
 
@@ -117,11 +121,14 @@ Names of pseudopotentials and basis sets help to achieve this association:
     For a given atom, such potentials are nicknamed `GTH-<XFC>-q<N>`, where `<N>` is the number of core electrons considered to build the potential.
     For example, a pseudopotential for carbon is nicknamed `GTH-BLYP-q4`, indicate that this pseudopotential was designed with BLYP, and that it embeded a total of 4 core electrons (all filled shells).
 
-+ Basis sets are generally named `<XZ>-<NAME>-<XCF>-GTH` or `<XZ>-GTH-<XCF>` (though this is definitely not an absolute rule!), where `<XZ>` describe the content of the basis set (e.g., `DZ` for double zeta, `TZP` for triple zeta with extra polarization, etc), `<NAME>` is the name of the family (e.g., `MOLOPT`) and `<XCF>` is the name of the XCF used to optimize the basis set. 
-  The `<XCF>` may not be present in the name: for example, `TZVP-MOLOPT-GTH` should work with all XCF, while `TZVP-MOLOPT-PBE-GTH` was specifically designed with PBE.
++ Basis sets are generally named `<XZ>-<NAME>-<XCF>-GTH` or `<XZ>-GTH-<XCF>` (though this is definitely not an absolute rule!), where `<XZ>` describe the content of the basis set (e.g., `DZV` for double zeta, `TZVP` for triple zeta with extra polarization, etc), `<NAME>` is the name of the family (e.g., `MOLOPT`) and `<XCF>` is the name of the XCF used to optimize the basis set. 
+  The `<XCF>` may not be present in the name: for example, `TZVP-MOLOPT-GTH` should work with all XCF, while `TZVP-MOLOPT-PBE-GTH` was specifically designed with PBE. 
+  The latter probably gives better results and should (probably) be preferred.
   
     Again, for each atom, a suffix `-q<N>` is added, indicated how much core electron were not considered while building this basis set.
     For example, for carbon, the nickname `DZVP-MOLOPT-GTH-q4` indicates that this is a double-zeta basis set (plus polarization functions) of the `MOLOPT` family, designed to work with GTH pseudopotentials embedding 4 core electrons.
+
+
 
 !!! note "Where are the basis sets and GTH pseudopotentials?"
     When running a CP2K calculation, you have to provide two files, containing the basis set(s) and pseudopotential(s) used in your calculation:
@@ -150,5 +157,5 @@ This is the pseudopotential of choice for GAPW calculations.
 It can be used with your usual all-electron basis sets (such as STO-3G, e.g., [found in the BSE](http://www.basissetexchange.org/)).
 A curated list is available in the [`EMSL_BAIS_SETS` file](https://github.com/cp2k/cp2k/blob/master/data/EMSL_BASIS_SETS).
 
-Specially designed basis sets were also derived (found in the [`ALL_BASIS_SETS` file](https://github.com/cp2k/cp2k/blob/master/data/ALL_BASIS_SETS)), which contains `ALL` in their name or ends by `-ae`.
+Specially designed basis sets were also derived (found, e.g., in the [`ALL_BASIS_SETS` file](https://github.com/cp2k/cp2k/blob/master/data/ALL_BASIS_SETS)), which contains `ALL` in their name or ends by `-ae`.
 The nickname `-q0` is sometimes used in these basis sets to remind that they are all-electron basis sets.
