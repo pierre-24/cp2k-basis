@@ -11,7 +11,6 @@ doc-serve:
 	mkdocs serve
 
 front:
-	npm i
 	npm run grunt
 
 lint:

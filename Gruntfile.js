@@ -8,6 +8,7 @@ const tasks = [
     'grunt-contrib-less',
     'grunt-contrib-uglify',
     'grunt-contrib-watch',
+    'grunt-contrib-imagemin',
 ];
 
 module.exports = function(grunt) {
@@ -36,6 +37,16 @@ module.exports = function(grunt) {
                 dest: `${output_dir}/scripts.min.js`
             }
         },
+        imagemin: {
+            build: {
+                files: [{
+                    expand: true,
+                    cwd: `${input_dir}/images`,
+                    src: ['*.{png,svg}'],
+                    dest: `${output_dir}/images`
+                }]
+            }
+        },
         watch: {
             js: {
                 files: ['<%= jshint.files %>'],
@@ -49,6 +60,6 @@ module.exports = function(grunt) {
     });
 
     tasks.forEach((task) => {grunt.loadNpmTasks(task); });
-    grunt.registerTask('default', ['jshint', 'less', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'less', 'uglify', 'imagemin']);
     grunt.registerTask('watch', ['watch']);
 };

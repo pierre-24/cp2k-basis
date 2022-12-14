@@ -1,5 +1,7 @@
 # `cp2k-basis`
 
+![](cp2k_basis_webservice/assets/images/logo.svg)
+
 **Live version now available at <https://cp2k-basis.pierrebeaujean.net>.**
 
 A library to parse CP2K basis sets and GTH pseudopotentials, which also comes with a webserver to find out and select a basis set and its matching pseudopotential for your CP2K calculations.
