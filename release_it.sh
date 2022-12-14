@@ -30,7 +30,7 @@ done
 
 
 # go to dev and ensure latest version
-if [[ $CURRENT_BRANCH != "dev" ]]; then
+if [[ $CURRENT_BRANCH != "master" ]]; then
   git checkout dev
 fi
 
@@ -38,9 +38,9 @@ git pull
 
 # bump version
 bump2version "$RELEASE_PART" --verbose
-git push --follow-tags origin dev
+git push --follow-tags origin master
 
 # switch back to current branch
-if [[ $CURRENT_BRANCH != "dev" ]]; then
+if [[ $CURRENT_BRANCH != "master" ]]; then
   git checkout "$CURRENT_BRANCH"
 fi
