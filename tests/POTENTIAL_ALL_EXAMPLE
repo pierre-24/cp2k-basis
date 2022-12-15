@@ -1,0 +1,11 @@
+# Two all-electron potentials (from https://github.com/cp2k/cp2k/blob/master/data/ALL_POTENTIALS)
+# In order to check the default behavior
+#
+H ALLELECTRON ALL
+    1    0    0
+     0.20000000    0
+#
+He ALLELECTRON ALL
+    2    0    0
+     0.20000000    0
+#

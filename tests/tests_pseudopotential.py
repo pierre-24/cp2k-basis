@@ -1,8 +1,10 @@
+import re
 import tempfile
 import unittest
 import pathlib
 import h5py
 
+from cp2k_basis.base_objects import FilterUnique
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialFamily, PseudopotentialsStorage
 from tests import BaseDataObjectMixin
 
@@ -63,6 +65,25 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
         self.assertEqual(len(variants), 2)
         self.assertEqual(sorted(variants), ['q10', 'q2'])
 
+    def test_guess_variant_all(self):
+        name = 'ALL'
+        storage = PseudopotentialsStorage()
+
+        filter_name = FilterUnique([(re.compile(r'^({})$'.format(name)), '\\1')])  # ALL!
+
+        with (pathlib.Path(__file__).parent / 'POTENTIAL_ALL_EXAMPLE').open() as f:
+            storage.update(
+                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants(),
+                filter_name,
+                self.filter_variant
+            )
+
+        self.assertIn('H', storage[name])
+        self.assertIn('q1', storage[name]['H'])
+
+        self.assertIn('He', storage[name])
+        self.assertIn('q2', storage[name]['He'])
+
     def test_storage_dump_hdf5_ok(self):
         path = tempfile.mktemp()
 
@@ -87,3 +108,8 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
                     for variant in self.storage[pp_name][symbol]:
                         self.assertAtomicPseudoEqual(
                             storage[pp_name][symbol][variant], self.storage[pp_name][symbol][variant])
+
+                        self.assertEqual(
+                            'q{}'.format(sum(storage[pp_name][symbol][variant].nelec)),
+                            variant
+                        )

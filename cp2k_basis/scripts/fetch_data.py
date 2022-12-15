@@ -36,7 +36,7 @@ def extract_from_file(
     if 'family_name' in file_def:
         filter_name = FilterUnique.create(file_def['family_name'])
 
-    filter_variant = FilterFirst([(re.compile(r'^.*$'), 'q0')])
+    filter_variant = FilterFirst([])
     if 'variant' in file_def:
         filter_variant = FilterFirst.create(file_def['variant'])
 

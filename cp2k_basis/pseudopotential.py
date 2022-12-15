@@ -112,7 +112,7 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
         return r
 
     def __repr__(self):
-        return 'AtomicPseudopotential({}, {}, {})'.format(repr(self.symbol), repr(self.names), repr(self.nelec))
+        return '<AtomicPseudopotential({}, {}, {})>'.format(repr(self.symbol), repr(self.names), repr(self.nelec))
 
     def dump_hdf5(self, group: h5py.Group):
         """Dump in HDF5"""

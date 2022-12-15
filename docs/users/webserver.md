@@ -3,7 +3,6 @@
 !!! info
     If you are not familiar with the concept of basis set and pseudopotentials, check out [this introduction](basis_sets_and_pseudos.md).
 
-
 As usual with quantum chemistry calculations, to run CP2K, you need a geometry and a method.
 For the latter, if you want to use the GPW method (and, to some extent, the GAPW method), you will need to pick a basis set and a matching pseudopotential, which is the goal of this web interface.
 
@@ -106,7 +105,7 @@ This has two (interesting!) side effects:
 
      ![](../images/webserver_kind_panel_err.jpg)
 
-     You should thus reflect on your choices since running such calculation would be a mistake.
+     You should thus reflect on your choices since running such calculation would be a mistake 😉
 
 ## API
 
