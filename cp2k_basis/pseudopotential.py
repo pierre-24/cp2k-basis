@@ -5,6 +5,7 @@ import numpy
 
 from cp2k_basis import logger
 from cp2k_basis.base_objects import BaseAtomicDataObject, BaseFamilyStorage, Storage, BaseAtomicVariantDataObject
+from cp2k_basis.elements import SYMB_TO_Z, L_TO_SHELL
 from cp2k_basis.parser import BaseParser, TokenType
 
 
@@ -95,7 +96,14 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
         self.nlprojectors = nlprojectors
 
     def __str__(self) -> str:
-        r = '{}  {}\n{}\n'.format(
+        r = '# {} [{}|{}]\n'.format(
+            self.symbol,
+            SYMB_TO_Z[self.symbol] - sum(self.nelec),
+            ''.join('{}{}'.format(self.nelec[i], L_TO_SHELL[i]) if self.nelec[i] != 0 else ''
+                    for i in range(len(self.nelec)))
+        )
+
+        r += '{}  {}\n{}\n'.format(
             self.symbol, ' '.join(self.names), ' '.join('{}'.format(x) for x in self.nelec))
 
         # local part

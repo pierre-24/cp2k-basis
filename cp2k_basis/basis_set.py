@@ -4,18 +4,9 @@ import numpy
 from typing import List, Iterable
 
 from cp2k_basis import logger
+from cp2k_basis.elements import L_TO_SHELL
 from cp2k_basis.parser import BaseParser, TokenType
 from cp2k_basis.base_objects import BaseAtomicVariantDataObject, BaseAtomicDataObject, BaseFamilyStorage, Storage
-
-L_TO_SHELL = {
-    0: 's',
-    1: 'p',
-    2: 'd',
-    3: 'f',
-    4: 'g',
-    5: 'h'
-}
-
 
 l_logger = logger.getChild('basis_set')
 

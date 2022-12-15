@@ -24,19 +24,19 @@ In particular, your input looks like:
           H      11.922476       1.573799       9.986994
         &END COORD
         &KIND H
-          BASIS_SET ??  # <- pick one
-          POTENTIAL ??  # <- pick one
+          BASIS_SET ??  ! <- pick one
+          POTENTIAL ??  ! <- pick one
         &END KIND
         &KIND O
-          BASIS_SET ??  # <- pick one
-          POTENTIAL ??  # <- pick one
+          BASIS_SET ??  ! <- pick one
+          POTENTIAL ??  ! <- pick one
         &END KIND
     &END SUBSYS
     &DFT
-        BASIS_SET_FILE_NAME  BASIS_SET      # <- should contain your basis set(s)
-        POTENTIAL_FILE_NAME  GTH_POTENTIALS # <- should contain your pseudo(s)
+        BASIS_SET_FILE_NAME  BASIS_SET      ! <- should contain your basis set(s)
+        POTENTIAL_FILE_NAME  GTH_POTENTIALS ! <- should contain your pseudo(s)
         &XC
-          &XC_FUNCTIONAL ??  # <- pick one
+          &XC_FUNCTIONAL ??  ! <- pick one
           &END XC_FUNCTIONAL
         &END XC
         # (...)
@@ -78,9 +78,15 @@ In particular, the first panel should be copied in a `BASIS_SET` file that will 
 
 ![](../images/webserver_panels.jpg)
 
-If you use a recent brower, you can use the copy button to do so: ![](../images/webserver_copy_btn.jpg).
+!!! info
+    These panels also report when the library of basis sets and pseudo was built, as a comment.
+    To ease your life latter (check for errors), it might be useful to keep it.
+    It also gives the address to the [API call that generates this output](api.md), if you want.
 
-The information button, ![](../images/webserver_info_btn.jpg) opens an extra area with some info on the basis set or pseudopotential, in particular the references to cite in your articles:
+If you use a recent brower, you can use the copy button to perform the copy 
+![](../images/webserver_copy_btn.jpg).
+
+The information button, ![](../images/webserver_info_btn.jpg) opens an extra area with some info on the basis set or pseudopotential, in particular the references you need to cite in your articles:
 
 ![](../images/webserver_info_area.jpg)
 
@@ -99,7 +105,7 @@ This has two (interesting!) side effects:
      
     ![](../images/webserver_kind_panel_multiple.jpg)
 
-    In this case, you can safely replace `-q3` by `-q1` for both the basis set and the potential, since they are both available (see the two panels in the top). It will, of course, impact the results.
+    In this case, you can safely replace `-q3` (all-electron) by `-q1` (2 core electron embedded in the pseudopotential) for both the basis set and the potential, since they are both available (see the two panels in the top). It will, of course, impact the results.
 
 2. If you select combination that are incompatible (e.g., the all-electron pseudopotential `ALL` with a pseudo basis set), it will be indicated:
 
