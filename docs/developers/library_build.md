@@ -201,9 +201,10 @@ However, you can have a quick overview of the content of the library using:
 cb_explore_library library.h5
 ```
 
-!!! warning
-    Code ?
+You can also use the [Python `cp2k_basis` library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis).
 
+??? example
+    See [there](https://github.com/pierre-24/cp2k-basis/tree/master/library/example.py) for some of Python code to access the library.
 
 ## Improving the library
 
