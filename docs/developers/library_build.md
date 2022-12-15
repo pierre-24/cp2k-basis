@@ -11,6 +11,24 @@ This page describes how to manipulate the library of basis sets and pseudopotent
 !!! info
     The current library and the source YAML file are available [here](https://github.com/pierre-24/cp2k-basis/tree/master/library).
 
+### Creating a library from the YAML source file
+
+From an existing YAML source file `DATA_SOURCE.yml` with the format described below, just use
+
+```bash
+cb_fetch_data DATA_SOURCES.yml -o library.h5
+```
+
+This will create a [`library.h5` file](library_file_format.md), which might be exploited [latter on](#using-the-library).
+
+If you want to have insight on what is happening, you might want to use:
+
+```bash
+LOGLEVEL=INFO cb_fetch_data DATA_SOURCES.yml -o library.h5
+```
+
+which is more verbose.
+
 ### YAML source file format
 
 #### Repositories
@@ -175,22 +193,6 @@ Note that in this case, there is no replacement, the bare value is used.
 
 For the moment, `references` and `description` are the two metadata reported for every basis set and pseudopotential.
 
-### Creating a library from the YAML source file
-
-From an existing YAML source file `DATA_SOURCE.yml` with the format described above, just use
-
-```bash
-cb_fetch_data DATA_SOURCES.yml -o library.h5
-```
-
-If you wan to have insight on what is happening, you might want to use:
-
-```bash
-LOGLEVEL=INFO cb_fetch_data DATA_SOURCES.yml -o library.h5
-```
-
-which is more verbose.
-
 ## Using the library
 
 Currently, the web interface is the only way to query the library.
@@ -203,12 +205,143 @@ cb_explore_library library.h5
 
 You can also use the [Python `cp2k_basis` library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis).
 
-??? example
-    See [there](https://github.com/pierre-24/cp2k-basis/tree/master/library/example.py) for some of Python code to access the library.
+!!! example
+    See [there](https://github.com/pierre-24/cp2k-basis/tree/master/library/example.py) for some of Python code to access the library and query its content.
 
 ## Improving the library
 
-To be continued, but:
+To improve the library, it might be easier to work directly with the file in question.
+This is possible with the `cb_explore_file` command.
 
-+ Describe how to use `cb_explore_file` tools.
-+ Patching and stuffs
+### An example: adding `BASIS_MOLOPT_UCL`
+
+[Issue #6](https://github.com/pierre-24/cp2k-basis/issues/6) requested the addtion of [`BASIS_MOLOPT_UCL`](https://github.com/cp2k/cp2k/blob/master/data/BASIS_MOLOPT_UCL) to the library.
+This will be used as an example.
+
+First of all, download the file (notice the `/raw/`):
+
+```bash
+wget https://github.com/cp2k/cp2k/raw/master/data/BASIS_MOLOPT_UCL
+```
+
+Then create a `source.yml` file:
+
+```bash
+touch source.yml
+```
+
+This file will follow the same syntax as the one described above [for files](#files), so the following skeleton can be used
+
+```yaml
+- name: BASIS_MOLOPT_UCL
+  type: BASIS_SETS
+  family_name:
+  variant:
+  metadata:
+```
+
+You can now run `cb_explore_file` ... But nothing much happens:
+
+```text
+$ cb_explore_file source.yml
+*
+|
++- basis_sets
+   |
+*
+|
++- pseudopotentials
+   |
+```
+
+This is normal: as described [above](#sorting-out-the-content-of-the-file), if no rule matches the nickname, they are just discarded.
+This is the case here, since there is no rule.
+Hopefully, the solution in this case is pretty straightforward: the name can be easily extracted from nicknames such as `TZVP-MOLOPT-SR-GTH-q3`, and so is the variant.
+
+??? example
+    With the following `source.yml`,
+    ```yaml
+    - name: BASIS_MOLOPT_UCL
+      type: BASIS_SETS
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
+      metadata:    
+    ```
+    
+    The result is better:
+
+    ```text
+    $ cb_explore_file source.yml 
+    *
+    |
+    +- basis_sets
+       |
+       +- TZVP-MOLOPT-SR-GTH
+       |  metadata={'source': 'BASIS_MOLOPT_UCL'}
+       |  |
+       |  +- Li: q3
+       |  +- Be: q4
+       (...)
+    ```
+    
+    The following basis sets were extracted:
+    
+    ```text
+    $ cb_explore_file source.yml | grep "   +-" 
+       +- TZVP-MOLOPT-SR-GTH
+       +- TZV2P-MOLOPT-SR-GTH
+       +- DZVPd-MOLOPT-SR-GTH
+       +- TZVPd-MOLOPT-SR-GTH
+       +- TZV2Pd-MOLOPT-SR-GTH
+       +- SZV-MOLOPT-SR-GTH
+       +- DZVP-MOLOPT-SR-GTH
+       +- SZV-MOLOPT-GTH
+       +- DZVP-MOLOPT-GTH
+       +- TZVP-MOLOPT-GTH
+       +- TZV2P-MOLOPT-GTH
+       +- TZV2PX-MOLOPT-GTH
+       +- DZV-MOLOPT-SR-GTH
+    ```
+
+Now you just need to add the metadata and iterate on the result until you are happy.
+
+??? example
+    With the following `source.yml`,
+    ```yaml
+    - name: BASIS_MOLOPT_UCL
+      type: BASIS_SETS
+      family_name:
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
+      metadata:
+        references:
+          '.*': [ https://github.com/cp2k/cp2k-data ]
+        description:
+          'TZVP-MOLOPT-SR-GTH': Short-range triple zeta (+ polarization) basis set.
+          '.*': MOLOPT basis set 
+    ```
+    
+    Metadata were added to the basis sets:
+    
+    ```text
+    $ cb_explore_file source.yml 
+    *
+    |
+    +- basis_sets
+       |
+       +- TZVP-MOLOPT-SR-GTH
+       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'Short-range triple zeta (+ polarization) basis set.', 'source': 'BASIS_MOLOPT_UCL'}
+       |  |
+       |  +- Li: q3
+       |  +- Be: q4
+       (...)
+       +- TZV2P-MOLOPT-SR-GTH
+       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'MOLOPT basis set', 'source': 'BASIS_MOLOPT_UCL'}
+       |  +- Li: q3
+       (...)
+    ```
+
+When you are happy with the result (one can do better than that!), you can add it to the main [`DATA_SOURCES.yml`](https://github.com/pierre-24/cp2k-basis/blob/dev/library/DATA_SOURCES.yml) and do a pull request (see, e.g., [there](https://github.com/pierre-24/cp2k-basis/pull/11))!
