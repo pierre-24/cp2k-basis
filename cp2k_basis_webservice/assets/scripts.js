@@ -232,21 +232,21 @@ export class Controller  {
             if(variants.length === 0) {
                 kind += `# No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
             } else {
-                /* by default, select the variant with the largest q, since it is the mostly available
+                /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
                 * */
                 let variant = `q` + Math.max(...variants.map(e => parseInt(e.substring(1))));
 
                 if(this.basisSetSelected.length > 0) {
                     kind += `  BASIS_SET ${this.basisSetVariants[e][variant]}`;
                     if(variants.length > 1)
-                        kind += ` # or ${variants.filter(v => v !== variant).map(v => this.basisSetVariants[e][v])}`;
+                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.basisSetVariants[e][v])}`;
                     kind += '\n';
                 }
 
                 if(this.pseudoSelected.length > 0) {
                     kind += `  POTENTIAL ${this.pseudoVariants[e][variant]}`;
                     if(variants.length > 1)
-                        kind += ` # or ${variants.filter(v => v !== variant).map(v => this.pseudoVariants[e][v])}`;
+                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.pseudoVariants[e][v])}`;
                     kind += '\n';
                 }
             }
