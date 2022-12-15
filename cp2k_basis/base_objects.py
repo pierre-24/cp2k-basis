@@ -250,6 +250,9 @@ class Storage:
         for obj in data_objects:
             names = list(filter_name(obj.names))
 
+            if len(names) == 0:
+                continue
+
             try:
                 variant = next(filter_variant(obj.names))
                 l_logger.debug('variant chosen from names {}'.format(obj.names))
