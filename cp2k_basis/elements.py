@@ -221,3 +221,13 @@ class ElementSetField(fields.Field):
             return ElementSet.create(value)
         except ValueError as e:
             raise ValidationError(str(e))
+
+
+L_TO_SHELL = {
+    0: 's',
+    1: 'p',
+    2: 'd',
+    3: 'f',
+    4: 'g',
+    5: 'h'
+}

@@ -78,9 +78,15 @@ In particular, the first panel should be copied in a `BASIS_SET` file that will 
 
 ![](../images/webserver_panels.jpg)
 
-If you use a recent brower, you can use the copy button to do so: ![](../images/webserver_copy_btn.jpg).
+!!! info
+    These panels also report when the library of basis sets and pseudo was built, as a comment.
+    To ease your life latter (check for errors), it might be useful to keep it.
+    It also gives the address to the [API call that generates this output](api.md), if you want.
 
-The information button, ![](../images/webserver_info_btn.jpg) opens an extra area with some info on the basis set or pseudopotential, in particular the references to cite in your articles:
+If you use a recent brower, you can use the copy button to perform the copy 
+![](../images/webserver_copy_btn.jpg).
+
+The information button, ![](../images/webserver_info_btn.jpg) opens an extra area with some info on the basis set or pseudopotential, in particular the references you need to cite in your articles:
 
 ![](../images/webserver_info_area.jpg)
 
