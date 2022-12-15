@@ -230,7 +230,7 @@ class Storage:
         self,
         data_objects: Iterable[BaseAtomicVariantDataObject],
         filter_name: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: x,
-        filter_variant: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: iter(['q0']),
+        filter_variant: Union[Callable[[Iterable[str]], Iterable[str]], 'Filter'] = lambda x: iter([]),
         add_metadata: Callable[[BaseFamilyStorage], None] = None
     ):
         """Add a set of variant to the storage.
@@ -243,6 +243,8 @@ class Storage:
         Use `add_metadata` to add metadata to the family if any.
         """
 
+        from cp2k_basis.pseudopotential import AtomicPseudopotentialVariant
+
         names_added = set()
 
         for obj in data_objects:
@@ -250,10 +252,19 @@ class Storage:
 
             try:
                 variant = next(filter_variant(obj.names))
+                l_logger.debug('variant chosen from names {}'.format(obj.names))
             except StopIteration:
-                variant = 'q0'
+                l_logger.debug('assume all-electron, variant chosen from Z')
+                variant = 'q{}'.format(SYMB_TO_Z[obj.symbol])  # assume all-electron!
 
-            l_logger.info('adding {} (variant={} => {})'.format(repr(names), repr(obj.names), variant))
+            l_logger.info('adding {} to {} with variant {}'.format(repr(obj), repr(names), variant))
+
+            # check for pseudo
+            if type(obj) is AtomicPseudopotentialVariant:
+                s_variant = 'q{}'.format(sum(obj.nelec))
+                if variant != s_variant:
+                    l_logger.warn('variant is {}, but sum of valence electrons indicate that it should be {}'.format(
+                        variant, s_variant))
 
             for name in names:
                 names_added.add(name)
