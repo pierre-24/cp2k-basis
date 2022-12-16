@@ -22,10 +22,11 @@ class Token:
         self.line = line
 
     def __repr__(self):
-        return 'Token({},{}{})'.format(
+        return '<Token({},{}{}{})>'.format(
             self.type,
             self.value,
-            '' if self.position < 0 else ', {}'.format(self.position)
+            '' if self.position < 0 else ', {}'.format(self.position),
+            '' if self.line < 0 else ', {}'.format(self.line)
         )
 
 
@@ -36,7 +37,7 @@ class Lexer:
     def __init__(self, inp):
         self.input = inp
         self.position = 0
-        self.line = 0
+        self.line = 1
 
     def _get_next_stop(self, must_be: Callable) -> int:
         end = self.position + 1
@@ -56,7 +57,7 @@ class Lexer:
             elif self.input[start] in NLS:
                 self.position = self._get_next_stop(must_be=lambda x: x in NLS)
                 yield Token(TokenType.NL, self.input[start:self.position], start, line_start)
-                self.line += 1
+                self.line += self.input[start:self.position].count('\n')
             else:
                 self.position = self._get_next_stop(must_be=lambda x: x not in SPACES and x not in NLS)
                 yield Token(TokenType.WORD, self.input[start:self.position], start, line_start)
