@@ -155,11 +155,6 @@ class BasisSetAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
         )
 
         self.assertEqual(
-            data['result']['source'],
-            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['source']
-        )
-
-        self.assertEqual(
             data['result']['references'],
             flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['references']
         )
@@ -238,11 +233,6 @@ class PseudopotentialAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
         self.assertEqual(
             data['result']['description'],
             flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['description']
-        )
-
-        self.assertEqual(
-            data['result']['source'],
-            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['source']
         )
 
         self.assertEqual(

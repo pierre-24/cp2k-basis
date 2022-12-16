@@ -86,9 +86,10 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
         nelec: List[int],
         lradius: float,
         lcoefficients: numpy.ndarray,
-        nlprojectors: List[NonLocalProjector]
+        nlprojectors: List[NonLocalProjector],
+        source: str = ''
     ):
-        super().__init__(symbol, names)
+        super().__init__(symbol, names, source)
 
         self.nelec = nelec
         self.lradius = lradius
@@ -102,6 +103,9 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
             ''.join('{}{}'.format(self.nelec[i], L_TO_SHELL[i]) if self.nelec[i] != 0 else ''
                     for i in range(len(self.nelec)))
         )
+
+        if self.source:
+            r += '# SOURCE: {}\n'.format(self.source)
 
         r += '{}  {}\n{}\n'.format(
             self.symbol, ' '.join(self.names), ' '.join('{}'.format(x) for x in self.nelec))
@@ -221,6 +225,7 @@ class AtomicPseudopotentialsParser(BaseParser):
 
         # first line
         self.expect(TokenType.WORD)
+        line = self.current_token.line
         symbol = self.current_token.value
         self.next()
         self.eat(TokenType.SPACE)
@@ -286,7 +291,8 @@ class AtomicPseudopotentialsParser(BaseParser):
             nelec,
             lradius,
             lcoefficients,
-            nlprojectors
+            nlprojectors,
+            (self.source + '#L{}'.format(line)) if self.source else ''
         )
 
     def nlprojector(self) -> NonLocalProjector:

@@ -18,9 +18,10 @@ l_logger = logger.getChild('base_objects')
 
 
 class BaseAtomicVariantDataObject:
-    def __init__(self, symbol: str, names: List[str]):
+    def __init__(self, symbol: str, names: List[str], source: str = ''):
         self.symbol = symbol
         self.names = names
+        self.source = source
 
     def preferred_name(self, family_name: str, variant: str) -> str:
         """Select one of the `self.names`, hopefully containing the family name and the variant.
@@ -46,6 +47,9 @@ class BaseAtomicVariantDataObject:
         ds_names = group.create_dataset('names', shape=(len(self.names), ), dtype=string_dt)
         ds_names[:] = self.names
 
+        if self.source:
+            group.attrs['source'] = self.source
+
     def _read_info(self, group: h5py.Group, name_size: int):
         """Read names
         """
@@ -56,6 +60,9 @@ class BaseAtomicVariantDataObject:
             raise ValueError('Dataset `names` in {} must have length {}'.format(group.name, name_size))
 
         self.names = list(n.decode('utf8') for n in ds_names)
+
+        if 'source' in group.attrs:
+            self.source = group.attrs['source']
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'BaseAtomicVariantDataObject':

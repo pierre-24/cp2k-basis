@@ -41,8 +41,6 @@ def extract_from_file(
     if 'variant' in file_def:
         filter_variant = FilterFirst.create(file_def['variant'])
 
-    # TODO: rule for source!
-
     # apply patch, if any
     if 'patch' in file_def:
         l_logger.info('will apply patch `{}`'.format(file_def['patch']))
@@ -51,11 +49,13 @@ def extract_from_file(
 
     # fetch data and store them:
     if file_def['type'] == 'BASIS_SETS':
-        iterator = AtomicBasisSetsParser(content).iter_atomic_basis_set_variants()
+        iterator = AtomicBasisSetsParser(
+            content, source=base_url + file_def['name']).iter_atomic_basis_set_variants()
         bs_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
     elif file_def['type'] == 'POTENTIALS':
-        iterator = AtomicPseudopotentialsParser(content).iter_atomic_pseudopotential_variants()
+        iterator = AtomicPseudopotentialsParser(
+            content, source=base_url + file_def['name']).iter_atomic_pseudopotential_variants()
         pp_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
 
