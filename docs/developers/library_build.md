@@ -346,4 +346,4 @@ Now you just need to add the metadata and iterate on the result until you are ha
        (...)
     ```
 
-When you are happy with the result (one can do better than that!), you can add it to the main [`DATA_SOURCES.yml`](https://github.com/pierre-24/cp2k-basis/blob/dev/library/DATA_SOURCES.yml) and do a pull request (see, e.g., [there](https://github.com/pierre-24/cp2k-basis/pull/11))!
+When you are happy with the result (one can do better than that!), you can add it to the main [`DATA_SOURCES.yml`](https://github.com/pierre-24/cp2k-basis/blob/dev/library/DATA_SOURCES.yml) and do a pull request (see, e.g., [there](https://github.com/pierre-24/cp2k-basis/pull/11/files#diff-452895da662eb75440387745216fc5dd841478e06b9474d80b45d91bf714cdf0R202))!
