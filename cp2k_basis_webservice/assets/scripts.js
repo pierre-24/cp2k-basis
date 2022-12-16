@@ -40,7 +40,6 @@ export class Controller  {
                 <li><strong>Name:</strong> ${0}</li>
                 <li><strong>Description:</strong> ${1}</li>
                 <li><strong>References:</strong><ul>${2}</ul></li>
-                <li><strong>Source:</strong> <a href="${3}">${3}</a></li>
             </ul>`;
 
         // interface elements
@@ -230,7 +229,7 @@ export class Controller  {
 
             let kind = `&KIND ${e}\n`;
             if(variants.length === 0) {
-                kind += `# No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
+                kind += `! No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
             } else {
                 /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
                 * */
@@ -266,8 +265,7 @@ export class Controller  {
         return [
             query.name,
             mt.description,
-            mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n'),
-            mt.source
+            mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n')
         ];
     }
 
