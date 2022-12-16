@@ -18,7 +18,7 @@ repositories:
       ^(.*)(-q\d{1,2})$: \1
     variant:
       ^.*-(q\d{1,2})$: \1
-# references: not used per se, but useful to avoid repetition thanks to the reference mechanism of YAML
+# references & kinds: not used per se, but useful to avoid repetition thanks to the reference mechanism of YAML
 references:
 - &refmolopt
   - 10.1063/1.2770708
