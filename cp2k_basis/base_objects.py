@@ -373,8 +373,9 @@ class Filter:
     @classmethod
     def create(cls, filter_def: Dict[str, Union[str, None]]):
         rules = []
-        for pattern, replacement in filter_def.items():
-            rules.append((re.compile(pattern), replacement))
+        if filter_def:
+            for pattern, replacement in filter_def.items():
+                rules.append((re.compile(pattern), replacement))
 
         return cls(rules)
 
@@ -423,10 +424,12 @@ class AddMetadata:
     @classmethod
     def create(cls, rules_def: Dict[str, Dict[str, Any]]):
         rules = {}
-        for key, rule_set in rules_def.items():
-            rules[key] = []
-            for rule_pattern, rule_value in rule_set.items():
-                rules[key].append((re.compile(rule_pattern), rule_value))
+
+        if rules_def:
+            for key, rule_set in rules_def.items():
+                rules[key] = []
+                for rule_pattern, rule_value in rule_set.items():
+                    rules[key].append((re.compile(rule_pattern), rule_value))
 
         return cls(rules)
 

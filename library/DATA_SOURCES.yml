@@ -1,25 +1,7 @@
 # This file contains a list of data sources
 # (which is a given location in a website containing different files).
 #
-# Each data source has the following attributes:
-#
-# - base: base URL, might content placeholders of the form `{name}`
-# - data: dictionary of values for each placeholder.
-# - files: list of files to fetch. Each file has the following attributes:
-#
-#   + name: name of the file,
-#   + type: give the type of data found in the file, can be either `BASIS_SETS` or `PSEUDOPOTENTIALS`.
-#   + patch (optional): if provided, contains the path (relative to this file) to a unified patch file that will be
-#     applied after the file is downloaded. Useful to fix small mistakes in the files.
-#   + family_name: set of rule to modify or discard names,
-#     as a dictionary where the key is a REGEX matching a name,
-#     and the value is its replacement (null value means that the name is discarded).
-#   + variant: fetch variant, on the same principle as with `family_name`.
-#   + metadata: set of metadata to be added, as a dictionary of list, where the key is the name of the metadata
-#     and the value is a dictionary of rules, where the key is a REGEX matching the name, and its value
-#     is the value of the metadata.
-#
-#   The full URL to download the file will be given by `base.replace(**data) + name`.
+# See https://pierre-24.github.io/cp2k-basis/developers/library_build/ for a description of the format.
 
 --- # list of repositories
 - base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # CP2K main repository
@@ -41,8 +23,9 @@
           'TZVP-MOLOPT-GTH': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
           'TZV2P-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
           'TZV2PX-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) and 1f MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          'SZV-MOLOPT-SR-GTH': A single zeta valence MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH pseudopotentials
-          'DZVP-MOLOPT-SR-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH pseudopotentials
+          # short-range
+          'SZV-MOLOPT-SR-GTH': A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          'DZVP-MOLOPT-SR-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
           # fallback:
           '.*': MOLOPT basis set.
     - name: GTH_BASIS_SETS
@@ -216,3 +199,28 @@
           '^DZV-GTH-BLYP-CONFINED$': A double zeta valence basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for BLYP.
           '^DZVP-GTH-BLYP$': A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials, optimized for BLYP.
           '^DZVP-GTH-BLYP-CONFINED$': A double zeta valence (+ 1 set of polarization) basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for BLYP.
+    - name: BASIS_MOLOPT_UCL
+      type: BASIS_SETS
+      family_name:
+        # remove non-SR basis sets (they only add Ce and Br, which is oddly specific!)
+        '^SZV-MOLOPT-GTH(-.*)?$': ~
+        '^DZVP-MOLOPT-GTH(-.*)?$': ~
+        '^TZVP-MOLOPT-GTH(-.*)?$': ~
+        '^TZV2P-MOLOPT-GTH(-.*)?$': ~
+        '^TZV2PX-MOLOPT-GTH(-.*)?$': ~
+        # keep the rest
+        '^(.*)(-q\d{1,2})$': '\1'
+      variant:
+        '^.*-(q\d{1,2})$': '\1'
+      metadata:
+        references:
+          '.*': [https://doi.org/10.1063/1.2770708, https://doi.org/10.1039/B508541A, https://github.com/cp2k/cp2k-data]
+        description:
+          # MOLOPT-SR
+          SZV-MOLOPT-SR-GTH: A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          DZV-MOLOPT-SR-GTH: A double zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          DZVPd?-MOLOPT-SR-GTH: A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          TZVPd?-MOLOPT-SR-GTH: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          TZV2Pd?-MOLOPT-SR-GTH: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+          # failback:
+          '.*': MOLOPT basis set
