@@ -14,9 +14,10 @@ nav:
           - REST API reference: users/api.md
     - For the developers:
           - Install and contribute: developers/install.md
+          - Content of the library: developers/library_content.md
           - Build, use and improve the library: developers/library_build.md
-          - Basis sets and pseudopotentials files format in CP2K: developers/bs_and_pseudo_file_format.md
           - Library file format: developers/library_file_format.md
+          - Basis sets and pseudopotentials files format in CP2K: developers/bs_and_pseudo_file_format.md
 
 theme:
   name: material
