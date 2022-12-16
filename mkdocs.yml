@@ -2,7 +2,7 @@ site_name: "cp2k-basis"
 site_description: "Parser for CP2K basis sets and GTH pseudopotentials, and a webserver to find matching basis and pseudo for your calculations."
 site_url: "https://pierre-24.github.io/cp2k-basis/"
 repo_url: "https://github.com/pierre-24/cp2k-basis"
-edit_uri: "blob/master/docs/"
+edit_uri: "blob/dev/docs/"
 repo_name: "pierre-24/cp2k-basis"
 
 nav:
