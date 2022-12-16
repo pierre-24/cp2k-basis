@@ -1,30 +1,47 @@
---- # list of repositories
-- base: https://github.com/{repo}/raw/{commit}/tests/ # tests of this repo
+---
+# list of repositories with files in it:
+repositories:
+- base: https://github.com/{repo}/raw/{commit}/tests/
   data:
-    repo: 'pierre-24/cp2k-basis'
-    commit: '1ec23cf65b5965a64643fde05ef7bb27cafdb2bd'
+    repo: pierre-24/cp2k-basis
+    commit: 1ec23cf65b5965a64643fde05ef7bb27cafdb2bd
   files:
-    - name: BASIS_EXAMPLE
-      type: BASIS_SETS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [10.1063/1.2770708]
-        description:
-          'SZV-.*': Single zeta valence MOLOPT basis set.
-          '.*': yet another MOLOPT basis set.
-    - name: POTENTIALS_EXAMPLE
-      type: POTENTIALS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [10.1103/PhysRevB.54.1703, 10.1103/PhysRevB.58.3641, 10.1007/s00214-005-0655-y]
-        description:
-          '.*-BLYP': |
-            GTH-BLYP is a set of GTH potentials for BLYP.
+  - name: BASIS_EXAMPLE
+    type: BASIS_SETS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: POTENTIALS_EXAMPLE
+    type: POTENTIALS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+# references: not used per se, but useful to avoid repetition thanks to the reference mechanism of YAML
+references:
+- &refmolopt
+  - 10.1063/1.2770708
+- &refgth
+  - 10.1103/PhysRevB.54.1703
+  - 10.1103/PhysRevB.58.3641
+  - 10.1007/s00214-005-0655-y
+kinds:
+  - &kindmolopt
+    - molopt
+    - gth
+# metadata:
+metadata:
+  SZV-.*:
+    description: Single zeta valence MOLOPT basis set.
+    references: *refmolopt
+    kind: *kindmolopt
+  .*-MOLOPT-GTH:
+      description: Yet another MOLOPT basis set
+      references: *refmolopt
+      kind: *kindmolopt
+  GTH-BLYP:
+    description: GTH-BLYP is a set of GTH potentials for BLYP.
+    references: *refgth
+    kind:
+      - gth

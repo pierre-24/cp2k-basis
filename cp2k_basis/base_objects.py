@@ -408,40 +408,35 @@ class FilterUnique(Filter):
 
 class AddMetadata:
     """Add a set of metadata to a `BaseFamilyStorage`, based on a set of rules of the form
-    `{'name1': [(pattern1, value1), (pattern2, value2)], 'name2': [...], ...}`, where:
+    `[(pattern1, metadata1), (pattern1, metadata1), ...]`, where:
 
-    + `name1`, `name2`, etc is the name of the metadata,
     + `pattern1`, `pattern2`, etc is a valid `re.Pattern`, to be matched against `BaseFamilyStorage.name`, and
-    + `value1`, `value2`, etc is the value the metadata will take if pattern is matched
+    + `metadata1`, `metadata`, etc is the value that the metadata field will take if pattern is matched
 
-    The first pattern that is matched gives its value to the metadata.
-    If no pattern is matched, then the metadata is not added.
+    The first pattern that is matched gives its value.
     """
 
-    def __init__(self, rules: Dict[str, List[Tuple[re.Pattern, Any]]]):
+    def __init__(self, rules: List[Tuple[re.Pattern, Dict[str, Any]]] = None):
         self.rules = rules
 
     @classmethod
     def create(cls, rules_def: Dict[str, Dict[str, Any]]):
-        rules = {}
+        rules = []
 
         if rules_def:
-            for key, rule_set in rules_def.items():
-                rules[key] = []
-                for rule_pattern, rule_value in rule_set.items():
-                    rules[key].append((re.compile(rule_pattern), rule_value))
+            for rule_pattern, values in rules_def.items():
+                rules.append((re.compile(rule_pattern), values))
 
         return cls(rules)
 
     def __call__(self, family_storage: BaseFamilyStorage):
         name = family_storage.name
+        metadata_value = None
+        for rule in self.rules:
+            rule_pattern, values = rule
+            if rule_pattern.match(name):
+                metadata_value = values
+                break
 
-        for key, rules_set in self.rules.items():
-            metadata_value = None
-            for rule_pattern, rule_value in rules_set:
-                if rule_pattern.match(name):
-                    metadata_value = rule_value
-                    break
-
-            if metadata_value:
-                family_storage.metadata[key] = metadata_value
+        if metadata_value:
+            family_storage.metadata = metadata_value

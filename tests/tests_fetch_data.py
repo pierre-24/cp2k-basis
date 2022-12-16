@@ -1,4 +1,5 @@
 import pathlib
+import re
 import unittest
 import os
 
@@ -26,7 +27,12 @@ class FetchDataTestCase(unittest.TestCase, BaseDataObjectMixin):
 
         for bs_name in self.bs_storage_parsed:
             self.assertIn(bs_name, bs_storage)
-            # TODO: check metadata
+
+            for pattern, values in data_sources['metadata'].items():
+                p = re.compile(pattern)
+                if p.match(bs_name):
+                    self.assertEqual(bs_storage[bs_name].metadata, values)
+                    break
 
             for symbol in self.bs_storage_parsed[bs_name]:
                 self.assertIn(symbol, bs_storage[bs_name])
@@ -38,6 +44,12 @@ class FetchDataTestCase(unittest.TestCase, BaseDataObjectMixin):
 
         for ppf_name in self.pp_storage_parsed:
             self.assertIn(ppf_name, pp_storage)
+
+            for pattern, values in data_sources['metadata'].items():
+                p = re.compile(pattern)
+                if p.match(ppf_name):
+                    self.assertEqual(pp_storage[ppf_name].metadata, values)
+                    break
 
             for symbol in self.pp_storage_parsed[ppf_name].data_objects.keys():
                 self.assertIn(symbol, pp_storage[ppf_name])
