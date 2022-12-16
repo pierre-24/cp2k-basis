@@ -248,8 +248,8 @@ class Storage:
 
         Use `filter_name` to extract the family names from `data_object.names`.
 
-        Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "q0" if
-        there is none).
+        Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "qZ" if
+        there is none, where Z is the number of valence electrons).
 
         Use `add_metadata` to add metadata to the family if any.
         """
@@ -271,7 +271,8 @@ class Storage:
                 l_logger.debug('assume all-electron, variant chosen from Z')
                 variant = 'q{}'.format(SYMB_TO_Z[obj.symbol])  # assume all-electron!
 
-            l_logger.info('adding {} to {} with variant {}'.format(repr(obj), repr(names), variant))
+            l_logger.info('adding {} to {} with variant {} (from {})'.format(
+                repr(obj), repr(names), variant, obj.source))
 
             # check for pseudo
             if type(obj) is AtomicPseudopotentialVariant:
@@ -287,6 +288,7 @@ class Storage:
 
         if add_metadata:
             for name in names_added:
+                l_logger.info('add metadata to {}'.format(name))
                 add_metadata(self.families[name])
 
     def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
