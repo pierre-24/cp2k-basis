@@ -2,16 +2,13 @@
 
 This page describes how to manipulate the library of basis sets and pseudopotentials.
 
-!!! info
-    If you want to know how the basis sets and pseudopotentials are actually stored in the file, [check out this page](library_file_format.md).
-
 
 ## Building the library (with `cb_fetch_data`)
 
+### Creating a library from the YAML source file
+
 !!! info
     The current library and the source YAML file are available [here](https://github.com/pierre-24/cp2k-basis/tree/master/library).
-
-### Creating a library from the YAML source file
 
 From an existing YAML source file `DATA_SOURCE.yml` with the format described below, just use
 
@@ -29,7 +26,7 @@ LOGLEVEL=INFO cb_fetch_data DATA_SOURCES.yml -o library.h5
 
 which is more verbose.
 
-### YAML source file format
+### Description of the YAML source file format
 
 #### Repositories
  
@@ -195,7 +192,10 @@ For the moment, `references` and `description` are the two metadata reported for
 
 ## Using the library
 
-Currently, the web interface is the only way to query the library.
+!!! info
+    If you want to know how the basis sets and pseudopotentials are actually stored in the library file, [check out this page](library_file_format.md).
+
+Currently, the web interface is the easiest way to query the library.
 
 However, you can have a quick overview of the content of the library using:
 
@@ -203,7 +203,7 @@ However, you can have a quick overview of the content of the library using:
 cb_explore_library library.h5
 ```
 
-You can also use the [Python `cp2k_basis` library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis).
+You can also use the [`cp2k_basis` library](https://github.com/pierre-24/cp2k-basis/tree/master/cp2k_basis) developed for this project.
 
 !!! example
     See [there](https://github.com/pierre-24/cp2k-basis/tree/master/library/example.py) for some of Python code to access the library and query its content.
@@ -212,6 +212,7 @@ You can also use the [Python `cp2k_basis` library](https://github.com/pierre-24/
 
 To improve the library, it might be easier to work directly with the file in question.
 This is possible with the `cb_explore_file` command.
+It takes a source YAML containing a [list of files](#files) as an input, so that you can experiment before actually updating the library.
 
 ### An example: adding `BASIS_MOLOPT_UCL`
 
@@ -254,6 +255,7 @@ $ cb_explore_file source.yml
    |
 ```
 
+Indeed, after it has read `source.yml`, the program reports the content it has extracted, which is in that case nothing.
 This is normal: as described [above](#sorting-out-the-content-of-the-file), if no rule matches the nickname, they are just discarded.
 This is the case here, since there is no rule.
 Hopefully, the solution in this case is pretty straightforward: the name can be easily extracted from nicknames such as `TZVP-MOLOPT-SR-GTH-q3`, and so is the variant.
@@ -320,7 +322,7 @@ Now you just need to add the metadata and iterate on the result until you are ha
         references:
           '.*': [ https://github.com/cp2k/cp2k-data ]
         description:
-          'TZVP-MOLOPT-SR-GTH': Short-range triple zeta (+ polarization) basis set.
+          '^TZVP-MOLOPT-SR-GTH$': Short-range triple zeta (+ polarization) basis set.
           '.*': MOLOPT basis set 
     ```
     

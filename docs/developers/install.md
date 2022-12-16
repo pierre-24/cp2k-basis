@@ -2,7 +2,7 @@
 
 ## Install and run (simple version)
 
-First, install node. It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) to do so.
+First, install node. **It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) to do so.**
 
 Then:
 
@@ -73,28 +73,50 @@ make install-front
 # ... then build front and run (see above)
 ```
 
-A useful setting is to setup the webservice to use the (smaller) test library for development:
-
-```bash
-mkdir instance
-echo "LIBRARY='tests/LIBRARY_EXAMPLE.h5'" > instance/settings.py
-```
-
-The webservice should then be faster to start & reload.
-
 ### Tips to contribute
 
-Don't forget to work on a separate branch, and to run the linting and tests:
++ A useful setting is to setup the webservice to use the (smaller) test library for development:
 
-```bash
-make lint  # flake8
-make test  # unit tests
-```
+    ```bash
+    mkdir instance
+    echo "LIBRARY='tests/LIBRARY_EXAMPLE.h5'" > instance/settings.py
+    ```
+    
+    The webservice should then be faster to start & reload.
 
-If you want to see and edit the doc, you can run the `mkdocs` webserver:
++ A good place to start is the [list of issues](https://github.com/pierre-24/cp2k-basis/issues).
+  In fact, it is easier if you start by filling an issue, and if you want to work on it, says so there, so that everyone knows that the issue is handled.
 
-```bash
-make doc-serve
-```
++ Don't forget to work on a separate branch.
+  Since this project follow the [git flow](http://nvie.com/posts/a-successful-git-branching-model/), you should base your branch on `dev`, not work in it directly:
 
-Don't forget to edit the documentation if you modify something.
+    ```bash
+    git checkout -b new_branch origin/dev
+    ```
+ 
++ Don't forget to regularly run the linting and tests:
+
+    ```bash
+    make lint
+    make test
+    ```
+    
+    Indeed, the code follows the [PEP-8 style recommendations](http://legacy.python.org/dev/peps/pep-0008/), checked by [`flake8`](https://flake8.pycqa.org/en/latest/), for the python part and use [`jshint`](https://jshint.com/) for the JS part.
+    Having an extensive test suite is also a good idea to prevent regressions.
+  
++ If you modify the front (i.e., the JS script file or the stylesheet), don't forget to rebuild the front to see the effects:
+
+    ```bash
+    make front
+    ```
+  
+    Indeed, both JS and SCSS are minified.
+
++ If you want to see and edit the doc, you can run the `mkdocs` webserver:
+
+    ```bash
+    make doc-serve
+    ```
+
++ Pull requests should be unitary, and include unit test(s) and documentation if needed. 
+  The test suite and lint must succeed for the merge request to be accepted.
