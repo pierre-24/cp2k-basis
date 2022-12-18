@@ -175,10 +175,12 @@
 
         let controller = new Controller({
             'basis_sets': {
-                'per_name': {{ bs_per_name|safe }},
+                'elements': {{ basis_sets['elements']|safe }},
+                'kinds': {{ basis_sets['kinds']|safe }},
             },
             'pseudopotentials': {
-                'per_name':  {{ pp_per_name|safe }},
+                'elements':  {{ pseudopotentials['elements']|safe }},
+                'kinds':  {{ pseudopotentials['kinds']|safe }},
             }
         });
     </script>

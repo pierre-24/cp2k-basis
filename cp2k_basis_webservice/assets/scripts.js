@@ -149,7 +149,7 @@ export class Controller  {
 
             let elements = [];
             if (this.basisSetSelected.length > 0)
-                elements = this.data.basis_sets.per_name[this.basisSetSelected];
+                elements = this.data.basis_sets.elements[this.basisSetSelected];
 
             this._updateAvailability('basis-set', elements);
             requiresOutputsUpdate = true;
@@ -160,7 +160,7 @@ export class Controller  {
 
             let elements = [];
             if(this.pseudoSelected.length > 0)
-                elements = this.data.pseudopotentials.per_name[this.pseudoSelected];
+                elements = this.data.pseudopotentials.elements[this.pseudoSelected];
 
             this._updateAvailability('pseudo', elements);
             requiresOutputsUpdate = true;
@@ -171,7 +171,7 @@ export class Controller  {
     }
 
     _updateSelect($select, data, prevValue, searchValue) {
-        let perName = data.per_name;
+        let perName = data.elements;
 
         $select.innerHTML = '';
         Object.keys(perName).forEach((name) => {

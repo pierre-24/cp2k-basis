@@ -233,7 +233,7 @@ class Storage:
 
     def __init__(self):
         self.families: Dict[str, BaseFamilyStorage] = {}
-        self.families_per_element: Dict[str, List[str]] = {}
+        self.kinds_per_family: Dict[str, List[str]] = {}
         self.elements_per_family: Dict[str, List[str]] = {}
         self.date_build = None
 
@@ -291,11 +291,12 @@ class Storage:
                 l_logger.info('add metadata to {}'.format(name))
                 add_metadata(self.families[name])
 
+                if 'kind' in self.families[name].metadata:
+                    self.kinds_per_family[name] = self.families[name].metadata['kind']
+
     def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
 
         symbol = obj.symbol
-        if symbol not in self.families_per_element:
-            self.families_per_element[symbol] = []
 
         if name not in self.families:
             self.families[name] = self.object_type(name)
@@ -303,7 +304,6 @@ class Storage:
 
         self.families[name].add(obj, variant)
         self.elements_per_family[name].append(symbol)
-        self.families_per_element[symbol].append(name)
 
     def __repr__(self):
         return '<Storage({})>'.format(repr(self.name))
@@ -360,6 +360,9 @@ class Storage:
 
             # add metadata
             obj.families[key].metadata = BaseFamilyStorage._read_metadata_hdf5(group)
+
+            if 'kind' in obj.families[key].metadata:
+                obj.kinds_per_family[key] = obj.families[key].metadata['kind']
 
         return obj
 

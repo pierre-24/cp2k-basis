@@ -41,26 +41,29 @@ class GeneralAPITestCase(FlaskAppMixture):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
+        bs_storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        pp_storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
         self.assertEqual(data['query']['type'], 'ALL')
 
         self.assertEqual(
-            data['result']['basis_sets']['per_name'],
-            flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family
+            data['result']['basis_sets']['elements'],
+            bs_storage.elements_per_family
         )
 
         self.assertEqual(
-            data['result']['basis_sets']['per_element'],
-            flask.current_app.config['BASIS_SETS_STORAGE'].families_per_element
+            data['result']['basis_sets']['kinds'],
+            dict((n, bs_storage[n].metadata['kind']) for n in bs_storage if 'kind' in bs_storage[n].metadata)
         )
 
         self.assertEqual(
-            data['result']['pseudopotentials']['per_name'],
-            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family
+            data['result']['pseudopotentials']['elements'],
+            pp_storage.elements_per_family
         )
 
         self.assertEqual(
-            data['result']['pseudopotentials']['per_element'],
-            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].families_per_element
+            data['result']['pseudopotentials']['kinds'],
+            dict((n, pp_storage[n].metadata['kind']) for n in pp_storage if 'kind' in pp_storage[n].metadata)
         )
 
     def test_names_no_elements_ok(self):

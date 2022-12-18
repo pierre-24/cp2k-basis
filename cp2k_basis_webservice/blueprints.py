@@ -46,8 +46,14 @@ class IndexView(RenderTemplateView):
             site_name='cp2k-basis',
             site_version=cp2k_basis.__version__,
             z_to_symb=Z_TO_SYMB,
-            bs_per_name=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
-            pp_per_name=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
+            basis_sets=dict(
+                elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
+                kinds=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].kinds_per_family),
+            ),
+            pseudopotentials=dict(
+                elements=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
+                kinds=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].kinds_per_family),
+            )
         )
 
         return ctx
@@ -94,13 +100,13 @@ class AllDataAPI(MethodView):
             query=dict(type='ALL'),
             result=dict(
                 basis_sets=dict(
-                    per_name=bs_storage.elements_per_family,
-                    per_element=bs_storage.families_per_element,
+                    elements=bs_storage.elements_per_family,
+                    kinds=bs_storage.kinds_per_family,
                     build_date=bs_storage.date_build
                 ),
                 pseudopotentials=dict(
-                    per_name=pp_storage.elements_per_family,
-                    per_element=pp_storage.families_per_element,
+                    elements=pp_storage.elements_per_family,
+                    kinds=pp_storage.kinds_per_family,
                     build_date=pp_storage.date_build
                 )
             )
