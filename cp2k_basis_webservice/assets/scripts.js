@@ -113,7 +113,34 @@ export class Controller  {
         this.$inputResult = document.querySelector('#inputResult');
 
         // buttons
+        document.querySelectorAll('.clear-button').forEach($e => {
+            $e.title = "Clear search value";
+            $e.classList.add('d-none');
+
+            let $node = document.createElement('i');
+            $node.classList.add('bi', 'bi-x');
+            $e.append($node);
+
+            let $src = document.querySelector($e.dataset.clear);
+
+            $src.addEventListener('keyup', () => {
+                if($src.value.length > 0) {
+                    $e.classList.remove('d-none');
+                } else {
+                    $e.classList.add('d-none');
+                }
+            });
+
+            $e.addEventListener('click', () => {
+                $src.value = "";
+                $e.classList.add('d-none');
+                this.update();
+            });
+        });
+
         document.querySelectorAll('.copy-button').forEach($e => {
+            $e.title = "Copy content";
+
             let $node = document.createElement('i');
             $node.classList.add('bi', 'bi-clipboard');
             $e.append($node);
@@ -134,11 +161,12 @@ export class Controller  {
         });
 
         document.querySelectorAll('.info-button').forEach($e => {
+            $e.title = "Get info";
+
             let $node = document.createElement('i');
             $node.classList.add('bi', 'bi-info-square');
             $e.append($node);
         });
-
 
         // cell elements
         document.querySelectorAll('.cell-element').forEach($e => {
