@@ -42,6 +42,23 @@ export class Controller  {
                 <li><strong>References:</strong><ul>${2}</ul></li>
             </ul>`;
 
+        // kinds
+        this.basisSetKinds = [];
+        Object.values(this.data.basis_sets.kinds).forEach($e => {
+            $e.forEach($x => {
+                if(this.basisSetKinds.indexOf($x) < 0)
+                    this.basisSetKinds.push($x);
+            });
+        });
+
+        this.pseudoKinds = [];
+        Object.values(this.data.pseudopotentials.kinds).forEach($e => {
+            $e.forEach($x => {
+                if(this.pseudoKinds.indexOf($x) < 0)
+                    this.pseudoKinds.push($x);
+            });
+        });
+
         // interface elements
         this.$basisSetSelect = document.querySelector('#basisSetSelect');
         this.$basisSetSelect.addEventListener('change', () => {
@@ -53,6 +70,18 @@ export class Controller  {
             this.update();
         });
 
+        this.$basisSetKindSelect = document.querySelector('#basisSetKindSelect');
+        this.basisSetKinds.forEach($k => {
+            let $opt = document.createElement('option');
+            $opt.value = $k;
+            $opt.innerText = $k;
+            this.$basisSetKindSelect.appendChild($opt);
+        });
+
+        this.$basisSetKindSelect.addEventListener('change', () => {
+            this.update();
+        });
+
         this.$pseudoSelect = document.querySelector('#pseudoSelect');
         this.$pseudoSelect.addEventListener('change', () => {
             this.update();
@@ -60,6 +89,18 @@ export class Controller  {
 
         this.$pseudoSearch = document.querySelector('#pseudoSearch');
         this.$pseudoSearch.addEventListener('keyup', () => {
+            this.update();
+        });
+
+        this.$pseudoKindSelect = document.querySelector('#pseudoKindSelect');
+        this.pseudoKinds.forEach($k => {
+            let $opt = document.createElement('option');
+            $opt.value = $k;
+            $opt.innerText = $k;
+            this.$pseudoKindSelect.appendChild($opt);
+        });
+
+        this.$pseudoKindSelect.addEventListener('change', () => {
             this.update();
         });
 
@@ -136,12 +177,14 @@ export class Controller  {
 
         // update the list of basis sets & pseudo based on the elements that are selected and the search value
         let basisSetSearched = this.$basisSetSearch.value;
+        let basisSetKind = this.$basisSetKindSelect.value;
         let basisSetValue = this.$basisSetSelect.value;
-        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched);
+        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched, basisSetKind);
 
         let pseudoSearched = this.$pseudoSearch.value;
+        let pseudoKind = this.$pseudoKindSelect.value;
         let pseudoValue = this.$pseudoSelect.value;
-        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched);
+        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched, pseudoKind);
 
         // update basis set & pseudo
         if(this.basisSetSelected !== this.$basisSetSelect.value) {
@@ -170,21 +213,24 @@ export class Controller  {
             this._updateOutputs();
     }
 
-    _updateSelect($select, data, prevValue, searchValue) {
-        let perName = data.elements;
+    _updateSelect($select, data, prevValue, searchValue, kindValue) {
+        let elements = data.elements;
+        let kinds = data.kinds;
 
         $select.innerHTML = '';
-        Object.keys(perName).forEach((name) => {
-            if((searchValue.length !== 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
-                if(!this.elementsSelected.some(e => perName[name].indexOf(e) < 0)) {
-                    let $node = document.createElement('option');
-                    $node.value = name;
-                    $node.innerText = name;
+        Object.keys(elements).forEach((name) => {
+            if((searchValue.length > 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
+                if(kindValue.length === 0 || (kindValue.length > 0 && kinds[name].indexOf(kindValue) >= 0)) {
+                    if(!this.elementsSelected.some(e => elements[name].indexOf(e) < 0)) {
+                        let $node = document.createElement('option');
+                        $node.value = name;
+                        $node.innerText = name;
 
-                    if(name === prevValue)
-                        $node.selected = true;
+                        if(name === prevValue)
+                            $node.selected = true;
 
-                    $select.append($node);
+                        $select.append($node);
+                    }
                 }
             }
         });
