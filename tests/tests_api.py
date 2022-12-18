@@ -164,6 +164,11 @@ class BasisSetAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
             sorted(flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].data_objects.keys())
         )
 
+        self.assertEqual(
+            data['result']['kind'],
+            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['kind']
+        )
+
     def test_basis_metadata_wrong_basis_ko(self):
 
         response = self.client.get(flask.url_for('api.basis-metadata', name='x'))
@@ -243,4 +248,9 @@ class PseudopotentialAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
         self.assertEqual(
             data['result']['elements'],
             sorted(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].data_objects.keys())
+        )
+
+        self.assertEqual(
+            data['result']['kind'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['kind']
         )
