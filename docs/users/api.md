@@ -122,6 +122,8 @@ Options:
 | `pp_name`  | String   | Restrict the output to a subset of pseudopotentials containing the given name (case insensitive). |
 | `pp_kind`  | String   | Restrict the output to a subset of pseudopotentials having the given kind.                        |
 
+Available kinds are listed [there](webserver.md#if-you-already-know-the-method).
+
 Output:
 
 | Field                     | Type           | Description                                 |
@@ -134,7 +136,7 @@ Output:
 [Example](https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti):
 
 ```bash
-curl https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti
+curl 'https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&pp_name=PBE&bs_kind=SR'
 ```
 
 ```json
@@ -148,14 +150,13 @@ curl https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti
   "result": {
     "basis_sets": [
       "DZVP-MOLOPT-SR-GTH",
-      "SZV-MOLOPT-SR-GTH"
+      "SZV-MOLOPT-SR-GTH",
+      "TZV2P-MOLOPT-SR-GTH",
+      "TZVP-MOLOPT-SR-GTH"
     ],
     "pseudopotentials": [
-      "GTH-BLYP",
-      "GTH-BP",
-      "GTH-LDA",
-      "GTH-PADE",
-      "GTH-PBE"
+      "GTH-PBE",
+      "GTH-PBE0"
     ]
   }
 }
