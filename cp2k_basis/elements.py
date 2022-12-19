@@ -94,7 +94,18 @@ Z_TO_SYMB = {
     89: 'Ac',
     90: 'Th',
     91: 'Pa',
-    92: 'U'
+    92: 'U',
+    93: 'Np',
+    94: 'Pu',
+    95: 'Am',
+    96: 'Cm',
+    97: 'Bk',
+    98: 'Cf',
+    99: 'Es',
+    100: 'Fm',
+    101: 'Md',
+    102: 'No',
+    103: 'Lr'
 }
 
 SYMB_TO_Z = dict((b, a) for a, b in Z_TO_SYMB.items())
@@ -181,7 +192,7 @@ class ElementSet:
             except KeyError:
                 raise ValueError('`{}` is not a valid element'.format(w))
 
-        if 1 <= Z <= 92:
+        if 1 <= Z <= 103:
             return Z
         else:
             raise ValueError('`{}` is not a valid Z value'.format(w))

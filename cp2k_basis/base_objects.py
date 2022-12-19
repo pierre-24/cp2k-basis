@@ -18,9 +18,10 @@ l_logger = logger.getChild('base_objects')
 
 
 class BaseAtomicVariantDataObject:
-    def __init__(self, symbol: str, names: List[str]):
+    def __init__(self, symbol: str, names: List[str], source: str = ''):
         self.symbol = symbol
         self.names = names
+        self.source = source
 
     def preferred_name(self, family_name: str, variant: str) -> str:
         """Select one of the `self.names`, hopefully containing the family name and the variant.
@@ -46,6 +47,9 @@ class BaseAtomicVariantDataObject:
         ds_names = group.create_dataset('names', shape=(len(self.names), ), dtype=string_dt)
         ds_names[:] = self.names
 
+        if self.source:
+            group.attrs['source'] = self.source
+
     def _read_info(self, group: h5py.Group, name_size: int):
         """Read names
         """
@@ -56,6 +60,9 @@ class BaseAtomicVariantDataObject:
             raise ValueError('Dataset `names` in {} must have length {}'.format(group.name, name_size))
 
         self.names = list(n.decode('utf8') for n in ds_names)
+
+        if 'source' in group.attrs:
+            self.source = group.attrs['source']
 
     @classmethod
     def read_hdf5(cls, symbol: str, group: h5py.Group) -> 'BaseAtomicVariantDataObject':
@@ -226,7 +233,7 @@ class Storage:
 
     def __init__(self):
         self.families: Dict[str, BaseFamilyStorage] = {}
-        self.families_per_element: Dict[str, List[str]] = {}
+        self.kinds_per_family: Dict[str, List[str]] = {}
         self.elements_per_family: Dict[str, List[str]] = {}
         self.date_build = None
 
@@ -241,8 +248,8 @@ class Storage:
 
         Use `filter_name` to extract the family names from `data_object.names`.
 
-        Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "q0" if
-        there is none).
+        Use `filter_variant` to extract the variant from `data_object.names` (will use the first result, or "qZ" if
+        there is none, where Z is the number of valence electrons).
 
         Use `add_metadata` to add metadata to the family if any.
         """
@@ -264,7 +271,8 @@ class Storage:
                 l_logger.debug('assume all-electron, variant chosen from Z')
                 variant = 'q{}'.format(SYMB_TO_Z[obj.symbol])  # assume all-electron!
 
-            l_logger.info('adding {} to {} with variant {}'.format(repr(obj), repr(names), variant))
+            l_logger.info('adding {} to {} with variant {} (from {})'.format(
+                repr(obj), repr(names), variant, obj.source))
 
             # check for pseudo
             if type(obj) is AtomicPseudopotentialVariant:
@@ -280,13 +288,15 @@ class Storage:
 
         if add_metadata:
             for name in names_added:
+                l_logger.info('add metadata to {}'.format(name))
                 add_metadata(self.families[name])
+
+                if 'kind' in self.families[name].metadata:
+                    self.kinds_per_family[name] = self.families[name].metadata['kind']
 
     def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
 
         symbol = obj.symbol
-        if symbol not in self.families_per_element:
-            self.families_per_element[symbol] = []
 
         if name not in self.families:
             self.families[name] = self.object_type(name)
@@ -294,7 +304,6 @@ class Storage:
 
         self.families[name].add(obj, variant)
         self.elements_per_family[name].append(symbol)
-        self.families_per_element[symbol].append(name)
 
     def __repr__(self):
         return '<Storage({})>'.format(repr(self.name))
@@ -318,17 +327,19 @@ class Storage:
         for family in self.families.values():
             family.tree(out)
 
-    def get_names_for_elements(self, elements: ElementSet) -> List[str]:
+    def get_names(self, elements: ElementSet, search_name: str = '', search_kind: str = '') -> List[str]:
         """Get all defined names, eventually restricted to a subset of elements
         """
 
+        if search_name:
+            search_name = search_name.lower()
+
         names_list = []
-        if not elements:
-            names_list = list(self)
-        else:
-            for name in self:
-                if elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
-                    names_list.append(name)
+        for name in self:
+            if not search_kind or (name in self.kinds_per_family and search_kind in self.kinds_per_family[name]):
+                if not search_name or search_name in name.lower():
+                    if not elements or elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
+                        names_list.append(name)
 
         return names_list
 
@@ -351,6 +362,9 @@ class Storage:
 
             # add metadata
             obj.families[key].metadata = BaseFamilyStorage._read_metadata_hdf5(group)
+
+            if 'kind' in obj.families[key].metadata:
+                obj.kinds_per_family[key] = obj.families[key].metadata['kind']
 
         return obj
 
@@ -408,40 +422,35 @@ class FilterUnique(Filter):
 
 class AddMetadata:
     """Add a set of metadata to a `BaseFamilyStorage`, based on a set of rules of the form
-    `{'name1': [(pattern1, value1), (pattern2, value2)], 'name2': [...], ...}`, where:
+    `[(pattern1, metadata1), (pattern1, metadata1), ...]`, where:
 
-    + `name1`, `name2`, etc is the name of the metadata,
     + `pattern1`, `pattern2`, etc is a valid `re.Pattern`, to be matched against `BaseFamilyStorage.name`, and
-    + `value1`, `value2`, etc is the value the metadata will take if pattern is matched
+    + `metadata1`, `metadata`, etc is the value that the metadata field will take if pattern is matched
 
-    The first pattern that is matched gives its value to the metadata.
-    If no pattern is matched, then the metadata is not added.
+    The first pattern that is matched gives its value.
     """
 
-    def __init__(self, rules: Dict[str, List[Tuple[re.Pattern, Any]]]):
+    def __init__(self, rules: List[Tuple[re.Pattern, Dict[str, Any]]] = None):
         self.rules = rules
 
     @classmethod
     def create(cls, rules_def: Dict[str, Dict[str, Any]]):
-        rules = {}
+        rules = []
 
         if rules_def:
-            for key, rule_set in rules_def.items():
-                rules[key] = []
-                for rule_pattern, rule_value in rule_set.items():
-                    rules[key].append((re.compile(rule_pattern), rule_value))
+            for rule_pattern, values in rules_def.items():
+                rules.append((re.compile(rule_pattern), values))
 
         return cls(rules)
 
     def __call__(self, family_storage: BaseFamilyStorage):
         name = family_storage.name
+        metadata_value = None
+        for rule in self.rules:
+            rule_pattern, values = rule
+            if rule_pattern.match(name):
+                metadata_value = values
+                break
 
-        for key, rules_set in self.rules.items():
-            metadata_value = None
-            for rule_pattern, rule_value in rules_set:
-                if rule_pattern.match(name):
-                    metadata_value = rule_value
-                    break
-
-            if metadata_value:
-                family_storage.metadata[key] = metadata_value
+        if metadata_value:
+            family_storage.metadata = metadata_value

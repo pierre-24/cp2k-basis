@@ -74,10 +74,10 @@ class AddMetadataTestCase(unittest.TestCase):
     def test_add_metadata_ok(self):
         src = ['a', 'b', 'c']
 
-        add_metadata = AddMetadata({
-            'name': [(re.compile('(.*)'), 'named')],
-            'only_a': [(re.compile('a'), 'x')]
-        })
+        add_metadata = AddMetadata([
+            (re.compile('a'), {'name': 'named', 'only_a': 'x'}),
+            (re.compile('(.*)'), {'name': 'named'})
+        ])
 
         for name in src:
             family_storage = BaseFamilyStorage(name)
@@ -92,11 +92,12 @@ class AddMetadataTestCase(unittest.TestCase):
     def test_add_metadata_create_ok(self):
         src = ['a', 'b', 'c']
         rules = {
-            'name': {
-                '(.*)': 'y'
+            'b': {
+                'name': 'y',
+                'only_b': 'x'
             },
-            'only_b': {
-                'b': 'x'
+            '.*': {
+                'name': 'y'
             }
         }
 

@@ -15,16 +15,18 @@ NLS = ['\n', '\r']
 
 
 class Token:
-    def __init__(self, typ_: TokenType, value: str, position: int = -1):
+    def __init__(self, typ_: TokenType, value: str, position: int = -1, line: int = -1):
         self.type = typ_
         self.value = value
         self.position = position
+        self.line = line
 
     def __repr__(self):
-        return 'Token({},{}{})'.format(
+        return '<Token({},{}{}{})>'.format(
             self.type,
             self.value,
-            '' if self.position < 0 else ', {}'.format(self.position)
+            '' if self.position < 0 else ', {}'.format(self.position),
+            '' if self.line < 0 else ', {}'.format(self.line)
         )
 
 
@@ -35,6 +37,7 @@ class Lexer:
     def __init__(self, inp):
         self.input = inp
         self.position = 0
+        self.line = 1
 
     def _get_next_stop(self, must_be: Callable) -> int:
         end = self.position + 1
@@ -46,16 +49,18 @@ class Lexer:
     def tokenize(self) -> Iterator[Token]:
         while self.position < len(self.input):
             start = self.position
+            line_start = self.line
 
             if self.input[start] in SPACES:
                 self.position = self._get_next_stop(must_be=lambda x: x in SPACES)
-                yield Token(TokenType.SPACE, self.input[start:self.position], start)
+                yield Token(TokenType.SPACE, self.input[start:self.position], start, line_start)
             elif self.input[start] in NLS:
                 self.position = self._get_next_stop(must_be=lambda x: x in NLS)
-                yield Token(TokenType.NL, self.input[start:self.position], start)
+                yield Token(TokenType.NL, self.input[start:self.position], start, line_start)
+                self.line += self.input[start:self.position].count('\n')
             else:
                 self.position = self._get_next_stop(must_be=lambda x: x not in SPACES and x not in NLS)
-                yield Token(TokenType.WORD, self.input[start:self.position], start)
+                yield Token(TokenType.WORD, self.input[start:self.position], start, line_start)
 
         yield Token(TokenType.EOS, '\0', self.position)
 
@@ -69,10 +74,11 @@ class ParserNode:
 
 
 class BaseParser:
-    def __init__(self, inp: str):
+    def __init__(self, inp: str, source: str = ''):
         self.lexer = Lexer(inp)
         self.tokenizer = self.lexer.tokenize()
         self.current_token: Token = None
+        self.source = source
 
         self.next()
 

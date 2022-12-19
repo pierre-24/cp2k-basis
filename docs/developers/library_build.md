@@ -31,25 +31,22 @@ which is more verbose.
 #### Repositories
  
 Building the library requires a YAML file which describe all the sources for the basis sets and pseudopotentials .
-It is composed of a list of repositories, for which the general structure is:
+It is composed of:
 
 ```yaml
---- List of repositories
-- base: <URL1>
-  data:  # dictionary of keywords (optional)
-  files: # list of files (mandatory)
-- base: <URL2>
-# (...)
+repositories: # list of repositories
+metadata: # metadata for each basis set and pseud
 ```
 
-Each of the item of the list describe a repository. 
-A repository is thus defined by a base url (`base`), which is a template.
+The first item is a list of repositories.
+A repository is defined by a base url (`base`), which is a template.
 Keyword inside curly braces will be replaced by their value given in the `keyword` dictionary (following the [Python `format()` syntax](https://docs.python.org/3/library/string.html#format-string-syntax)).
 
 ??? example
     With:
 
     ```yaml
+    repositories:
     - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
       data:
         commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
@@ -57,7 +54,7 @@ Keyword inside curly braces will be replaced by their value given in the `keywor
     
     the base URL will be `https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/`.
 
-Finally, each repository has different files (listed `files`).
+Then, ach repository has different files (listed `files`).
 
 #### Files
 
@@ -68,7 +65,6 @@ name: <NAME>
 type: BASIS_SETS
 family_name:  # dictionary (mandatory)
 variant:  # dictionary (mandatory)
-metadata: # dictionary (optional)
 ```
 
 Each file has a `name` and a type linked to its content, which is either `BASIS_SETS` or `POTENTIALS`.
@@ -78,6 +74,7 @@ While gathering the file, `cb_fetch_data` will download it from `<BASE_URL>/<NAM
     From the following structure:
     
     ```yaml
+    repositories:
     - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
       data:
         commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
@@ -127,6 +124,7 @@ All the nickname are checked against the REGEX, in the order given in the file.
     With:
 
     ```yaml
+    repositories:
     - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
       data:
         commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
@@ -147,12 +145,15 @@ The rules are the same as with `family_name`, but only the **first** result will
     With:
 
     ```yaml
+    repositories:
     - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
       data:
         commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
       files:
         - name: BASIS_MOLOPT
           type: BASIS_SETS
+          family_name:
+            '^(.*)(-q\d{1,2})$': '\1'
           variant:
             '^.*-(q\d{1,2})$': '\1'
     ```
@@ -160,35 +161,44 @@ The rules are the same as with `family_name`, but only the **first** result will
     `cb_fetch_data` will apply the REGEX to every nickname, and will take **the first** result.
     With `SZV-MOLOPT-GTH SZV-MOLOPT-GTH-q1`, the first nickname yield no result, while the second yield `q1`, which will be used.
 
-#### Adding metadata to the families
+#### Adding metadata
 
 Finaly, `cb_fetch_data`, it will add metadata to those families.
-To do so, the `metdata` dictionary will be used, with the key being name of the metadata and the value being a key(REGEX)-value dictionary, which again allow for some flexibility.
-This time, the **family name** (not the nicknames) will be matched against each key, and if there is a match, this value will be used for the metadata.
-Note that in this case, there is no replacement, the bare value is used.
+
+To do so, the `metdata` dictionary will be used, in which the key is a REGEX matched against the name of the family.
+The if there is a match, then all the values are attributed as metadata.
 
 ??? example
     With:
 
     ```yaml
+    repositories:
     - base: https://github.com/cp2k/cp2k/raw/{commit}/data/
       data:
         commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
       files:
         - name: BASIS_MOLOPT
           type: BASIS_SETS
-          metadata:
-            references:
-              '.*': [https://github.com/cp2k/cp2k-data]
-            description:
-              '^SZV-MOLOPT-GTH$': A double zeta basis set
-              '.*': MOLOPT basis set.
+          family_name:
+            '^(.*)(-q\d{1,2})$': '\1'
+          variant:
+            '^.*-(q\d{1,2})$': '\1'
+    metadata:
+      '^SZV-MOLOPT-GTH$':
+        references: [https://github.com/cp2k/cp2k-data]
+        description: A double zeta basis set
+      '.*':
+        references: [https://github.com/cp2k/cp2k-data]
+        description: MOLOPT basis set.
     ```
     
     For the basis set `SZV-MOLOPT-GTH`, the metadata will contain two fields: `references` and `description` (which will contain "A double zeta basis set")
     For the basis set `DZVP-MOLOPT-GTH` (or any other basis, thanks to the use of `.*`), the fields in the metadata will be the same, but the value of `description` is different ("MOLOPT basis set.").
 
-For the moment, `references` and `description` are the two metadata reported for every basis set and pseudopotential.
+For the moment, `references`, `description` and `kind` are the three metadata that should be reported for every basis set and pseudopotential.
+
+!!! note
+    In practice, the YAML format defines [anchors and aliases](https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases), which allow to define references and kinds once and use them multiple time.
 
 ## Using the library
 
@@ -234,11 +244,12 @@ touch source.yml
 This file will follow the same syntax as the one described above [for files](#files), so the following skeleton can be used
 
 ```yaml
+files:
 - name: BASIS_MOLOPT_UCL
   type: BASIS_SETS
   family_name:
   variant:
-  metadata:
+metadata:
 ```
 
 You can now run `cb_explore_file` ... But nothing much happens:
@@ -263,13 +274,14 @@ Hopefully, the solution in this case is pretty straightforward: the name can be 
 ??? example
     With the following `source.yml`,
     ```yaml
+    files:
     - name: BASIS_MOLOPT_UCL
       type: BASIS_SETS
       family_name:
         '^(.*)(-q\d{1,2})$': '\1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
-      metadata:    
+    metadata:    
     ```
     
     The result is better:
@@ -312,18 +324,18 @@ Now you just need to add the metadata and iterate on the result until you are ha
 ??? example
     With the following `source.yml`,
     ```yaml
+    files:
     - name: BASIS_MOLOPT_UCL
       type: BASIS_SETS
       family_name:
         '^(.*)(-q\d{1,2})$': '\1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://github.com/cp2k/cp2k-data ]
-        description:
-          '^TZVP-MOLOPT-SR-GTH$': Short-range triple zeta (+ polarization) basis set.
-          '.*': MOLOPT basis set 
+    metadata:
+      '^TZVP-MOLOPT-SR-GTH$':
+        references: [ https://github.com/cp2k/cp2k-data ]
+        description: Short-range triple zeta (+ polarization) basis set.
+        kind: [MOLOPT, SR, GTH]
     ```
     
     Metadata were added to the basis sets:
@@ -335,15 +347,11 @@ Now you just need to add the metadata and iterate on the result until you are ha
     +- basis_sets
        |
        +- TZVP-MOLOPT-SR-GTH
-       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'Short-range triple zeta (+ polarization) basis set.', 'source': 'BASIS_MOLOPT_UCL'}
+       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'Short-range triple zeta (+ polarization) basis set.', 'kind': ['MOLOPT', 'SR', 'GTH']}
        |  |
        |  +- Li: q3
        |  +- Be: q4
        (...)
-       +- TZV2P-MOLOPT-SR-GTH
-       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'MOLOPT basis set', 'source': 'BASIS_MOLOPT_UCL'}
-       |  +- Li: q3
-       (...)
     ```
 
-When you are happy with the result (one can do better than that!), you can add it to the main [`DATA_SOURCES.yml`](https://github.com/pierre-24/cp2k-basis/blob/dev/library/DATA_SOURCES.yml) and do a pull request (see, e.g., [there](https://github.com/pierre-24/cp2k-basis/pull/11/files#diff-452895da662eb75440387745216fc5dd841478e06b9474d80b45d91bf714cdf0R202))!
+    When you are happy with the result (metadata should be defined for all basis sets!), you can add it to the main [`DATA_SOURCES.yml`](https://github.com/pierre-24/cp2k-basis/blob/dev/library/DATA_SOURCES.yml) and do a pull request.

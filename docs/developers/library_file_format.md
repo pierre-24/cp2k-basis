@@ -142,10 +142,12 @@ Each `basis set` and `pp familly` group might also have the following attributes
 
 | Name          | Type    | Description                                                         |
 |---------------|---------|---------------------------------------------------------------------|
-| `source`      | `str`   | URL to the original file used to build the data                     |
 | `description` | `str`   | Description of the data                                             |
 | `references`  | `array` | One-dimensional array of URLs to reference papers (DOI) or sources. |
+| `kind`        | `array` | One-dimensional array of kinds                                      |
 
-Those attributes are optional: if an attribute is missing, an empty value can be assumed.
+Each `atomic bs variant` and `atomic pp variant` may present a `source` attribute which indicate the URL to the source of this variant.
+
+Those attributes are optional.
 
 

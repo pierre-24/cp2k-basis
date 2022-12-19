@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="description" content="This website provide an equivalent to the famous basis set exchange for the basis sets and GTH pseudopotentials CP2K program.">
-    <meta name="keywords" content="cp2k, basis sets, pseudopotentials, GTH pseudopontetials">
+    <meta name="description" content="{{ description }}">
+    <meta name="keywords" content="cp2k, basis sets, pseudopotentials, GTH pseudopotentials">
 
     <title>{{ site_name }} &bullet; {% block page_title %}{% endblock %}</title>
 
@@ -17,7 +17,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@PierreBeaujean" />
     <meta name="twitter:title" content="{{ site_name }}" />
-    <meta name="twitter:description" content="This website provide an equivalent to the famous basis set exchange for the basis sets and GTH pseudopotentials CP2K program." />
+    <meta name="twitter:description" content="{{ description }}" />
     <meta name="twitter:image" content="{{ url_for('static', filename='images/logo.svg') }}" />
     <meta name="twitter:image:alt" content="Logo of {{ site_name }}" />
 
@@ -36,9 +36,9 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav">
-                  <li class="nav-item"><a href="https://pierre-24.github.io/cp2k-basis/users/api/" class="nav-link active">REST API reference</a></li>
-                  <li class="nav-item"><a href="https://pierre-24.github.io/cp2k-basis/users/webserver/" class="nav-link active">How to use?</a></li>
-                  <li class="nav-item"><a href="https://github.com/pierre-24/cp2k-basis" class="nav-link active">Github</a> </li>
+                  <li class="nav-item"><a href="{{ documentation }}/users/api/" class="nav-link active">REST API reference</a></li>
+                  <li class="nav-item"><a href="{{ documentation }}/users/webserver/" class="nav-link active">How to use?</a></li>
+                  <li class="nav-item"><a href="{{ code_repo }}" class="nav-link active">Github</a> </li>
                   <li class="nav-item"><a href="https://www.basissetexchange.org/" class="nav-link active">Basis Set Exchange</a></li>
               </ul>
             </div>
@@ -51,8 +51,8 @@
         </main>
 
         <footer class="container-fluid">
-            <p class="mb-1"><a href="https://github.com/pierre-24/cp2k-basis">{{ site_name }}</a> version {{ site_version }} by <a href="https://pierrebeaujean.net">Pierre Beaujean</a>.</p>
-            <p>Written in <a href="https://www.python.org/">Python 3</a> 🐍 with <a href="https://flask.palletsprojects.com">Flask</a>. Please report <a href="https://github.com/pierre-24/cp2k-basis/issues">inaccuracies</a>.</p>
+            <p class="mb-1"><a href="{{ code_repo }}">{{ site_name }}</a> version <a href="{{ code_repo }}/tree/{{ site_version }}">{{ site_version }}</a> by <a href="{{ documentation }}/about/#who">{{ author }}</a>.</p>
+            <p>Written in <a href="https://www.python.org/">Python 3</a> 🐍 with <a href="https://flask.palletsprojects.com">Flask</a>. Please report <a href="{{ code_repo }}/issues">inaccuracies</a>.</p>
         </footer>
     {% endblock %}
 

@@ -1,5 +1,6 @@
 """
-Implementation of a working webservice
+This website provides an equivalent to the famous basis set exchange for the basis sets and GTH pseudopotentials
+used in the CP2K program.
 """
 
 import pathlib

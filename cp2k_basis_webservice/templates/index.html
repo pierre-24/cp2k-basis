@@ -21,8 +21,8 @@
     <div class="row">
         <div class="col-12 col-xl-8 col-xxl-7">
             <div class="blk">
-                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" height="100" class="float-end mx-2">
-                <h2>Welcome to {{ site_name }}</h2>
+                <a href="{{ url_for('static', filename='images/logo.svg') }}"><img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" height="100" class="float-end mx-2"></a>
+                <h2>Welcome to {{ site_name }}!</h2>
                 <p>
                     This website provide an equivalent to the famous <a href="https://www.basissetexchange.org/">basis set exchange</a> for the <a href="https://pierre-24.github.io/cp2k-basis/users/basis_sets_and_pseudos/">basis sets and GTH pseudopotentials</a> used in the <a href="https://www.cp2k.org/">CP2K program</a>.
                     Data are obtained from <a href="https://github.com/cp2k/cp2k/tree/master/data">the CP2K <code>data</code> folder</a> (see <a href="https://github.com/pierre-24/cp2k-basis/blob/master/library/">here</a>).
@@ -32,8 +32,12 @@
             <div class="row">
                 <div class="col-sm-6">
                 <div class="blk">
-                    <p>
-                    <input type="text" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
+                    <p class="search-group input-group">
+                        <input type="search" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
+                        <select class="form-select form-select-sm" id="basisSetKindSelect">
+                            <option value="">All kinds</option>
+                        </select>
+                        <span class="clear-button" data-clear="#basisSetSearch"></span>
                     </p>
                     <p>
                     <select size="5" class="form-select form-select-sm" id="basisSetSelect">
@@ -43,8 +47,12 @@
 
                 <div class="col-sm-6">
                 <div class="blk">
-                    <p>
-                    <input type="text" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
+                    <p class="input-group search-group">
+                        <input type="search" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
+                        <select class="form-select form-select-sm" id="pseudoKindSelect">
+                            <option value="">All kinds</option>
+                        </select>
+                        <span class="clear-button" data-clear="#pseudoSearch"></span>
                     </p>
                     <p>
                     <select size="5" class="form-select form-select-sm" id="pseudoSelect">
@@ -121,7 +129,7 @@
                     {{ cEmpty() }}
                     {{ cEmpty() }}
                     {{ cEmpty() }}
-                    {% for i in range(89, 93) %}
+                    {% for i in range(89, 104) %}
                         {{ cElement(i) }}
                     {% endfor %}
                 </tr>
@@ -175,10 +183,12 @@
 
         let controller = new Controller({
             'basis_sets': {
-                'per_name': {{ bs_per_name|safe }},
+                'elements': {{ basis_sets['elements']|safe }},
+                'kinds': {{ basis_sets['kinds']|safe }},
             },
             'pseudopotentials': {
-                'per_name':  {{ pp_per_name|safe }},
+                'elements':  {{ pseudopotentials['elements']|safe }},
+                'kinds':  {{ pseudopotentials['kinds']|safe }},
             }
         });
     </script>

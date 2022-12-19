@@ -3,224 +3,443 @@
 #
 # See https://pierre-24.github.io/cp2k-basis/developers/library_build/ for a description of the format.
 
---- # list of repositories
-- base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # CP2K main repository
+---
+# repositories
+repositories:
+- base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # main CP2K repository
   data:
-    commit: '786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1'
+    commit: 786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1
   files:
-    - name: BASIS_MOLOPT
-      type: BASIS_SETS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [https://dx.doi.org/10.1063/1.2770708]
-        description:
-          'SZV-MOLOPT-GTH': A single zeta valence MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          'DZVP-MOLOPT-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          'TZVP-MOLOPT-GTH': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          'TZV2P-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          'TZV2PX-MOLOPT-GTH': A triple zeta valence (+ 2 sets polarization) and 1f MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
-          # short-range
-          'SZV-MOLOPT-SR-GTH': A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          'DZVP-MOLOPT-SR-GTH': A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          # fallback:
-          '.*': MOLOPT basis set.
-    - name: GTH_BASIS_SETS
-      type: BASIS_SETS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [https://dx.doi.org/10.1016/j.cpc.2004.12.014]  # Quickstep paper, in which they were originally described
-        description:
-          'SZV-GTH': A single zeta valence basis set for GTH pseudopotentials
-          'DZV-GTH': A double zeta valence basis set for H and He for GTH pseudopotentials
-          'DZVP-GTH': A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
-          'TZVP-GTH': A triple zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
-          'TZV2P-GTH': A triple zeta valence (+ 2 set of polarization) basis set for GTH pseudopotentials
-          'QZV2P-GTH': A quadruple zeta valence (+ 2 set of polarization) basis set for GTH pseudopotentials
-          'QZV3P-GTH': A quadruple zeta valence (+ 3 set of polarization) basis set for GTH pseudopotentials
-          'aug-DZVP-GTH': An augmented double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
-          'aug-TZVP-GTH': An augmented triple zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
-          'aug-TZV2P-GTH': An augmented triple zeta valence (+ 2 sets of polarization) basis set for GTH pseudopotentials
-          'aug-QZV2P-GTH': An augmented quadruple zeta valence (+ 2 sets of polarization) basis set for GTH pseudopotentials
-          'aug-QZV3P-GTH': An augmented quadruple zeta valence (+ 3 sets of polarization) basis set for GTH pseudopotentials
-          # fallback:
-          '.*': A basis set for GTH pseudopotentials
-    - name: GTH_POTENTIALS
-      type: POTENTIALS
-      family_name:
-        # avail in other files
-        '^GTH-PBE(-.*)?$': ~
-        '^GTH-PBESol(-.*)?$': ~
-        # keep the rest
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [https://dx.doi.org/10.1103/PhysRevB.54.1703, https://dx.doi.org/10.1103/PhysRevB.58.3641, https://dx.doi.org/10.1007/s00214-005-0655-y, https://github.com/cp2k/cp2k-data]
-        description:
-          '.*-BLYP': GTH pseudopotentials, optimized for BLYP.
-          '.*-OLYP': GTH pseudopotentials, optimized for OLYP.
-          '.*-BP': GTH pseudopotentials, optimized for BP.
-          '.*-HCTH.*': GTH pseudopotentials, optimized for HCTH.
-          '.*-(LDA|PADE)': GTH pseudopotentials, optimized for PADE.
-          # fallback:
-          '.*': GTH pseudopotentials.
-    - name: LnPP1_POTENTIALS
-      type: POTENTIALS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://doi.org/10.1021/acs.jctc.9b00553, https://doi.org/10.1021/acs.jctc.1c00026 ]
-        description:
-          '.*': GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
-    - name: BASIS_MOLOPT_LnPP1
-      patch: BASIS_MOLOPT_LnPP1.patch
-      type: BASIS_SETS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://doi.org/10.1021/acs.jctc.9b00553 ]
-        description:
-          '.*': MOLOPT basis set (double zeta) to explore Lanthanide chemistry in complex environments, optimized for PBE.
-    - name: AcPP1_POTENTIALS
-      type: POTENTIALS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://doi.org/10.1021/acs.jctc.9b00553, https://doi.org/10.1021/acs.jctc.1c00026]
-        description:
-          '.*': GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
-    - name: BASIS_MOLOPT_AcPP1
-      type: BASIS_SETS
-      patch: BASIS_MOLOPT_AcPP1.patch
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1-AcLnPP1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://doi.org/10.1021/acs.jctc.1c00026 ]
-        description:
-          '.*': MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
-    - name: POTENTIAL_UZH
-      patch: POTENTIAL_UZH.patch
-      type: POTENTIALS
-      family_name:
-        '^(.*)ALLELECTRON(.*)?': '\1ALL\2'
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://github.com/cp2k/cp2k-data ]
-        description:
-          'ALL': All-electron pseudopotentials (UZH)
-          '.*-(PBE|GGA)$': GTH pseudopotentials, optimized for PBE (UZH).
-          '.*-(SCAN|MGGA)': GTH pseudopotentials, optimized for SCAN (UZH).
-          '.*-(PBE0|HYB)': GTH pseudopotentials, optimized for PBE0 (UZH).
-    - name: BASIS_MOLOPT_UZH
-      type: BASIS_SETS
-      family_name:
-        '^(.*)(-q\d{1,2})$': '\1'
-        '^(.*)-ae$': '\1-ae'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://github.com/cp2k/cp2k-data ]
-        description:
-          '^DZVP-MOLOPT-(PBE|GGA)-GTH$': A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
-          '^TZVP-MOLOPT-(PBE|GGA)-GTH$': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
-          '^TZV2P-MOLOPT-(PBE|GGA)-GTH$': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functiona (UZH).
-          '^DZVP-MOLOPT-(SCAN|MGGA)-GTH$': A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
-          '^TZVP-MOLOPT-(SCAN|MGGA)-GTH$': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
-          '^TZV2P-MOLOPT-(SCAN|MGGA)-GTH$': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
-          '^DZVP-MOLOPT-(PBE0|HYB)-GTH$': A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
-          '^TZVP-MOLOPT-(PBE0|HYB)-GTH$': A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
-          '^TZV2P-MOLOPT-(PBE0|HYB)-GTH$': A triple zeta valence (+ 2 sets polarization) MOLOPT basis set optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
-          # GAPW:
-          '^SVP-MOLOPT-(PBE|GGA)-GTH$': A MOLOPT basis set based on def-svp, optimized for small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
-          '^TZVPP-MOLOPT-(PBE|GGA)-GTH$': A MOLOPT basis set based on def-tzvpp, optimized for small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
-          '^QZVPP-MOLOPT-(PBE|GGA)-GTH$': A MOLOPT basis set based on def-qzvpp, optimized for the small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
-          '^SVP-MOLOPT-(GGA|PBE)-ae$': A MOLOPT basis set based on def-svp, optimized for all-electrons, the PBE functional, and the GAPW method (UZH).
-          '^TZVPP-MOLOPT-(PBE|GGA)-ae$': A MOLOPT basis set based on def-tzvpp, optimized for all-electrons, the PBE functional, and the GAPW method (UZH).
-          '^QZVPP-MOLOPT-(PBE|GGA)-ae$': A MOLOPT basis set based on def-qzvpp, optimized for all-electrons, the PBE functional, and the GAPW method (UZH).
-    - name: ALL_BASIS_SETS
-      patch: ALL_BASIS_SETS.patch
-      type: BASIS_SETS
-      family_name:
-        # remove basis sets that can be found in ESML:
-        '^\(.*\)$': ~
-        '^6-31.*$': ~
-        '^SADLEJ$': ~
-        '^.*-ANO$': ~
-        # add the others
-        '^(.*)ALLELECTRON(.*)?': '\1ALL\2'
-        '^(.*)(-q\d{1,2})$': '\1'
-        '^(.*)$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [ https://github.com/cp2k/cp2k-data ]
-        description:
-          '^DZV-ALL$': A double zeta valence basis set for all-electron calculations.
-          '^DZVP(-MONTREAL)?-ALL$': A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations.
-          '^TZVP-ALL$': A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations.
-          '^DZV-ALL-PADE(-NEW)?$': A double zeta valence basis set for all-electron calculations, optimized for PADE.
-          '^DZVP-ALL-PADE(-NEW)?$': A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for PADE.
-          '^TZV-ALL-PADE$': A triple zeta valence basis set for all-electron calculations, optimized for PADE.
-          '^TZVP-ALL-PADE$': A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for PADE.
-          '^DZV-ALL-BLYP$': A double zeta valence basis set for all-electron calculations, optimized for BLYP.
-          '^DZVP-ALL-BLYP$': A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for BLYP.
-          '^TZVP-ALL-BLYP$': A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for BLYP.
-          '^DZV-GTH-PADE$': A double zeta valence basis set for GTH pseudopotentials, optimized for PADE.
-          '^DZV-GTH-PADE-CONFINED$': A double zeta valence basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for PADE.
-          '^DZVP-GTH-PADE$': A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials, optimized for PADE.
-          '^DZVP-GTH-PADE-CONFINED$': A double zeta valence (+ 1 set of polarization) basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for PADE.
-          '^DZV-GTH-BLYP$': A double zeta valence basis set for GTH pseudopotentials, optimized for BLYP.
-          '^DZV-GTH-BLYP-CONFINED$': A double zeta valence basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for BLYP.
-          '^DZVP-GTH-BLYP$': A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials, optimized for BLYP.
-          '^DZVP-GTH-BLYP-CONFINED$': A double zeta valence (+ 1 set of polarization) basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for BLYP.
-    - name: BASIS_MOLOPT_UCL
-      type: BASIS_SETS
-      family_name:
-        # remove non-SR basis sets (they only add Ce and Br, which is oddly specific!)
-        '^SZV-MOLOPT-GTH(-.*)?$': ~
-        '^DZVP-MOLOPT-GTH(-.*)?$': ~
-        '^TZVP-MOLOPT-GTH(-.*)?$': ~
-        '^TZV2P-MOLOPT-GTH(-.*)?$': ~
-        '^TZV2PX-MOLOPT-GTH(-.*)?$': ~
-        # keep the rest
-        '^(.*)(-q\d{1,2})$': '\1'
-      variant:
-        '^.*-(q\d{1,2})$': '\1'
-      metadata:
-        references:
-          '.*': [https://doi.org/10.1063/1.2770708, https://doi.org/10.1039/B508541A, https://github.com/cp2k/cp2k-data]
-        description:
-          # MOLOPT-SR
-          SZV-MOLOPT-SR-GTH: A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          DZV-MOLOPT-SR-GTH: A double zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          DZVPd?-MOLOPT-SR-GTH: A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          TZVPd?-MOLOPT-SR-GTH: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          TZV2Pd?-MOLOPT-SR-GTH: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
-          # failback:
-          '.*': MOLOPT basis set
+  # GTH (older)
+  - name: GTH_BASIS_SETS
+    type: BASIS_SETS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: GTH_POTENTIALS
+    type: POTENTIALS
+    family_name:
+      # drop these (available elsewhere):
+      ^GTH-PBE(-.*)?$: ~
+      ^GTH-PBESol(-.*)?$: ~
+      # add the others
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # MOLOPT
+  - name: BASIS_MOLOPT
+    type: BASIS_SETS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # MOLOPT (UCL)
+  - name: BASIS_MOLOPT_UCL
+    type: BASIS_SETS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # MOLOPT (UZH)
+  - name: POTENTIAL_UZH
+    type: POTENTIALS
+    patch: POTENTIAL_UZH.patch
+    family_name:
+      ^(.*)ALLELECTRON(.*)?: \1ALL\2
+      ^(.*)(-q\d{1,2})$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: BASIS_MOLOPT_UZH
+    type: BASIS_SETS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1
+      ^(.*)-ae$: \1-ae
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # MOLOPT (Actinides and Lantanides)
+  - name: LnPP1_POTENTIALS
+    type: POTENTIALS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-AcLnPP1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: BASIS_MOLOPT_LnPP1
+    type: BASIS_SETS
+    patch: BASIS_MOLOPT_LnPP1.patch
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-AcLnPP1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: AcPP1_POTENTIALS
+    type: POTENTIALS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-AcLnPP1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  - name: BASIS_MOLOPT_AcPP1
+    type: BASIS_SETS
+    patch: BASIS_MOLOPT_AcPP1.patch
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-AcLnPP1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # all-electron
+  - name: ALL_BASIS_SETS
+    type: BASIS_SETS
+    patch: ALL_BASIS_SETS.patch
+    family_name:
+      # remove all basis sets already in the BSE
+      ^\(.*\)$: ~
+      ^6-31.*$: ~
+      ^SADLEJ$: ~
+      ^.*-ANO$: ~
+      # add the rest
+      ^(.*)ALLELECTRON(.*)?: \1ALL\2
+      ^(.*)(-q\d{1,2})$: \1
+      ^(.*)$: \1
+    variant:
+      ^.*-(q\d{1,2})$: \1
+#
+# references & kinds: not used per se, but useful to avoid repetition thanks to the reference mechanism of YAML
+references:
+- &refmolopt
+  - https://dx.doi.org/10.1063/1.2770708
+  - https://doi.org/10.1039/B508541A
+  - https://github.com/cp2k/cp2k-data
+- &refquickstep
+  - https://dx.doi.org/10.1016/j.cpc.2004.12.014
+- &refgth
+  - https://dx.doi.org/10.1103/PhysRevB.54.1703
+  - https://dx.doi.org/10.1103/PhysRevB.58.3641
+  - https://dx.doi.org/10.1007/s00214-005-0655-y
+  - https://github.com/cp2k/cp2k-data
+- &refacln
+  - https://doi.org/10.1021/acs.jctc.9b00553
+  - https://doi.org/10.1021/acs.jctc.1c00026
+- &refdefault
+  - https://github.com/cp2k/cp2k-data
+kinds:
+  - &kindgth
+    - GTH
+  - &kindgthsr
+    - GTH
+    - SR
+  - &kindmolopt
+    - MOLOPT
+    - GTH
+  - &kindmoloptsr
+    - MOLOPT
+    - SR
+    - GTH
+  - &kindall
+    - ALL
+  - &kindallmolopt
+    - ALL
+    - MOLOPT
+#
+# metadata definitions for all basis sets and pseudos:
+metadata:
+  # 1. BASIS SETS:
+  # --------------
+  #
+  # GTH:
+  ^SZV-GTH$:
+    description: A single zeta valence basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^DZV-GTH$:
+    description: A double zeta valence basis set for H and He for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^DZVP-GTH$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^TZVP-GTH$:
+    description: A triple zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^TZV2P-GTH$:
+    description: A triple zeta valence (+ 2 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^QZV2P-GTH$:
+    description: A quadruple zeta valence (+ 2 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  ^QZV3P-GTH$:
+    description: A quadruple zeta valence (+ 3 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  aug-DZVP-GTH:
+    description: An augmented double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  aug-TZVP-GTH:
+    description: An augmented triple zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  aug-TZV2P-GTH:
+    description: An augmented triple zeta valence (+ 2 sets of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  aug-QZV2P-GTH:
+    description: An augmented quadruple zeta valence (+ 2 sets of polarization) basis set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  aug-QZV3P-GTH:
+    description: An augmented quadruple zeta valence (+ 3 sets of polarization) basis  set for GTH pseudopotentials
+    references: *refquickstep
+    kind: *kindgth
+  # -- PADE
+  ^DZV-GTH-PADE$:
+    description: A double zeta valence basis set for GTH pseudopotentials, optimized for PADE.
+    references: *refdefault
+    kind: *kindgth
+  ^DZV-GTH-PADE-CONFINED$:
+    description: A double zeta valence basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for PADE.
+    references: *refdefault
+    kind: *kindgthsr
+  ^DZVP-GTH-PADE$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials, optimized for PADE.
+    references: *refdefault
+    kind: *kindgth
+  ^DZVP-GTH-PADE-CONFINED$:
+    description: A double zeta valence (+ 1 set of polarization) basis set (CONFINED
+      version for solids) for GTH pseudopotentials, optimized for PADE.
+    references: *refdefault
+    kind: *kindgthsr
+  # -- BLYP
+  ^DZV-GTH-BLYP$:
+    description: A double zeta valence basis set for GTH pseudopotentials, optimized for BLYP.
+    references: *refdefault
+    kind: *kindgth
+  ^DZV-GTH-BLYP-CONFINED$:
+    description: A double zeta valence basis set (CONFINED version for solids) for GTH pseudopotentials, optimized for BLYP.
+    references: *refdefault
+    kind: *kindgthsr
+  ^DZVP-GTH-BLYP$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials, optimized for BLYP.
+    references: *refdefault
+    kind: *kindgth
+  ^DZVP-GTH-BLYP-CONFINED$:
+    description: A double zeta valence (+ 1 set of polarization) basis set (CONFINED  version for solids) for GTH pseudopotentials, optimized for BLYP.
+    references: *refdefault
+    kind: *kindgthsr
+
+  # MOLOPT:
+  ^SZV-MOLOPT-GTH$:
+    description: A single zeta valence MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmolopt
+  ^DZV-MOLOPT-GTH-AcLnPP1$:
+    description:  MOLOPT basis set (double zeta) to explore Lanthanide chemistry in complex environments, optimized for PBE.
+    references: *refacln
+    kind: *kindmolopt
+  ^DZVP-MOLOPT-GTH$:
+    description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmolopt
+  ^DZVP-MOLOPT-GTH-AcLnPP1$:
+    description: MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
+    references: *refacln
+    kind: *kindmolopt
+  ^TZVP-MOLOPT-GTH$:
+    description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmolopt
+  ^TZV2P-MOLOPT-GTH$:
+    description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmolopt
+  ^TZV2PX-MOLOPT-GTH$:
+    description: A triple zeta valence (+ 2 sets polarization and 1f) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmolopt
+
+  # MOLOPT (UZH):
+  # -- PBE:
+  ^DZVP-MOLOPT-(PBE|GGA)-GTH$:
+    description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZVP-MOLOPT-(PBE|GGA)-GTH$:
+    description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized or the GTH pseudopotentials and the PBE functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZV2P-MOLOPT-(PBE|GGA)-GTH$:
+    description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  # -- SCAN:
+  ^DZVP-MOLOPT-(SCAN|MGGA)-GTH$:
+    description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZVP-MOLOPT-(SCAN|MGGA)-GTH$:
+    description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZV2P-MOLOPT-(SCAN|MGGA)-GTH$:
+    description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  # -- PBE0:
+  ^DZVP-MOLOPT-(PBE0|HYB)-GTH$:
+    description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZVP-MOLOPT-(PBE0|HYB)-GTH$:
+    description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZV2P-MOLOPT-(PBE0|HYB)-GTH$:
+    description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set optimized for the GTH pseudopotentials and the PBE0 functional (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+
+  # MOLOPT-SR:
+  SZV-MOLOPT-SR-GTH:
+    description: A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+  SZVP-MOLOPT-SR-GTH:
+    description: A single zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+  DZV-MOLOPT-SR-GTH:
+    description: A double zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+  DZVPd?-MOLOPT-SR-GTH:
+    description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+  TZVPd?-MOLOPT-SR-GTH:
+    description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+  TZV2Pd?-MOLOPT-SR-GTH:
+    description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
+    references: *refmolopt
+    kind: *kindmoloptsr
+
+  # small-core basis sets for GAPW (UZH)
+  ^SVP-MOLOPT-(PBE|GGA)-GTH$:
+    description: A MOLOPT basis set based on def-svp, optimized for small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^TZVPP-MOLOPT-(PBE|GGA)-GTH$:
+    description: A MOLOPT basis set based on def-tzvpp, optimized for small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+  ^QZVPP-MOLOPT-(PBE|GGA)-GTH$:
+    description: A MOLOPT basis set based on def-qzvpp, optimized for the small-core GTH pseudopotentials, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindmolopt
+
+  # ALL (MOLOPT, from UZH)
+  ^SVP-MOLOPT-(GGA|PBE)-ae$:
+    description: A MOLOPT basis set based on def-svp, optimized for all-electron calculations, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindallmolopt
+  ^TZVPP-MOLOPT-(PBE|GGA)-ae$:
+    description: A MOLOPT basis set based on def-tzvpp, optimized for all-electron calculations, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindallmolopt
+  ^QZVPP-MOLOPT-(PBE|GGA)-ae$:
+    description: A MOLOPT basis set based on def-qzvpp, optimized for all-electron calculations, the PBE functional, and the GAPW method (UZH).
+    references: *refdefault
+    kind: *kindallmolopt
+
+  # ALL (others, from various sources):
+  ^DZV-ALL$:
+    description: A double zeta valence basis set for all-electron calculations.
+    references: *refdefault
+    kind: *kindall
+  ^DZVP(-MONTREAL)?-ALL$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations.
+    references: *refdefault
+    kind: *kindall
+  ^TZVP-ALL$:
+    description: A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations.
+    references: *refdefault
+    kind: *kindall
+  # -- PADE
+  ^DZV-ALL-PADE(-NEW)?$:
+    description: A double zeta valence basis set for all-electron calculations, optimized for PADE.
+    references: *refdefault
+    kind: *kindall
+  ^DZVP-ALL-PADE(-NEW)?$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for PADE.
+    references: *refdefault
+    kind: *kindall
+  ^TZV-ALL-PADE$:
+    description: A triple zeta valence basis set for all-electron calculations, optimized for PADE.
+    references: *refdefault
+    kind: *kindall
+  ^TZVP-ALL-PADE$:
+    description: A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for PADE.
+    references: *refdefault
+    kind: *kindall
+  # -- BLYP
+  ^DZV-ALL-BLYP$:
+    description: A double zeta valence basis set for all-electron calculations, optimized for BLYP.
+    references: *refdefault
+    kind: *kindall
+  ^DZVP-ALL-BLYP$:
+    description: A double zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for BLYP.
+    references: *refdefault
+    kind: *kindall
+  ^TZVP-ALL-BLYP$:
+    description: A triple zeta valence (+ 1 set of polarization) basis set for all-electron calculations, optimized for BLYP.
+    references: *refdefault
+    kind: *kindall
+
+  # 2. PSEUDOPOTENTIALS
+  # -------------------
+  #
+  # GTH:
+  ^GTH-BLYP$:
+    description: GTH pseudopotentials, optimized for BLYP.
+    references: *refgth
+    kind: *kindgth
+  ^GTH-OLYP$:
+    description: GTH pseudopotentials, optimized for OLYP.
+    references: *refgth
+    kind: *kindgth
+  ^GTH-BP$:
+    description: GTH pseudopotentials, optimized for BP.
+    references: *refgth
+    kind: *kindgth
+  ^GTH-HCTH.*$:
+    description: GTH pseudopotentials, optimized for HCTH.
+    references: *refgth
+    kind: *kindgth
+  ^GTH-(LDA|PADE)$:
+    description: GTH pseudopotentials, optimized for PADE.
+    references: *refgth
+    kind: *kindgth
+  ^GTH-(PBE|GGA)$:
+    description: GTH pseudopotentials, optimized for PBE (UZH).
+    references: *refgth
+    kind: *kindgth
+  ^GTH-(SCAN|MGGA)$:
+    description: GTH pseudopotentials, optimized for SCAN (UZH).
+    references: *refgth
+    kind: *kindgth
+  ^GTH-(PBE0|HYB)$:
+    description: GTH pseudopotentials, optimized for PBE0 (UZH).
+    references: *refgth
+    kind: *kindgth
+  ^GTH-PBE-AcLnPP1$:
+    description: GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
+    references: *refacln
+    kind: *kindgth
+  # ALL:
+  ALL:
+    description: All-electron pseudopotentials (UZH)
+    references: *refdefault
+    kind: *kindall
+

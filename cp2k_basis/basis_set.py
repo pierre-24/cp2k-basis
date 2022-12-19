@@ -97,8 +97,8 @@ class Contraction:
 
 
 class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
-    def __init__(self, symbol: str, names: List[str], contractions: List[Contraction]):
-        super().__init__(symbol, names)
+    def __init__(self, symbol: str, names: List[str], contractions: List[Contraction], source: str = ''):
+        super().__init__(symbol, names, source)
         self.contractions = contractions
 
     def _l_max(self) -> int:
@@ -127,6 +127,10 @@ class AtomicBasisSetVariant(BaseAtomicVariantDataObject):
     def __str__(self) -> str:
         r = '# {} [{}|{}]\n'.format(
             self.symbol, self._representation(False, sep=''), self._representation(True, sep=''))
+
+        if self.source:
+            r += '# SOURCE: {}\n'.format(self.source)
+
         r += '{}  {}\n{}\n'.format(self.symbol, ' '.join(self.names), len(self.contractions))
 
         r += ''.join(str(c) for c in self.contractions)
@@ -214,7 +218,9 @@ class AtomicBasisSetsParser(BaseParser):
         """
 
         self.expect(TokenType.WORD)
-        symbol = self.current_token.value
+
+        line = self.current_token.line
+        symbol = self.current_token.value[0].upper() + self.current_token.value[1:].lower()
         self.next()
         self.eat(TokenType.SPACE)
 
@@ -243,7 +249,8 @@ class AtomicBasisSetsParser(BaseParser):
             l_logger.debug('read contraction {}'.format(i))
             contractions.append(self.contraction())
 
-        return AtomicBasisSetVariant(symbol, names, contractions)
+        return AtomicBasisSetVariant(
+            symbol, names, contractions, source=(self.source + '#L{}'.format(line)) if self.source else '')
 
     def contraction(self) -> Contraction:
         """

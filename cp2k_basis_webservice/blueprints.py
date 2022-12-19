@@ -42,12 +42,24 @@ class IndexView(RenderTemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
+        from cp2k_basis_webservice import __doc__ as description
+
         ctx.update(
             site_name='cp2k-basis',
             site_version=cp2k_basis.__version__,
+            author=cp2k_basis.__author__,
+            code_repo='https://github.com/pierre-24/cp2k-basis',
+            documentation='https://pierre-24.github.io/cp2k-basis',
+            description=description,
             z_to_symb=Z_TO_SYMB,
-            bs_per_name=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
-            pp_per_name=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
+            basis_sets=dict(
+                elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
+                kinds=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].kinds_per_family),
+            ),
+            pseudopotentials=dict(
+                elements=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
+                kinds=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].kinds_per_family),
+            )
         )
 
         return ctx
@@ -94,13 +106,13 @@ class AllDataAPI(MethodView):
             query=dict(type='ALL'),
             result=dict(
                 basis_sets=dict(
-                    per_name=bs_storage.elements_per_family,
-                    per_element=bs_storage.families_per_element,
+                    elements=bs_storage.elements_per_family,
+                    kinds=bs_storage.kinds_per_family,
                     build_date=bs_storage.date_build
                 ),
                 pseudopotentials=dict(
-                    per_name=pp_storage.elements_per_family,
-                    per_element=pp_storage.families_per_element,
+                    elements=pp_storage.elements_per_family,
+                    kinds=pp_storage.kinds_per_family,
                     build_date=pp_storage.date_build
                 )
             )
@@ -111,12 +123,22 @@ api_blueprint.add_url_rule('/data', view_func=AllDataAPI.as_view(name='data'))
 
 
 class NamesAPI(MethodView):
-    @parser.use_kwargs({'elements': field_elements}, location='query')
+    @parser.use_kwargs({
+        'elements': field_elements,
+        'bs_name': fields.Str(),
+        'bs_kind': fields.Str(),
+        'pp_name': fields.Str(),
+        'pp_kind': fields.Str()
+    }, location='query')
     def get(self, **kwargs):
         bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
         pp_storage: Storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
 
         elements = kwargs.get('elements', None)
+        bs_name = kwargs.get('bs_name', None)
+        pp_name = kwargs.get('pp_name', None)
+        bs_kind = kwargs.get('bs_kind', None)
+        pp_kind = kwargs.get('pp_kind', None)
 
         query = dict(type='ALL')
 
@@ -126,8 +148,8 @@ class NamesAPI(MethodView):
         return flask.jsonify(
             query=query,
             result=dict(
-                basis_sets=bs_storage.get_names_for_elements(elements),
-                pseudopotentials=pp_storage.get_names_for_elements(elements)
+                basis_sets=bs_storage.get_names(elements, bs_name, bs_kind),
+                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_kind)
             )
         )
 

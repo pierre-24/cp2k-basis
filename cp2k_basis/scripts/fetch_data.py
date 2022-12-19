@@ -28,6 +28,7 @@ def extract_from_file(
         bs_storage: BasisSetsStorage,
         pp_storage: PseudopotentialsStorage,
         base_url: str,
+        add_metadata: AddMetadata,
         pwd: pathlib.Path = pathlib.Path('.')
 ):
 
@@ -40,26 +41,21 @@ def extract_from_file(
     if 'variant' in file_def:
         filter_variant = FilterFirst.create(file_def['variant'])
 
-    # build the rules for the metadata
-    add_metadata = AddMetadata({})
-    if 'metadata' in file_def:
-        add_metadata = AddMetadata.create(file_def['metadata'])
-
-    add_metadata.rules['source'] = [(re.compile(r'.*', ), base_url + file_def['name'])]  # add rule for source
-
     # apply patch, if any
     if 'patch' in file_def:
         l_logger.info('will apply patch `{}`'.format(file_def['patch']))
         with open(pwd / file_def['patch']) as f:
             content = diffpatch.apply_patch(content, f.read())
 
-    # fetch data and store them
+    # fetch data and store them:
     if file_def['type'] == 'BASIS_SETS':
-        iterator = AtomicBasisSetsParser(content).iter_atomic_basis_set_variants()
+        iterator = AtomicBasisSetsParser(
+            content, source=base_url + file_def['name']).iter_atomic_basis_set_variants()
         bs_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
     elif file_def['type'] == 'POTENTIALS':
-        iterator = AtomicPseudopotentialsParser(content).iter_atomic_pseudopotential_variants()
+        iterator = AtomicPseudopotentialsParser(
+            content, source=base_url + file_def['name']).iter_atomic_pseudopotential_variants()
         pp_storage.update(iterator, filter_name, filter_variant, add_metadata)
 
 
@@ -71,8 +67,13 @@ def fetch_data(data_sources: dict, pwd: pathlib.Path = pathlib.Path('.')) -> Tup
     bs_storage = BasisSetsStorage()
     pp_storage = PseudopotentialsStorage()
 
+    # read metadata
+    add_metadata = AddMetadata()
+    if 'metadata' in data_sources:
+        add_metadata = AddMetadata.create(data_sources['metadata'])
+
     # fetch files
-    for data_source in data_sources:
+    for data_source in data_sources['repositories']:
         if 'data' in data_source:
             base_url = data_source['base'].format(**data_source['data'])
         else:
@@ -87,7 +88,8 @@ def fetch_data(data_sources: dict, pwd: pathlib.Path = pathlib.Path('.')) -> Tup
 
             response = requests.get(full_url)
 
-            extract_from_file(response.content.decode('utf8'), file_def, bs_storage, pp_storage, base_url, pwd)
+            extract_from_file(
+                response.content.decode('utf8'), file_def, bs_storage, pp_storage, base_url, add_metadata, pwd)
 
     return bs_storage, pp_storage
 

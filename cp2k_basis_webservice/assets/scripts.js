@@ -40,8 +40,24 @@ export class Controller  {
                 <li><strong>Name:</strong> ${0}</li>
                 <li><strong>Description:</strong> ${1}</li>
                 <li><strong>References:</strong><ul>${2}</ul></li>
-                <li><strong>Source:</strong> <a href="${3}">${3}</a></li>
             </ul>`;
+
+        // kinds
+        this.basisSetKinds = [];
+        Object.values(this.data.basis_sets.kinds).forEach($e => {
+            $e.forEach($x => {
+                if(this.basisSetKinds.indexOf($x) < 0)
+                    this.basisSetKinds.push($x);
+            });
+        });
+
+        this.pseudoKinds = [];
+        Object.values(this.data.pseudopotentials.kinds).forEach($e => {
+            $e.forEach($x => {
+                if(this.pseudoKinds.indexOf($x) < 0)
+                    this.pseudoKinds.push($x);
+            });
+        });
 
         // interface elements
         this.$basisSetSelect = document.querySelector('#basisSetSelect');
@@ -51,6 +67,18 @@ export class Controller  {
 
         this.$basisSetSearch = document.querySelector('#basisSetSearch');
         this.$basisSetSearch.addEventListener('keyup', () => {
+            this.update();
+        });
+
+        this.$basisSetKindSelect = document.querySelector('#basisSetKindSelect');
+        this.basisSetKinds.forEach($k => {
+            let $opt = document.createElement('option');
+            $opt.value = $k;
+            $opt.innerText = $k;
+            this.$basisSetKindSelect.appendChild($opt);
+        });
+
+        this.$basisSetKindSelect.addEventListener('change', () => {
             this.update();
         });
 
@@ -64,6 +92,18 @@ export class Controller  {
             this.update();
         });
 
+        this.$pseudoKindSelect = document.querySelector('#pseudoKindSelect');
+        this.pseudoKinds.forEach($k => {
+            let $opt = document.createElement('option');
+            $opt.value = $k;
+            $opt.innerText = $k;
+            this.$pseudoKindSelect.appendChild($opt);
+        });
+
+        this.$pseudoKindSelect.addEventListener('change', () => {
+            this.update();
+        });
+
         this.$basisSetResult = document.querySelector('#basisSetResult');
         this.$basisSetMetadata = document.querySelector('#basisSetMetadata');
 
@@ -73,7 +113,34 @@ export class Controller  {
         this.$inputResult = document.querySelector('#inputResult');
 
         // buttons
+        document.querySelectorAll('.clear-button').forEach($e => {
+            $e.title = "Clear search value";
+            $e.classList.add('d-none');
+
+            let $node = document.createElement('i');
+            $node.classList.add('bi', 'bi-x');
+            $e.append($node);
+
+            let $src = document.querySelector($e.dataset.clear);
+
+            $src.addEventListener('keyup', () => {
+                if($src.value.length > 0) {
+                    $e.classList.remove('d-none');
+                } else {
+                    $e.classList.add('d-none');
+                }
+            });
+
+            $e.addEventListener('click', () => {
+                $src.value = "";
+                $e.classList.add('d-none');
+                this.update();
+            });
+        });
+
         document.querySelectorAll('.copy-button').forEach($e => {
+            $e.title = "Copy content";
+
             let $node = document.createElement('i');
             $node.classList.add('bi', 'bi-clipboard');
             $e.append($node);
@@ -94,11 +161,12 @@ export class Controller  {
         });
 
         document.querySelectorAll('.info-button').forEach($e => {
+            $e.title = "Get info";
+
             let $node = document.createElement('i');
             $node.classList.add('bi', 'bi-info-square');
             $e.append($node);
         });
-
 
         // cell elements
         document.querySelectorAll('.cell-element').forEach($e => {
@@ -137,12 +205,14 @@ export class Controller  {
 
         // update the list of basis sets & pseudo based on the elements that are selected and the search value
         let basisSetSearched = this.$basisSetSearch.value;
+        let basisSetKind = this.$basisSetKindSelect.value;
         let basisSetValue = this.$basisSetSelect.value;
-        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched);
+        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched, basisSetKind);
 
         let pseudoSearched = this.$pseudoSearch.value;
+        let pseudoKind = this.$pseudoKindSelect.value;
         let pseudoValue = this.$pseudoSelect.value;
-        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched);
+        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched, pseudoKind);
 
         // update basis set & pseudo
         if(this.basisSetSelected !== this.$basisSetSelect.value) {
@@ -150,7 +220,7 @@ export class Controller  {
 
             let elements = [];
             if (this.basisSetSelected.length > 0)
-                elements = this.data.basis_sets.per_name[this.basisSetSelected];
+                elements = this.data.basis_sets.elements[this.basisSetSelected];
 
             this._updateAvailability('basis-set', elements);
             requiresOutputsUpdate = true;
@@ -161,7 +231,7 @@ export class Controller  {
 
             let elements = [];
             if(this.pseudoSelected.length > 0)
-                elements = this.data.pseudopotentials.per_name[this.pseudoSelected];
+                elements = this.data.pseudopotentials.elements[this.pseudoSelected];
 
             this._updateAvailability('pseudo', elements);
             requiresOutputsUpdate = true;
@@ -171,21 +241,24 @@ export class Controller  {
             this._updateOutputs();
     }
 
-    _updateSelect($select, data, prevValue, searchValue) {
-        let perName = data.per_name;
+    _updateSelect($select, data, prevValue, searchValue, kindValue) {
+        let elements = data.elements;
+        let kinds = data.kinds;
 
         $select.innerHTML = '';
-        Object.keys(perName).forEach((name) => {
-            if((searchValue.length !== 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
-                if(!this.elementsSelected.some(e => perName[name].indexOf(e) < 0)) {
-                    let $node = document.createElement('option');
-                    $node.value = name;
-                    $node.innerText = name;
+        Object.keys(elements).forEach((name) => {
+            if((searchValue.length > 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
+                if(kindValue.length === 0 || (kindValue.length > 0 && kinds[name].indexOf(kindValue) >= 0)) {
+                    if(!this.elementsSelected.some(e => elements[name].indexOf(e) < 0)) {
+                        let $node = document.createElement('option');
+                        $node.value = name;
+                        $node.innerText = name;
 
-                    if(name === prevValue)
-                        $node.selected = true;
+                        if(name === prevValue)
+                            $node.selected = true;
 
-                    $select.append($node);
+                        $select.append($node);
+                    }
                 }
             }
         });
@@ -230,7 +303,7 @@ export class Controller  {
 
             let kind = `&KIND ${e}\n`;
             if(variants.length === 0) {
-                kind += `# No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
+                kind += `! No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
             } else {
                 /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
                 * */
@@ -266,8 +339,7 @@ export class Controller  {
         return [
             query.name,
             mt.description,
-            mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n'),
-            mt.source
+            mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n')
         ];
     }
 
