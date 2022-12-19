@@ -35,35 +35,37 @@ class GeneralAPITestCase(FlaskAppMixture):
     def setUp(self) -> None:
         super().setUp()
 
+        self.bs_storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        self.pp_storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
     def test_data_ok(self):
 
         response = self.client.get(flask.url_for('api.data'))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
-        bs_storage = flask.current_app.config['BASIS_SETS_STORAGE']
-        pp_storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
-
         self.assertEqual(data['query']['type'], 'ALL')
 
         self.assertEqual(
             data['result']['basis_sets']['elements'],
-            bs_storage.elements_per_family
+            self.bs_storage.elements_per_family
         )
 
         self.assertEqual(
             data['result']['basis_sets']['kinds'],
-            dict((n, bs_storage[n].metadata['kind']) for n in bs_storage if 'kind' in bs_storage[n].metadata)
+            dict((n, self.bs_storage[n].metadata['kind']) for n in self.bs_storage
+                 if 'kind' in self.bs_storage[n].metadata)
         )
 
         self.assertEqual(
             data['result']['pseudopotentials']['elements'],
-            pp_storage.elements_per_family
+            self.pp_storage.elements_per_family
         )
 
         self.assertEqual(
             data['result']['pseudopotentials']['kinds'],
-            dict((n, pp_storage[n].metadata['kind']) for n in pp_storage if 'kind' in pp_storage[n].metadata)
+            dict((n, self.pp_storage[n].metadata['kind']) for n in self.pp_storage
+                 if 'kind' in self.pp_storage[n].metadata)
         )
 
     def test_names_no_elements_ok(self):
@@ -74,8 +76,8 @@ class GeneralAPITestCase(FlaskAppMixture):
         self.assertEqual(data['query']['type'], 'ALL')
         self.assertNotIn('elements', data['query'])
 
-        self.assertEqual(data['result']['basis_sets'], list(flask.current_app.config['BASIS_SETS_STORAGE']))
-        self.assertEqual(data['result']['pseudopotentials'], list(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']))
+        self.assertEqual(data['result']['basis_sets'], list(self.bs_storage))
+        self.assertEqual(data['result']['pseudopotentials'], list(self.pp_storage))
 
     def test_names_with_elements_ok(self):
         elements = 'O,Ne'
@@ -88,6 +90,32 @@ class GeneralAPITestCase(FlaskAppMixture):
 
         self.assertEqual(data['result']['basis_sets'], [])
         self.assertEqual(data['result']['pseudopotentials'], ['GTH-BLYP'])
+
+    def test_names_with_name_ok(self):
+        name = 'molopt'
+        response = self.client.get(flask.url_for('api.names') + '?bs_name={}'.format(name))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['type'], 'ALL')
+
+        self.assertEqual(
+            data['result']['basis_sets'],
+            list(k for k in self.bs_storage if name in k.lower())
+        )
+
+    def test_names_with_kind_ok(self):
+        kind = 'molopt'
+        response = self.client.get(flask.url_for('api.names') + '?bs_kind={}'.format(kind))
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data['query']['type'], 'ALL')
+
+        self.assertEqual(
+            data['result']['basis_sets'],
+            list(k for k in self.bs_storage.kinds_per_family if kind in self.bs_storage.kinds_per_family[k])
+        )
 
 
 class BasisSetAPITestCase(FlaskAppMixture, BaseDataObjectMixin):

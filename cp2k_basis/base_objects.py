@@ -327,17 +327,19 @@ class Storage:
         for family in self.families.values():
             family.tree(out)
 
-    def get_names_for_elements(self, elements: ElementSet) -> List[str]:
+    def get_names(self, elements: ElementSet, search_name: str = '', search_kind: str = '') -> List[str]:
         """Get all defined names, eventually restricted to a subset of elements
         """
 
+        if search_name:
+            search_name = search_name.lower()
+
         names_list = []
-        if not elements:
-            names_list = list(self)
-        else:
-            for name in self:
-                if elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
-                    names_list.append(name)
+        for name in self:
+            if not search_kind or (name in self.kinds_per_family and search_kind in self.kinds_per_family[name]):
+                if not search_name or search_name in name.lower():
+                    if not elements or elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
+                        names_list.append(name)
 
         return names_list
 

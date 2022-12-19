@@ -114,9 +114,13 @@ List all available basis set and pseudopotential names available, eventually for
 
 Options:
 
-| Option     | Argument | Description                                  |
-|------------|----------|----------------------------------------------|
-| `elements` | String   | Restrict the output to a subset of elements. |
+| Option     | Argument | Description                                                                                       |
+|------------|----------|---------------------------------------------------------------------------------------------------|
+| `elements` | String   | Restrict the output to a subset of elements.                                                      |
+| `bs_name`  | String   | Restrict the output to a subset of basis sets containing the given name (case insensitive).       |
+| `bs_kind`  | String   | Restrict the output to a subset of basis sets having the given kind.                              |
+| `pp_name`  | String   | Restrict the output to a subset of pseudopotentials containing the given name (case insensitive). |
+| `pp_kind`  | String   | Restrict the output to a subset of pseudopotentials having the given kind.                        |
 
 Output:
 

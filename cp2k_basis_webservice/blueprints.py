@@ -117,12 +117,22 @@ api_blueprint.add_url_rule('/data', view_func=AllDataAPI.as_view(name='data'))
 
 
 class NamesAPI(MethodView):
-    @parser.use_kwargs({'elements': field_elements}, location='query')
+    @parser.use_kwargs({
+        'elements': field_elements,
+        'bs_name': fields.Str(),
+        'bs_kind': fields.Str(),
+        'pp_name': fields.Str(),
+        'pp_kind': fields.Str()
+    }, location='query')
     def get(self, **kwargs):
         bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
         pp_storage: Storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
 
         elements = kwargs.get('elements', None)
+        bs_name = kwargs.get('bs_name', None)
+        pp_name = kwargs.get('pp_name', None)
+        bs_kind = kwargs.get('bs_kind', None)
+        pp_kind = kwargs.get('pp_kind', None)
 
         query = dict(type='ALL')
 
@@ -132,8 +142,8 @@ class NamesAPI(MethodView):
         return flask.jsonify(
             query=query,
             result=dict(
-                basis_sets=bs_storage.get_names_for_elements(elements),
-                pseudopotentials=pp_storage.get_names_for_elements(elements)
+                basis_sets=bs_storage.get_names(elements, bs_name, bs_kind),
+                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_kind)
             )
         )
 
