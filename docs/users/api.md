@@ -54,11 +54,11 @@ There is no option.
 
 Output:
 
-| Field                     | Type       | Description                                                                                                                                                                                                                                               |
-|---------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `query.type`              | string     | Always `ALL`                                                                                                                                                                                                                                              |
-| `result.basis_sets`       | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `per_name`, which lists elements available for a given basis set, and `per_elements`, which lists all basis set names available for a given element.             |
-| `result.pseudopotentials` | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `per_name`, which lists elements available for a given pseudopotential, and `per_elements`, which lists all pseudopotential names available for a given element. |
+| Field                     | Type       | Description                                                                                                                                                                                                                  |
+|---------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `query.type`              | string     | Always `ALL`                                                                                                                                                                                                                 |
+| `result.basis_sets`       | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given basis set, and `kinds`, which lists the kind for each basis set.             |
+| `result.pseudopotentials` | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given pseudopotential, and `kinds`, which lists the kind for each pseudopotential. |
 
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/data):
@@ -74,38 +74,34 @@ curl https://cp2k-basis.pierrebeaujean.net/api/data
   },
   "result": {
     "basis_sets": {
-      "per_element": {
-        "Ag": [
-          "DZVP-MOLOPT-SR-GTH",
-          "SZV-MOLOPT-SR-GTH"
+      "build_date": "2022-12-16T18:09:03.513403",
+      "elements": {
+        "DZVP-MOLOPT-GTH": [
+          "C",
+          "H",
+          (...)
         ],
         (...)
       },
-      "per_name": {
-        "DZV-GTH": [
-          "H",
-          "He"
+      "kinds": {
+        "DZVP-MOLOPT-GTH": [
+          "molopt",
+          "gth"
         ],
         (...)
       }
     },
     "pseudopotentials": {
-      "per_element": {
-        "Ag": [
-          "GTH-BLYP",
-          "GTH-LDA",
-          "GTH-PADE",
-          "GTH-PBE"
-        ],
-        (...)
-      },
-      "per_name": {
+      "build_date": "2022-12-16T18:09:03.513403",
+      "elements": {
         "GTH-BLYP": [
-          "Ag",
-          "Al",
+          "B",
+          "Be", 
           (...)
-        ],
-        (...)
+        ]
+      },
+      "kinds": {
+          (...)
       }
     }
   }
@@ -201,14 +197,22 @@ curl https://cp2k-basis.pierrebeaujean.net/api/basis/SZV-MOLOPT-SR-GTH/data?elem
     "type": "BASIS_SET"
   },
   "result": {
-    "data": "# URL: http://127.0.0.1:5000/api/basis/SZV-MOLOPT-SR-GTH/data?elements=Rh\n# DATETIME: 02/12/2022 @ 17:18\n# ---\n# Rh [12s6p6d|2s1p1d]\nRh  SZV-MOLOPT-SR-GTH SZV-MOLOPT-SR-GTH-q17\n1\n2 0 2 6 2 1 1\n  3.157817444361  0.760084070950  0.239207051701 -0.336193318541 -0.176446839307\n  2.683291075925 -0.255650224037 -0.091067207483  0.373953992584  0.261743358411\n  1.140786095845 -1.025626679377 -0.520689753906  0.300684698668  0.174717739794\n  0.492081007160 -0.234415477939 -0.274976137245  0.141457244144  0.188746290944\n  0.192543904978  0.046321838032  0.534686741279  0.007751787318  0.112894420897\n  0.066486620394  0.135748106274  0.896548625743  0.000117823467  0.021703317232\n# Rh [6s6p6d|1s1p1d]\nRh  SZV-MOLOPT-SR-GTH-q9\n1\n2 0 2 6 1 1 1\n  3.902721449032  0.016652865171 -0.008699428728 -0.112417659954\n  1.999830271997 -0.133395648426  0.046572987907  0.348017742874\n  0.879887627395  0.373099930807 -0.153463590375  0.381775351795\n  0.363794442257  0.298777744612 -0.052550610965  0.335875585916\n  0.140096726529 -0.924610879301  0.949493319446  0.146687236468\n  0.042562039477 -0.455102584336  0.423881871378  0.013082339937\n",
+    "data": "# URL: http://127.0.0.1:5000/api/basis/SZV-MOLOPT-SR-GTH/data?elements=Rh\n# BUILD: 16/12/2022 @ 19:38\n# FETCHED: 19/12/2022 @ 14:36\n# ---\n# Rh [12s6p6d|2s1p1d]\n# SOURCE: https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/BASIS_MOLOPT#L1244\nRh  SZV-MOLOPT-SR-GTH SZV-MOLOPT-SR-GTH-q17\n1\n2 0 2 6 2 1 1\n  3.157817444361  0.760084070950  0.239207051701 -0.336193318541 -0.176446839307\n  2.683291075925 -0.255650224037 -0.091067207483  0.373953992584  0.261743358411\n  1.140786095845 -1.025626679377 -0.520689753906  0.300684698668  0.174717739794\n  0.492081007160 -0.234415477939 -0.274976137245  0.141457244144  0.188746290944\n  0.192543904978  0.046321838032  0.534686741279  0.007751787318  0.112894420897\n  0.066486620394  0.135748106274  0.896548625743  0.000117823467  0.021703317232\n# Rh [6s6p6d|1s1p1d]\n# SOURCE: https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/BASIS_MOLOPT#L1262\nRh  SZV-MOLOPT-SR-GTH-q9\n1\n2 0 2 6 1 1 1\n  3.902721449032  0.016652865171 -0.008699428728 -0.112417659954\n  1.999830271997 -0.133395648426  0.046572987907  0.348017742874\n  0.879887627395  0.373099930807 -0.153463590375  0.381775351795\n  0.363794442257  0.298777744612 -0.052550610965  0.335875585916\n  0.140096726529 -0.924610879301  0.949493319446  0.146687236468\n  0.042562039477 -0.455102584336  0.423881871378  0.013082339937\n",
     "elements": [
       "Rh"
     ],
     "metadata": {
-      "description": "A single zeta valence MOLOPT basis set, for solids (short-range, less diffuse basis functions) and GTH potentials.",
-      "references": ["https://dx.doi.org/10.1063/1.2770708"],
-      "source": "https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/BASIS_MOLOPT"
+      "description": "A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials",
+      "kind": [
+        "MOLOPT",
+        "SR",
+        "GTH"
+      ],
+      "references": [
+        "https://dx.doi.org/10.1063/1.2770708",
+        "https://doi.org/10.1039/B508541A",
+        "https://github.com/cp2k/cp2k-data"
+      ]
     },
     "variants": {
       "Rh": {
@@ -233,7 +237,7 @@ Output:
 | `result.elements`    | list of string | Elements for which the basis set/pseudopotential are defined |
 | `result.description` | string         | Small description.                                           |
 | `result.references`  | list of string | List of URL to articles or repositories                      |
-| `result.source`      | string         | URL to the file which was used to create the data            |
+| `result.kind`        | list of string | Kind of the basis set/pseudopotential                        |
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadata):
 
@@ -248,19 +252,21 @@ curl https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadat
     "type": "PSEUDOPOTENTIAL"
   },
   "result": {
-    "description": "GTH potentials for BLYP.",
+    "description": "GTH pseudopotentials, optimized for BLYP.",
     "elements": [
       "Ag",
       "Al",
       (...)
+    ],
+    "kind": [
+      "GTH"
     ],
     "references": [
       "https://dx.doi.org/10.1103/PhysRevB.54.1703",
       "https://dx.doi.org/10.1103/PhysRevB.58.3641",
       "https://dx.doi.org/10.1007/s00214-005-0655-y",
       "https://github.com/cp2k/cp2k-data"
-    ],
-    "source": "https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/GTH_POTENTIALS"
+    ]
   }
 }
 ```
