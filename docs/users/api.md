@@ -22,7 +22,7 @@ Every time the option `elements` can be used,
 + but also ranges, e.g., `H,C-O`, and
 + Z numbers can be used instead of symbols, e,g., `H,6-8`.
 
-Elements are limited to Z ≤ 92, i.e., hydrogen to uranium.
+Elements are limited to Z ≤ 103, i.e., hydrogen to Lawrencium.
 If you want to perform calculations outside this range, you probably have other problems on your plate than finding a basis set ;)
 
 

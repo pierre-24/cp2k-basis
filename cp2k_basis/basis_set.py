@@ -220,7 +220,7 @@ class AtomicBasisSetsParser(BaseParser):
         self.expect(TokenType.WORD)
 
         line = self.current_token.line
-        symbol = self.current_token.value
+        symbol = self.current_token.value[0].upper() + self.current_token.value[1:].lower()
         self.next()
         self.eat(TokenType.SPACE)
 
