@@ -429,6 +429,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../library_content/" class="md-nav__link">
+        Content of the library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../library_build/" class="md-nav__link">
         Build, use and improve the library
       </a>
@@ -443,8 +457,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../bs_and_pseudo_file_format/" class="md-nav__link">
-        Basis sets and pseudopotentials files format in CP2K
+      <a href="../library_file_format/" class="md-nav__link">
+        Library file format
       </a>
     </li>
   
@@ -457,8 +471,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../library_file_format/" class="md-nav__link">
-        Library file format
+      <a href="../bs_and_pseudo_file_format/" class="md-nav__link">
+        Basis sets and pseudopotentials files format in CP2K
       </a>
     </li>
   
@@ -545,7 +559,7 @@
                 
                   
 
-  <a href="https://github.com/pierre-24/cp2k-basis/blob/master/docs/developers/install.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/pierre-24/cp2k-basis/blob/dev/docs/developers/install.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
@@ -553,7 +567,7 @@
 
 <h1 id="install-and-contribute">Install and contribute<a class="headerlink" href="#install-and-contribute" title="Permanent link">¤</a></h1>
 <h2 id="install-and-run-simple-version">Install and run (simple version)<a class="headerlink" href="#install-and-run-simple-version" title="Permanent link">¤</a></h2>
-<p>First, install node. It is recommended to use <a href="https://github.com/nvm-sh/nvm#install--update-script"><code>nvm</code></a> to do so.</p>
+<p>First, install node. <strong>It is recommended to use <a href="https://github.com/nvm-sh/nvm#install--update-script"><code>nvm</code></a> to do so.</strong></p>
 <p>Then:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># clone </span>
 git clone https://github.com/pierre-24/cp2k-basis.git
@@ -610,20 +624,49 @@ make install-front
 
 <span class="c1"># ... then build front and run (see above)</span>
 </code></pre></div>
+<h3 id="tips-to-contribute">Tips to contribute<a class="headerlink" href="#tips-to-contribute" title="Permanent link">¤</a></h3>
+<ul>
+<li>
 <p>A useful setting is to setup the webservice to use the (smaller) test library for development:</p>
 <div class="highlight"><pre><span></span><code>mkdir instance
 <span class="nb">echo</span> <span class="s2">&quot;LIBRARY=&#39;tests/LIBRARY_EXAMPLE.h5&#39;&quot;</span> &gt; instance/settings.py
 </code></pre></div>
 <p>The webservice should then be faster to start &amp; reload.</p>
-<h3 id="tips-to-contribute">Tips to contribute<a class="headerlink" href="#tips-to-contribute" title="Permanent link">¤</a></h3>
-<p>Don't forget to work on a separate branch, and to run the linting and tests:</p>
-<div class="highlight"><pre><span></span><code>make lint  <span class="c1"># flake8</span>
-make <span class="nb">test</span>  <span class="c1"># unit tests</span>
+</li>
+<li>
+<p>A good place to start is the <a href="https://github.com/pierre-24/cp2k-basis/issues">list of issues</a>.
+  In fact, it is easier if you start by filling an issue, and if you want to work on it, says so there, so that everyone knows that the issue is handled.</p>
+</li>
+<li>
+<p>Don't forget to work on a separate branch.
+  Since this project follow the <a href="http://nvie.com/posts/a-successful-git-branching-model/">git flow</a>, you should base your branch on <code>dev</code>, not work in it directly:</p>
+<div class="highlight"><pre><span></span><code>git checkout -b new_branch origin/dev
 </code></pre></div>
+</li>
+<li>
+<p>Don't forget to regularly run the linting and tests:</p>
+<div class="highlight"><pre><span></span><code>make lint
+make <span class="nb">test</span>
+</code></pre></div>
+<p>Indeed, the code follows the <a href="http://legacy.python.org/dev/peps/pep-0008/">PEP-8 style recommendations</a>, checked by <a href="https://flake8.pycqa.org/en/latest/"><code>flake8</code></a>, for the python part and use <a href="https://jshint.com/"><code>jshint</code></a> for the JS part.
+Having an extensive test suite is also a good idea to prevent regressions.</p>
+</li>
+<li>
+<p>If you modify the front (i.e., the JS script file or the stylesheet), don't forget to rebuild the front to see the effects:</p>
+<div class="highlight"><pre><span></span><code>make front
+</code></pre></div>
+<p>Indeed, both JS and SCSS are minified.</p>
+</li>
+<li>
 <p>If you want to see and edit the doc, you can run the <code>mkdocs</code> webserver:</p>
 <div class="highlight"><pre><span></span><code>make doc-serve
 </code></pre></div>
-<p>Don't forget to edit the documentation if you modify something.</p>
+</li>
+<li>
+<p>Pull requests should be unitary, and include unit test(s) and documentation if needed. 
+  The test suite and lint must succeed for the merge request to be accepted.</p>
+</li>
+</ul>
 
 
 
@@ -660,13 +703,13 @@ make <span class="nb">test</span>  <span class="c1"># unit tests</span>
       
       
         
-        <a href="../library_build/" class="md-footer__link md-footer__link--next" aria-label="Next: Build, use and improve the library" rel="next">
+        <a href="../library_content/" class="md-footer__link md-footer__link--next" aria-label="Next: Content of the library" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Build, use and improve the library
+              Content of the library
             </div>
           </div>
           <div class="md-footer__button md-icon">

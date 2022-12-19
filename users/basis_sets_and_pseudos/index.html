@@ -423,6 +423,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../developers/library_content/" class="md-nav__link">
+        Content of the library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../developers/library_build/" class="md-nav__link">
         Build, use and improve the library
       </a>
@@ -437,8 +451,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developers/bs_and_pseudo_file_format/" class="md-nav__link">
-        Basis sets and pseudopotentials files format in CP2K
+      <a href="../../developers/library_file_format/" class="md-nav__link">
+        Library file format
       </a>
     </li>
   
@@ -451,8 +465,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developers/library_file_format/" class="md-nav__link">
-        Library file format
+      <a href="../../developers/bs_and_pseudo_file_format/" class="md-nav__link">
+        Basis sets and pseudopotentials files format in CP2K
       </a>
     </li>
   
@@ -533,7 +547,7 @@
                 
                   
 
-  <a href="https://github.com/pierre-24/cp2k-basis/blob/master/docs/users/basis_sets_and_pseudos.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/pierre-24/cp2k-basis/blob/dev/docs/users/basis_sets_and_pseudos.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
@@ -619,7 +633,7 @@ In particular, they are given as a local part plus a set of nonlinear projectors
 <h2 id="pairing-gth-pseudopotentials-with-basis-sets">Pairing GTH pseudopotentials with basis sets<a class="headerlink" href="#pairing-gth-pseudopotentials-with-basis-sets" title="Permanent link">¤</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>In practice, the number of core electron is dictated by the pseudopotential (in which the info is reported).
+<p>In practice, the number electron is dictated by the pseudopotential (which lists the number of valence electrons in each shell).
 CP2K will blindly use whatever basis set you give, since it has no way to check the information on the basis set side (not even the names, which are merely conventions).</p>
 </div>
 <p>From the previous paragraph, it appears that one has to pair a given pseudopotential with a correctly defined basis set, that has been designed with the correct amount of core electron removed and that contains smoother (pseudo-) basis functions.
@@ -628,15 +642,15 @@ Names of pseudopotentials and basis sets help to achieve this association:</p>
 <li>
 <p>GTH pseudopotential are generally named <code>GTH-&lt;XFC&gt;</code>, where <code>&lt;XCF&gt;</code> is the name of a XC-functional. 
   It is thus strongly suggested to use them together with the XCF in question.</p>
-<p>For a given atom, such potentials are nicknamed <code>GTH-&lt;XFC&gt;-q&lt;N&gt;</code>, where <code>&lt;N&gt;</code> is the number of core electrons considered to build the potential.
-For example, a pseudopotential for carbon is nicknamed <code>GTH-BLYP-q4</code>, indicate that this pseudopotential was designed with BLYP, and that it embeded a total of 4 core electrons (all filled shells).</p>
+<p>For a given atom, such potentials are nicknamed <code>GTH-&lt;XFC&gt;-q&lt;N&gt;</code>, where <code>&lt;N&gt;</code> is the number of valence electrons considered while building the potential.
+For example, a pseudopotential for carbon is nicknamed <code>GTH-BLYP-q4</code>, indicate that this pseudopotential was designed with BLYP, and that was built using 4 valence electrons (so it embedded a total of 2 core electrons).</p>
 </li>
 <li>
 <p>Basis sets are generally named <code>&lt;XZ&gt;-&lt;NAME&gt;-&lt;XCF&gt;-GTH</code> or <code>&lt;XZ&gt;-GTH-&lt;XCF&gt;</code> (though this is definitely not an absolute rule!), where <code>&lt;XZ&gt;</code> describe the content of the basis set (e.g., <code>DZV</code> for double zeta, <code>TZVP</code> for triple zeta with extra polarization, etc), <code>&lt;NAME&gt;</code> is the name of the family (e.g., <code>MOLOPT</code>) and <code>&lt;XCF&gt;</code> is the name of the XCF used to optimize the basis set. 
   The <code>&lt;XCF&gt;</code> may not be present in the name: for example, <code>TZVP-MOLOPT-GTH</code> should work with all XCF, while <code>TZVP-MOLOPT-PBE-GTH</code> was specifically designed with PBE. 
   The latter probably gives better results and should (probably) be preferred.</p>
-<p>Again, for each atom, a suffix <code>-q&lt;N&gt;</code> is added, indicated how much core electron were not considered while building this basis set.
-For example, for carbon, the nickname <code>DZVP-MOLOPT-GTH-q4</code> indicates that this is a double-zeta basis set (plus polarization functions) of the <code>MOLOPT</code> family, designed to work with GTH pseudopotentials embedding 4 core electrons.</p>
+<p>Again, for each atom, a suffix <code>-q&lt;N&gt;</code> is added, indicated how much valence electrons were not considered while building this basis set.
+For example, for carbon, the nickname <code>DZVP-MOLOPT-GTH-q4</code> indicates that this is a double-zeta basis set (plus polarization functions) of the <code>MOLOPT</code> family, designed to work with GTH pseudopotentials embedding 2 core electrons.</p>
 </li>
 </ul>
 <div class="admonition note">
@@ -660,9 +674,9 @@ This is equivalent, since the data are obtained from the same source and just pr
 <p>There also exists a special pseudopotential, <code>ALL</code>, which should be used for all-electron calculations.
 This is the pseudopotential of choice for GAPW calculations. 
 It can be used with your usual all-electron basis sets (such as STO-3G, e.g., <a href="http://www.basissetexchange.org/">found in the BSE</a>).
-A curated list is available in the <a href="https://github.com/cp2k/cp2k/blob/master/data/EMSL_BASIS_SETS"><code>EMSL_BAIS_SETS</code> file</a>.</p>
+A curated list is available in the <a href="https://github.com/cp2k/cp2k/blob/master/data/EMSL_BASIS_SETS"><code>EMSL_BASIS_SETS</code> file</a>.</p>
 <p>Specially designed basis sets were also derived (found, e.g., in the <a href="https://github.com/cp2k/cp2k/blob/master/data/ALL_BASIS_SETS"><code>ALL_BASIS_SETS</code> file</a>), which contains <code>ALL</code> in their name or ends by <code>-ae</code>.
-The nickname <code>-q0</code> is sometimes used in these basis sets to remind that they are all-electron basis sets.</p>
+The <code>-q&lt;N&gt;</code> number, if it exists (it is generally omitted), should be equal to the atomic number.</p>
 
 
 

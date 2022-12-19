@@ -443,6 +443,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../developers/library_content/" class="md-nav__link">
+        Content of the library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../developers/library_build/" class="md-nav__link">
         Build, use and improve the library
       </a>
@@ -457,8 +471,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developers/bs_and_pseudo_file_format/" class="md-nav__link">
-        Basis sets and pseudopotentials files format in CP2K
+      <a href="../../developers/library_file_format/" class="md-nav__link">
+        Library file format
       </a>
     </li>
   
@@ -471,8 +485,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developers/library_file_format/" class="md-nav__link">
-        Library file format
+      <a href="../../developers/bs_and_pseudo_file_format/" class="md-nav__link">
+        Basis sets and pseudopotentials files format in CP2K
       </a>
     </li>
   
@@ -573,7 +587,7 @@
                 
                   
 
-  <a href="https://github.com/pierre-24/cp2k-basis/blob/master/docs/users/webserver.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/pierre-24/cp2k-basis/blob/dev/docs/users/webserver.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
@@ -601,19 +615,19 @@ In particular, your input looks like:</p>
           H      11.922476       1.573799       9.986994
         &amp;END COORD
         &amp;KIND H
-          BASIS_SET ??  # &lt;- pick one
-          POTENTIAL ??  # &lt;- pick one
+          BASIS_SET ??  ! &lt;- pick one
+          POTENTIAL ??  ! &lt;- pick one
         &amp;END KIND
         &amp;KIND O
-          BASIS_SET ??  # &lt;- pick one
-          POTENTIAL ??  # &lt;- pick one
+          BASIS_SET ??  ! &lt;- pick one
+          POTENTIAL ??  ! &lt;- pick one
         &amp;END KIND
     &amp;END SUBSYS
     &amp;DFT
-        BASIS_SET_FILE_NAME  BASIS_SET      # &lt;- should contain your basis set(s)
-        POTENTIAL_FILE_NAME  GTH_POTENTIALS # &lt;- should contain your pseudo(s)
+        BASIS_SET_FILE_NAME  BASIS_SET      ! &lt;- should contain your basis set(s)
+        POTENTIAL_FILE_NAME  GTH_POTENTIALS ! &lt;- should contain your pseudo(s)
         &amp;XC
-          &amp;XC_FUNCTIONAL ??  # &lt;- pick one
+          &amp;XC_FUNCTIONAL ??  ! &lt;- pick one
           &amp;END XC_FUNCTIONAL
         &amp;END XC
         # (...)
@@ -626,6 +640,34 @@ In particular, your input looks like:</p>
 <p><img alt="" src="../../images/webserver_pick_bs_pseudo.jpg" /></p>
 <p>You can use the search bar in the top of each list to quickly access the basis set or pseudopotential you are looking for:</p>
 <p><img alt="" src="../../images/webserver_search.jpg" /></p>
+<p>It is also possible to sort the basis set per <em>kind</em>, with the dropdown on the right.
+The following kinds are available:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GTH</code></td>
+<td>GTH basis sets or pseudopotential. Opposite of <code>ALL</code></td>
+</tr>
+<tr>
+<td><code>ALL</code></td>
+<td>All-electron basis set or (pseudo)potential. Opposite of <code>GTH</code></td>
+</tr>
+<tr>
+<td><code>MOLOPT</code></td>
+<td>MOLOPT basis sets</td>
+</tr>
+<tr>
+<td><code>SR</code></td>
+<td>Short-range/confined basis sets, better for solids</td>
+</tr>
+</tbody>
+</table>
 <p>In the periodic table below, the <strong>red borders indicate that the basis set is available</strong> for these atoms, while the <strong>blue borders indicates that the pseudopotential is available</strong>:</p>
 <p><img alt="" src="../../images/webserver_pt_selected.jpg" /></p>
 <p>This combination is thus available for H and O (but also for C-F and Si-Cl).</p>
@@ -638,8 +680,15 @@ So you can pick whatever combination you want in these possibilities!</p>
 <p>When you have selected a matching triplet of atoms, basis set and pseudopotential, the panels on the right should update with the result.</p>
 <p>In particular, the first panel should be copied in a <code>BASIS_SET</code> file that will be used by your calculation, while the second should be copied in a <code>GTH_PSEUDOPOTENTIALS</code> file:</p>
 <p><img alt="" src="../../images/webserver_panels.jpg" /></p>
-<p>If you use a recent brower, you can use the copy button to do so: <img alt="" src="../../images/webserver_copy_btn.jpg" />.</p>
-<p>The information button, <img alt="" src="../../images/webserver_info_btn.jpg" /> opens an extra area with some info on the basis set or pseudopotential, in particular the references to cite in your articles:</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>These panels also report when the library of basis sets and pseudo was built, as a comment.
+To ease your life latter (check for errors), it might be useful to keep it.
+It also gives the address to the <a href="../api/">API call that generates this output</a>, if you want.</p>
+</div>
+<p>If you use a recent brower, you can use the copy button to perform the copy 
+<img alt="" src="../../images/webserver_copy_btn.jpg" />.</p>
+<p>The information button, <img alt="" src="../../images/webserver_info_btn.jpg" /> opens an extra area with some info on the basis set or pseudopotential, in particular the references you need to cite in your articles:</p>
 <p><img alt="" src="../../images/webserver_info_area.jpg" /></p>
 <p>Finally, a last panel gives you the <code>&amp;KIND</code> sections that you can just copy-paste in your input:</p>
 <p><img alt="" src="../../images/webserver_kind_panel.jpg" /></p>
@@ -651,12 +700,12 @@ This has two (interesting!) side effects:</p>
 <li>
 <p>For some elements, you have multiple possibilities (called "variant" by the web interface), indicated by comments:</p>
 <p><img alt="" src="../../images/webserver_kind_panel_multiple.jpg" /></p>
-<p>In this case, you can safely replace <code>-q3</code> by <code>-q1</code> for both the basis set and the potential, since they are both available (see the two panels in the top). It will, of course, impact the results.</p>
+<p>In this case, you can safely replace <code>-q3</code> (all-electron) by <code>-q1</code> (2 core electron embedded in the pseudopotential) for both the basis set and the potential, since they are both available (see the two panels in the top). It will, of course, impact the results.</p>
 </li>
 <li>
 <p>If you select combination that are incompatible (e.g., the all-electron pseudopotential <code>ALL</code> with a pseudo basis set), it will be indicated:</p>
 <p><img alt="" src="../../images/webserver_kind_panel_err.jpg" /></p>
-<p>You should thus reflect on your choices since running such calculation would be a mistake.</p>
+<p>You should thus reflect on your choices since running such calculation would be a mistake 😉</p>
 </li>
 </ol>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">¤</a></h2>
