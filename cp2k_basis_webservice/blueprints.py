@@ -9,7 +9,6 @@ from werkzeug.exceptions import NotFound
 from webargs import fields
 from webargs.flaskparser import FlaskParser
 
-import cp2k_basis
 from cp2k_basis.elements import ElementSetField, Z_TO_SYMB
 from cp2k_basis.base_objects import Storage
 from cp2k_basis_webservice import limiter, Config
