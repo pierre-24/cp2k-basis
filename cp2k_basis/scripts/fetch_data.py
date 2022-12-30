@@ -1,7 +1,7 @@
 """
 Fetch the basis sets and pseudopotentials as described in the input, and pack them together as a library (HDF5 file).
-See https://github.com/pierre-24/cp2k-basis/blob/master/library/DATA_SOURCES.yml for a description of the input, and
-https://github.com/pierre-24/cp2k-basis/blob/master/docs/library_file_format.md for a description of the output.
+See https://pierre-24.github.io/cp2k-basis/developers/library_build/ for a description of the input, and
+https://pierre-24.github.io/cp2k-basis/developers/library_file_format/ for a description of the output.
 """
 import datetime
 import pathlib
@@ -18,6 +18,7 @@ from cp2k_basis import logger
 from cp2k_basis.basis_set import AtomicBasisSetsParser, BasisSetsStorage
 from cp2k_basis.base_objects import FilterFirst, FilterUnique, Storage, AddMetadata
 from cp2k_basis.pseudopotential import AtomicPseudopotentialsParser, PseudopotentialsStorage
+from cp2k_basis.scripts import SCHEMA_LIBRARY_SOURCE_FILE
 
 l_logger = logger.getChild('fetch_data')
 
@@ -62,6 +63,8 @@ def extract_from_file(
 def fetch_data(data_sources: dict, pwd: pathlib.Path = pathlib.Path('.')) -> Tuple[Storage, Storage]:
     """Fetch data from files that are found in repositories.
     """
+
+    data_sources = SCHEMA_LIBRARY_SOURCE_FILE.validate(data_sources)
 
     # storages
     bs_storage = BasisSetsStorage()
