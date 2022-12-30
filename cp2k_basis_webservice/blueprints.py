@@ -42,15 +42,10 @@ class IndexView(RenderTemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
-        from cp2k_basis_webservice import __doc__ as description
+        from cp2k_basis_webservice import COMMON_CONTEXT
+        ctx.update(**COMMON_CONTEXT)
 
         ctx.update(
-            site_name='cp2k-basis',
-            site_version=cp2k_basis.__version__,
-            author=cp2k_basis.__author__,
-            code_repo='https://github.com/pierre-24/cp2k-basis',
-            documentation='https://pierre-24.github.io/cp2k-basis',
-            description=description,
             z_to_symb=Z_TO_SYMB,
             basis_sets=dict(
                 elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),

@@ -10,8 +10,22 @@ from flask import Flask
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+import cp2k_basis
 from cp2k_basis.basis_set import BasisSetsStorage
 from cp2k_basis.pseudopotential import PseudopotentialsStorage
+
+
+COMMON_CONTEXT = dict(
+    site_name='cp2k-basis',
+    site_version=cp2k_basis.__version__,
+    author=cp2k_basis.__author__,
+    code_repo='https://github.com/pierre-24/cp2k-basis',
+    documentation='https://pierre-24.github.io/cp2k-basis',
+    bootstrap_version='5.2.3',
+    keywords='cp2k, basis sets, pseudopotentials, GTH pseudopotentials',
+    twitter_account='@PierreBeaujean',
+    description=__doc__,
+)
 
 
 limiter = Limiter(key_func=get_remote_address)
