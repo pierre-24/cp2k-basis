@@ -195,10 +195,10 @@ The if there is a match, then all the values are attributed as metadata.
     For the basis set `SZV-MOLOPT-GTH`, the metadata will contain two fields: `references` and `description` (which will contain "A double zeta basis set")
     For the basis set `DZVP-MOLOPT-GTH` (or any other basis, thanks to the use of `.*`), the fields in the metadata will be the same, but the value of `description` is different ("MOLOPT basis set.").
 
-For the moment, `references`, `description` and `kind` are the three metadata that should be reported for every basis set and pseudopotential.
+For the moment, `references`, `description` and `tags` are the three metadata that should be reported for every basis set and pseudopotential.
 
 !!! note
-    In practice, the YAML format defines [anchors and aliases](https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases), which allow to define references and kinds once and use them multiple time.
+    In practice, the YAML format defines [anchors and aliases](https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases), which allow to define references and tags once and use them multiple time.
 
 ## Using the library
 
@@ -335,7 +335,7 @@ Now you just need to add the metadata and iterate on the result until you are ha
       '^TZVP-MOLOPT-SR-GTH$':
         references: [ https://github.com/cp2k/cp2k-data ]
         description: Short-range triple zeta (+ polarization) basis set.
-        kind: [MOLOPT, SR, GTH]
+        tags: [MOLOPT, SR, GTH]
     ```
     
     Metadata were added to the basis sets:
@@ -347,7 +347,7 @@ Now you just need to add the metadata and iterate on the result until you are ha
     +- basis_sets
        |
        +- TZVP-MOLOPT-SR-GTH
-       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'Short-range triple zeta (+ polarization) basis set.', 'kind': ['MOLOPT', 'SR', 'GTH']}
+       |  metadata={'references': ['https://github.com/cp2k/cp2k-data'], 'description': 'Short-range triple zeta (+ polarization) basis set.',  'tags': ['MOLOPT', 'SR', 'GTH']}
        |  |
        |  +- Li: q3
        |  +- Be: q4

@@ -55,15 +55,15 @@ You can use the search bar in the top of each list to quickly access the basis s
 
 ![](../images/webserver_search.jpg)
 
-It is also possible to sort the basis set per *kind*, with the dropdown on the right.
-The following kinds are available:
+It is also possible to sort the basis set per *tag*, with the dropdown on the right.
+The following tags are available:
 
-| Kind      | Description                                                    |
-|-----------|----------------------------------------------------------------|
-| `GTH`     | GTH basis sets or pseudopotential. Opposite of `ALL`           |
-| `ALL`     | All-electron basis set or (pseudo)potential. Opposite of `GTH` |
-| `MOLOPT`  | MOLOPT basis sets                                              |
- | `SR`      | Short-range/confined basis sets, better for solids             |
+| Tag      | Description                                                    |
+|----------|----------------------------------------------------------------|
+| `GTH`    | GTH basis sets or pseudopotential. Opposite of `ALL`           |
+| `ALL`    | All-electron basis set or (pseudo)potential. Opposite of `GTH` |
+| `MOLOPT` | MOLOPT basis sets                                              |
+ | `SR`     | Short-range/confined basis sets, better for solids             |
 
 In the periodic table below, the **red borders indicate that the basis set is available** for these atoms, while the **blue borders indicates that the pseudopotential is available**:
 
