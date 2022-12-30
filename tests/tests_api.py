@@ -52,9 +52,9 @@ class GeneralAPITestCase(FlaskAppMixture):
         )
 
         self.assertEqual(
-            data['result']['basis_sets']['kinds'],
-            dict((n, self.bs_storage[n].metadata['kind']) for n in self.bs_storage
-                 if 'kind' in self.bs_storage[n].metadata)
+            data['result']['basis_sets']['tags'],
+            dict((n, self.bs_storage[n].metadata['tags']) for n in self.bs_storage
+                 if 'tags' in self.bs_storage[n].metadata)
         )
 
         self.assertEqual(
@@ -63,9 +63,9 @@ class GeneralAPITestCase(FlaskAppMixture):
         )
 
         self.assertEqual(
-            data['result']['pseudopotentials']['kinds'],
-            dict((n, self.pp_storage[n].metadata['kind']) for n in self.pp_storage
-                 if 'kind' in self.pp_storage[n].metadata)
+            data['result']['pseudopotentials']['tags'],
+            dict((n, self.pp_storage[n].metadata['tags']) for n in self.pp_storage
+                 if 'tags' in self.pp_storage[n].metadata)
         )
 
     def test_names_no_elements_ok(self):
@@ -104,9 +104,9 @@ class GeneralAPITestCase(FlaskAppMixture):
             list(k for k in self.bs_storage if name in k.lower())
         )
 
-    def test_names_with_kind_ok(self):
-        kind = 'molopt'
-        response = self.client.get(flask.url_for('api.names') + '?bs_kind={}'.format(kind))
+    def test_names_with_tag_ok(self):
+        tag = 'molopt'
+        response = self.client.get(flask.url_for('api.names') + '?bs_tag={}'.format(tag))
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
 
@@ -114,7 +114,7 @@ class GeneralAPITestCase(FlaskAppMixture):
 
         self.assertEqual(
             data['result']['basis_sets'],
-            list(k for k in self.bs_storage.kinds_per_family if kind in self.bs_storage.kinds_per_family[k])
+            list(k for k in self.bs_storage.tags_per_family if tag in self.bs_storage.tags_per_family[k])
         )
 
 
@@ -196,8 +196,8 @@ class BasisSetAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
         )
 
         self.assertEqual(
-            data['result']['kind'],
-            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['kind']
+            data['result']['tags'],
+            flask.current_app.config['BASIS_SETS_STORAGE'][self.basis_name].metadata['tags']
         )
 
     def test_basis_metadata_wrong_basis_ko(self):
@@ -282,6 +282,6 @@ class PseudopotentialAPITestCase(FlaskAppMixture, BaseDataObjectMixin):
         )
 
         self.assertEqual(
-            data['result']['kind'],
-            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['kind']
+            data['result']['tags'],
+            flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'][self.pseudo_name].metadata['tags']
         )

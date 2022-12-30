@@ -42,20 +42,20 @@ export class Controller  {
                 <li><strong>References:</strong><ul>${2}</ul></li>
             </ul>`;
 
-        // kinds
-        this.basisSetKinds = [];
-        Object.values(this.data.basis_sets.kinds).forEach($e => {
+        // tagss
+        this.basisSetTags = [];
+        Object.values(this.data.basis_sets.tags).forEach($e => {
             $e.forEach($x => {
-                if(this.basisSetKinds.indexOf($x) < 0)
-                    this.basisSetKinds.push($x);
+                if(this.basisSetTags.indexOf($x) < 0)
+                    this.basisSetTags.push($x);
             });
         });
 
-        this.pseudoKinds = [];
-        Object.values(this.data.pseudopotentials.kinds).forEach($e => {
+        this.pseudoTags = [];
+        Object.values(this.data.pseudopotentials.tags).forEach($e => {
             $e.forEach($x => {
-                if(this.pseudoKinds.indexOf($x) < 0)
-                    this.pseudoKinds.push($x);
+                if(this.pseudoTags.indexOf($x) < 0)
+                    this.pseudoTags.push($x);
             });
         });
 
@@ -70,15 +70,15 @@ export class Controller  {
             this.update();
         });
 
-        this.$basisSetKindSelect = document.querySelector('#basisSetKindSelect');
-        this.basisSetKinds.forEach($k => {
+        this.$basisSetTagSelect = document.querySelector('#basisSetTagSelect');
+        this.basisSetTags.forEach($k => {
             let $opt = document.createElement('option');
             $opt.value = $k;
             $opt.innerText = $k;
-            this.$basisSetKindSelect.appendChild($opt);
+            this.$basisSetTagSelect.appendChild($opt);
         });
 
-        this.$basisSetKindSelect.addEventListener('change', () => {
+        this.$basisSetTagSelect.addEventListener('change', () => {
             this.update();
         });
 
@@ -92,15 +92,15 @@ export class Controller  {
             this.update();
         });
 
-        this.$pseudoKindSelect = document.querySelector('#pseudoKindSelect');
-        this.pseudoKinds.forEach($k => {
+        this.$pseudoTagSelect = document.querySelector('#pseudoTagSelect');
+        this.pseudoTags.forEach($k => {
             let $opt = document.createElement('option');
             $opt.value = $k;
             $opt.innerText = $k;
-            this.$pseudoKindSelect.appendChild($opt);
+            this.$pseudoTagSelect.appendChild($opt);
         });
 
-        this.$pseudoKindSelect.addEventListener('change', () => {
+        this.$pseudoTagSelect.addEventListener('change', () => {
             this.update();
         });
 
@@ -205,14 +205,14 @@ export class Controller  {
 
         // update the list of basis sets & pseudo based on the elements that are selected and the search value
         let basisSetSearched = this.$basisSetSearch.value;
-        let basisSetKind = this.$basisSetKindSelect.value;
+        let basisSetTag = this.$basisSetTagSelect.value;
         let basisSetValue = this.$basisSetSelect.value;
-        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched, basisSetKind);
+        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched, basisSetTag);
 
         let pseudoSearched = this.$pseudoSearch.value;
-        let pseudoKind = this.$pseudoKindSelect.value;
+        let pseudoTag = this.$pseudoTagSelect.value;
         let pseudoValue = this.$pseudoSelect.value;
-        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched, pseudoKind);
+        this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched, pseudoTag);
 
         // update basis set & pseudo
         if(this.basisSetSelected !== this.$basisSetSelect.value) {
@@ -241,14 +241,14 @@ export class Controller  {
             this._updateOutputs();
     }
 
-    _updateSelect($select, data, prevValue, searchValue, kindValue) {
+    _updateSelect($select, data, prevValue, searchValue, tagValue) {
         let elements = data.elements;
-        let kinds = data.kinds;
+        let tags = data.tags;
 
         $select.innerHTML = '';
         Object.keys(elements).forEach((name) => {
             if((searchValue.length > 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
-                if(kindValue.length === 0 || (kindValue.length > 0 && kinds[name].indexOf(kindValue) >= 0)) {
+                if(tagValue.length === 0 || (tagValue.length > 0 && tags[name].indexOf(tagValue) >= 0)) {
                     if(!this.elementsSelected.some(e => elements[name].indexOf(e) < 0)) {
                         let $node = document.createElement('option');
                         $node.value = name;

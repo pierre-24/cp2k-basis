@@ -18,8 +18,8 @@ references:
   - 10.1103/PhysRevB.54.1703
   - 10.1103/PhysRevB.58.3641
   - 10.1007/s00214-005-0655-y
-kinds:
-  - &kindmolopt
+tags:
+  - &tagsmolopt
     - molopt
     - gth
 # metadata:
@@ -27,13 +27,13 @@ metadata:
   SZV-.*:
     description: Single zeta valence MOLOPT basis set.
     references: *refmolopt
-    kind: *kindmolopt
+    tags: *tagsmolopt
   .*-MOLOPT-GTH:
       description: Yet another MOLOPT basis set
       references: *refmolopt
-      kind: *kindmolopt
+      tags: *tagsmolopt
   GTH-BLYP:
     description: GTH-BLYP is a set of GTH potentials for BLYP.
     references: *refgth
-    kind:
+    tags:
       - gth

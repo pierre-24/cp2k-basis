@@ -48,11 +48,11 @@ class IndexView(RenderTemplateView):
             z_to_symb=Z_TO_SYMB,
             basis_sets=dict(
                 elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
-                kinds=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].kinds_per_family),
+                tags=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].tags_per_family),
             ),
             pseudopotentials=dict(
                 elements=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
-                kinds=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].kinds_per_family),
+                tags=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].tags_per_family),
             )
         )
 
@@ -101,12 +101,12 @@ class AllDataAPI(MethodView):
             result=dict(
                 basis_sets=dict(
                     elements=bs_storage.elements_per_family,
-                    kinds=bs_storage.kinds_per_family,
+                    tags=bs_storage.tags_per_family,
                     build_date=bs_storage.date_build
                 ),
                 pseudopotentials=dict(
                     elements=pp_storage.elements_per_family,
-                    kinds=pp_storage.kinds_per_family,
+                    tags=pp_storage.tags_per_family,
                     build_date=pp_storage.date_build
                 )
             )
@@ -120,9 +120,9 @@ class NamesAPI(MethodView):
     @parser.use_kwargs({
         'elements': field_elements,
         'bs_name': fields.Str(),
-        'bs_kind': fields.Str(),
+        'bs_tag': fields.Str(),
         'pp_name': fields.Str(),
-        'pp_kind': fields.Str()
+        'pp_tag': fields.Str()
     }, location='query')
     def get(self, **kwargs):
         bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
@@ -131,8 +131,8 @@ class NamesAPI(MethodView):
         elements = kwargs.get('elements', None)
         bs_name = kwargs.get('bs_name', None)
         pp_name = kwargs.get('pp_name', None)
-        bs_kind = kwargs.get('bs_kind', None)
-        pp_kind = kwargs.get('pp_kind', None)
+        bs_tag = kwargs.get('bs_tag', None)
+        pp_tag = kwargs.get('pp_tag', None)
 
         query = dict(type='ALL')
 
@@ -142,8 +142,8 @@ class NamesAPI(MethodView):
         return flask.jsonify(
             query=query,
             result=dict(
-                basis_sets=bs_storage.get_names(elements, bs_name, bs_kind),
-                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_kind)
+                basis_sets=bs_storage.get_names(elements, bs_name, bs_tag),
+                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_tag)
             )
         )
 

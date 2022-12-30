@@ -34,8 +34,8 @@
                 <div class="blk">
                     <p class="search-group input-group">
                         <input type="search" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
-                        <select class="form-select form-select-sm" id="basisSetKindSelect">
-                            <option value="">All kinds</option>
+                        <select class="form-select form-select-sm" id="basisSetTagSelect">
+                            <option value="">All tags</option>
                         </select>
                         <span class="clear-button" data-clear="#basisSetSearch"></span>
                     </p>
@@ -49,8 +49,8 @@
                 <div class="blk">
                     <p class="input-group search-group">
                         <input type="search" class="form-control" placeholder="Search pseudopotentials" id="pseudoSearch">
-                        <select class="form-select form-select-sm" id="pseudoKindSelect">
-                            <option value="">All kinds</option>
+                        <select class="form-select form-select-sm" id="pseudoTagSelect">
+                            <option value="">All tags</option>
                         </select>
                         <span class="clear-button" data-clear="#pseudoSearch"></span>
                     </p>
@@ -179,16 +179,16 @@
     <script type="module">
         import {
             Controller
-        } from "{{ url_for('static', filename='scripts.min.js') }}";
+        } from "{{ url_for('static', filename='scripts.js') }}";
 
         let controller = new Controller({
             'basis_sets': {
                 'elements': {{ basis_sets['elements']|safe }},
-                'kinds': {{ basis_sets['kinds']|safe }},
+                'tags': {{ basis_sets['tags']|safe }},
             },
             'pseudopotentials': {
                 'elements':  {{ pseudopotentials['elements']|safe }},
-                'kinds':  {{ pseudopotentials['kinds']|safe }},
+                'tags':  {{ pseudopotentials['tags']|safe }},
             }
         });
     </script>

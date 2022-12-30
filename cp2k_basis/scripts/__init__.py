@@ -4,7 +4,7 @@ SCHEMA_METADATA = Schema({
     str: {
         'description': str,
         'references': [str],
-        Optional('kind'): [str]
+        Optional('tags'): [str]
     }
 })
 
@@ -12,8 +12,8 @@ SCHEMA_FILE = Schema({
     'name': str,
     'type': Or('BASIS_SETS', 'POTENTIALS'),
     Optional('patch'): str,
-    Optional('family_name'): {str: str},
-    Optional('variant'): {str: str}
+    Optional('family_name'): {str: Or(str, None)},
+    Optional('variant'): {str: Or(str, None)}
 })
 
 SCHEMA_LIBRARY_SOURCE_FILE = Schema({
