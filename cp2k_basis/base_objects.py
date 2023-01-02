@@ -445,12 +445,13 @@ class AddMetadata:
 
     def __call__(self, family_storage: BaseFamilyStorage):
         name = family_storage.name
-        metadata_value = None
-        for rule in self.rules:
-            rule_pattern, values = rule
-            if rule_pattern.match(name):
-                metadata_value = values
-                break
+        if self.rules:
+            metadata_value = None
+            for rule in self.rules:
+                rule_pattern, values = rule
+                if rule_pattern.match(name):
+                    metadata_value = values
+                    break
 
-        if metadata_value:
-            family_storage.metadata = metadata_value
+            if metadata_value:
+                family_storage.metadata = metadata_value

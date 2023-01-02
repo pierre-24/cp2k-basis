@@ -1,0 +1,102 @@
+@@ -72 +72 @@
+-H cFIT3
++H cFIT3 cFIT3-q1
+@@ -116 +116 @@
+-H FIT3
++H FIT3 FIT3-q1
+@@ -193 +193 @@
+-He cFIT3
++He cFIT3 cFIT3-q2
+@@ -213 +213 @@
+-He FIT3
++He FIT3 FIT3-q2
+@@ -273 +273 @@
+-Li cFIT3
++Li cFIT3 cFIT3-q3
+@@ -295 +295 @@
+-Li FIT3
++Li FIT3 FIT3-q3
+@@ -361 +361 @@
+-Be cFIT3
++Be cFIT3 cFIT3-q4
+@@ -383 +383 @@
+-Be FIT3
++Be FIT3 FIT3-q4
+@@ -450 +450 @@
+-B cFIT3
++B cFIT3 cFIT3-q3
+@@ -480 +480 @@
+-B FIT3
++B FIT3 FIT3-q3
+@@ -606 +606 @@
+-C cFIT3
++C cFIT3 cFIT3-q4
+@@ -674 +674 @@
+-C FIT3
++C FIT3 FIT3-q4
+@@ -842 +842 @@
+-N cFIT3
++N cFIT3 cFIT3-q5
+@@ -910 +910 @@
+-N FIT3
++N FIT3 FIT3-q5
+@@ -1060 +1060 @@
+-O cFIT3
++O cFIT3 cFIT3-q6
+@@ -1128 +1128 @@
+-O FIT3
++O FIT3 FIT3-q6
+@@ -1292 +1292 @@
+-F cFIT3
++F cFIT3 cFIT3-q7
+@@ -1360 +1360 @@
+-F FIT3
++F FIT3 FIT3-q7
+@@ -1487 +1487 @@
+-Na cFIT3
++Na cFIT3 cFIT3-q9
+@@ -1521 +1521 @@
+-Na FIT3
++Na FIT3 FIT3-q9
+@@ -1613 +1613 @@
+-Mg cFIT3
++Mg cFIT3 cFIT3-q10
+@@ -1647 +1647 @@
+-Mg FIT3
++Mg FIT3 FIT3-q10
+@@ -1736 +1736 @@
+-Al cFIT3
++Al cFIT3 cFIT3-q3
+@@ -1766 +1766 @@
+-Al FIT3
++Al FIT3 FIT3-q3
+@@ -1894 +1894 @@
+-Si cFIT3
++Si cFIT3 cFIT3-q4
+@@ -1962 +1962 @@
+-Si FIT3
++Si FIT3 FIT3-q4
+@@ -2140 +2140 @@
+-P cFIT3
++P cFIT3 cFIT3-q5
+@@ -2208 +2208 @@
+-P FIT3
++P FIT3 FIT3-q5
+@@ -2378 +2378 @@
+-S cFIT3
++S cFIT3 cFIT3-q6
+@@ -2446 +2446 @@
+-S FIT3
++S FIT3 FIT3-q6
+@@ -2620 +2620 @@
+-Cl cFIT3
++Cl cFIT3 cFIT3-q7
+@@ -2688 +2688 @@
+-Cl FIT3
++Cl FIT3 FIT3-q7
+@@ -2800 +2800 @@
+-Br cFIT3
++Br cFIT3 cFIT3-q7
+@@ -2830 +2830 @@
+-Br FIT3
++Br FIT3 FIT3-q7
