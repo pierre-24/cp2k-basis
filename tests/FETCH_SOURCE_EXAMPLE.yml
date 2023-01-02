@@ -19,9 +19,9 @@ references:
   - 10.1103/PhysRevB.58.3641
   - 10.1007/s00214-005-0655-y
 tags:
-  - &tagsmolopt
-    - molopt
-    - gth
+- &tagsmolopt
+  - MOLOPT
+  - GTH
 # metadata:
 metadata:
   SZV-.*:
@@ -32,6 +32,15 @@ metadata:
       description: Yet another MOLOPT basis set
       references: *refmolopt
       tags: *tagsmolopt
+  .*-GTH:
+      description: GTH basis set
+      references: *refgth
+      tags: [GTH]
+  cFIT3:
+      description: ADMM basis set
+      references: *refmolopt
+      tag: [ADMM]
+      basis_type: AUX_FIT
   GTH-BLYP:
     description: GTH-BLYP is a set of GTH potentials for BLYP.
     references: *refgth
