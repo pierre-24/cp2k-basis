@@ -38,21 +38,43 @@ visitor_blueprint = Blueprint('visitor', __name__)
 class IndexView(RenderTemplateView):
     template_name = 'index.html'
 
+    def __init__(self):
+        super().__init__()
+
+        self.bs_storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        self.pp_storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
+        # separate orb and aux basis sets
+        self.orb_basis = {'elements': {}, 'tags': {}}
+        self.aux_basis = {'elements': {}, 'tags': {}}
+
+        for name in self.bs_storage:
+            if self.bs_storage[name].metadata.get('basis_type', 'ORB') != 'ORB':
+                b = self.aux_basis
+            else:
+                b = self.orb_basis
+
+            b['elements'][name] = self.bs_storage.elements_per_family[name]
+            b['tags'][name] = self.bs_storage.tags_per_family[name]
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
         from cp2k_basis_webservice import COMMON_CONTEXT
         ctx.update(**COMMON_CONTEXT)
 
+        aux_basis = []
+        for name in flask.current_app.config['BASIS_SETS_STORAGE']:
+            if self.bs_storage[name].metadata.get('basis_type', 'ORB') != 'ORB':
+                aux_basis.append(name)
+
         ctx.update(
             z_to_symb=Z_TO_SYMB,
-            basis_sets=dict(
-                elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
-                tags=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].tags_per_family),
-            ),
+            orb_basis_sets=self.orb_basis,
+            aux_basis_sets=self.aux_basis,
             pseudopotentials=dict(
-                elements=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
-                tags=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].tags_per_family),
+                elements=json.dumps(self.pp_storage.elements_per_family),
+                tags=json.dumps(self.pp_storage.tags_per_family),
             )
         )
 

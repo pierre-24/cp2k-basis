@@ -30,8 +30,10 @@ export class Controller  {
         this.futureSelectedElements = [];
 
         this.elementsSelected = [];
-        this.basisSetSelected = null;
-        this.basisSetVariants = {};
+        this.orbBasisSetSelected = null;
+        this.orbBasisSetVariants = {};
+        this.auxBasisSetSelected = null;
+        this.auxBasisSetVariants = {};
         this.pseudoSelected = null;
         this.pseudoVariants = {};
 
@@ -42,12 +44,12 @@ export class Controller  {
                 <li><strong>References:</strong><ul>${2}</ul></li>
             </ul>`;
 
-        // tagss
-        this.basisSetTags = [];
-        Object.values(this.data.basis_sets.tags).forEach($e => {
+        // tags
+        this.orbBasisSetTags = [];
+        Object.values(this.data.orb_basis_sets.tags).forEach($e => {
             $e.forEach($x => {
-                if(this.basisSetTags.indexOf($x) < 0)
-                    this.basisSetTags.push($x);
+                if(this.orbBasisSetTags.indexOf($x) < 0)
+                    this.orbBasisSetTags.push($x);
             });
         });
 
@@ -60,26 +62,52 @@ export class Controller  {
         });
 
         // interface elements
-        this.$basisSetSelect = document.querySelector('#basisSetSelect');
-        this.$basisSetSelect.addEventListener('change', () => {
+        this.$orbBasisSetSelect = document.querySelector('#orbBasisSetSelect');
+        this.$orbBasisSetSelect.addEventListener('change', () => {
             this.update();
         });
 
-        this.$basisSetSearch = document.querySelector('#basisSetSearch');
-        this.$basisSetSearch.addEventListener('keyup', () => {
+        this.$auxBasisSetSelect = document.querySelector('#auxBasisSetSelect');
+        this.$auxBasisSetSelect.addEventListener('change', () => {
             this.update();
         });
 
-        this.$basisSetTagSelect = document.querySelector('#basisSetTagSelect');
-        this.basisSetTags.forEach($k => {
+        this.$orbBasisSetSearch = document.querySelector('#orbBasisSetSearch');
+        this.$orbBasisSetSearch.addEventListener('keyup', () => {
+            this.update();
+        });
+
+        this.$orbBasisSetTagSelect = document.querySelector('#orbBasisSetTagSelect');
+        this.orbBasisSetTags.forEach($k => {
             let $opt = document.createElement('option');
             $opt.value = $k;
             $opt.innerText = $k;
-            this.$basisSetTagSelect.appendChild($opt);
+            this.$orbBasisSetTagSelect.appendChild($opt);
         });
 
-        this.$basisSetTagSelect.addEventListener('change', () => {
+        this.$orbBasisSetTagSelect.addEventListener('change', () => {
             this.update();
+        });
+
+        this.$addAuxBasisSet = document.querySelector('#addAuxBasisSet');
+        this.$orbBasisSetContainer = document.querySelector('#orbBasisSetContainer');
+        this.$auxBasisSetContainer = document.querySelector('#auxBasisSetContainer');
+
+        this.$addAuxBasisSet.addEventListener('change', () => {
+            if(this.$addAuxBasisSet.checked) {
+                this.$orbBasisSetContainer.classList.add('col-lg-6');
+                this.$auxBasisSetContainer.classList.remove('d-none');
+                this.$auxBasisSetContainer.classList.add('col-lg-6');
+            } else {
+                this.$orbBasisSetContainer.classList.remove('col-lg-6');
+                this.$auxBasisSetContainer.classList.add('d-none');
+                this.$auxBasisSetContainer.classList.remove('col-lg-6');
+
+                this.auxBasisSetSelected = null;
+                this.$auxBasisSetSelect.value = '';
+
+                this.update();
+            }
         });
 
         this.$pseudoSelect = document.querySelector('#pseudoSelect');
@@ -184,7 +212,7 @@ export class Controller  {
 
             this.futureSelectedElements = [];
 
-            this.$basisSetSelect.value = null;
+            this.$orbBasisSetSelect.value = null;
             this.$pseudoSelect.value = null;
 
             this.update();
@@ -204,10 +232,13 @@ export class Controller  {
         }
 
         // update the list of basis sets & pseudo based on the elements that are selected and the search value
-        let basisSetSearched = this.$basisSetSearch.value;
-        let basisSetTag = this.$basisSetTagSelect.value;
-        let basisSetValue = this.$basisSetSelect.value;
-        this._updateSelect(this.$basisSetSelect, this.data.basis_sets, basisSetValue, basisSetSearched, basisSetTag);
+        let basisSetSearched = this.$orbBasisSetSearch.value;
+        let basisSetTag = this.$orbBasisSetTagSelect.value;
+        let orbBasisSetValue = this.$orbBasisSetSelect.value;
+        this._updateSelect(this.$orbBasisSetSelect, this.data.orb_basis_sets, orbBasisSetValue, basisSetSearched, basisSetTag);
+
+        let auxBasisSetValue = this.$auxBasisSetSelect.value;
+        this._updateSelect(this.$auxBasisSetSelect, this.data.aux_basis_sets, auxBasisSetValue, '', '');
 
         let pseudoSearched = this.$pseudoSearch.value;
         let pseudoTag = this.$pseudoTagSelect.value;
@@ -215,12 +246,21 @@ export class Controller  {
         this._updateSelect(this.$pseudoSelect, this.data.pseudopotentials, pseudoValue, pseudoSearched, pseudoTag);
 
         // update basis set & pseudo
-        if(this.basisSetSelected !== this.$basisSetSelect.value) {
-            this.basisSetSelected = this.$basisSetSelect.value;
+        if(this.orbBasisSetSelected !== this.$orbBasisSetSelect.value || this.auxBasisSetSelected !== this.$auxBasisSetSelect.value) {
+            this.orbBasisSetSelected = this.$orbBasisSetSelect.value;
+            this.auxBasisSetSelected = this.$auxBasisSetSelect.value;
 
             let elements = [];
-            if (this.basisSetSelected.length > 0)
-                elements = this.data.basis_sets.elements[this.basisSetSelected];
+            if (this.orbBasisSetSelected.length > 0 && this.auxBasisSetSelected.length === 0)
+                elements = this.data.orb_basis_sets.elements[this.orbBasisSetSelected];
+            else if(this.auxBasisSetSelected.length > 0 && this.orbBasisSetSelected.length === 0)
+                elements = this.data.aux_basis_sets.elements[this.auxBasisSetSelected];
+            else if(this.orbBasisSetSelected.length > 0 && this.auxBasisSetSelected.length > 0) {
+                this.data.orb_basis_sets.elements[this.orbBasisSetSelected].forEach($e => {
+                    if(this.data.aux_basis_sets.elements[this.auxBasisSetSelected].indexOf($e) >= 0)
+                        elements.push($e);
+                });
+            }
 
             this._updateAvailability('basis-set', elements);
             requiresOutputsUpdate = true;
@@ -294,25 +334,25 @@ export class Controller  {
         this.elementsSelected.forEach(e => {
 
             let variants = {};
-            if(this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0)
-                variants = Object.keys(this.basisSetVariants[e]);
-            else if(this.basisSetSelected.length === 0 && this.pseudoSelected.length > 0)
+            if(this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length === 0)
+                variants = Object.keys(this.orbBasisSetVariants[e]);
+            else if(this.orbBasisSetSelected.length === 0 && this.pseudoSelected.length > 0)
                 variants = Object.keys(this.pseudoVariants[e]);
-            else if(this.basisSetSelected.length > 0 && this.pseudoSelected.length > 0)
-                variants = Object.keys(this.basisSetVariants[e]).filter(v => v in this.pseudoVariants[e]);
+            else if(this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length > 0)
+                variants = Object.keys(this.orbBasisSetVariants[e]).filter(v => v in this.pseudoVariants[e]);
 
             let kind = `&KIND ${e}\n`;
             if(variants.length === 0) {
-                kind += `! No compatible variant for ${e}: [basis set=${Object.keys(this.basisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
+                kind += `! No compatible variant for ${e}: [basis set=${Object.keys(this.orbBasisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
             } else {
                 /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
                 * */
                 let variant = `q` + Math.max(...variants.map(e => parseInt(e.substring(1))));
 
-                if(this.basisSetSelected.length > 0) {
-                    kind += `  BASIS_SET ${this.basisSetVariants[e][variant]}`;
+                if(this.orbBasisSetSelected.length > 0) {
+                    kind += `  BASIS_SET ${this.orbBasisSetVariants[e][variant]}`;
                     if(variants.length > 1)
-                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.basisSetVariants[e][v])}`;
+                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.orbBasisSetVariants[e][v])}`;
                     kind += '\n';
                 }
 
@@ -346,10 +386,10 @@ export class Controller  {
     _updateOutputs() {
         this.$inputResult.value = 'Select element(s).';
 
-        if(this.basisSetSelected.length === 0)
+        if(this.orbBasisSetSelected.length === 0)
             this._updateOutputBasisSet('Select a basis set.', []);
         else if(this.elementsSelected.length === 0) {
-            apiCall(`/basis/${this.basisSetSelected}/metadata`).then(data => {
+            apiCall(`/basis/${this.orbBasisSetSelected}/metadata`).then(data => {
                 this._updateOutputBasisSet(
                     'Select element(s)',
                     this._fetchMetadata(data.query, data.result)
@@ -369,16 +409,16 @@ export class Controller  {
         }
 
         if(this.elementsSelected.length > 0)  {
-            if (this.basisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
-                apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
+            if (this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
+                apiCall(`/basis/${this.orbBasisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
                     this._updateOutputBasisSet(
                         data.result.data,
                         this._fetchMetadata(data.query, data.result.metadata)
                     );
-                    this.basisSetVariants = data.result.variants;
+                    this.orbBasisSetVariants = data.result.variants;
                     this._updateOutputInput();
                 });
-            } else if(this.pseudoSelected.length > 0 && this.basisSetSelected.length === 0)  {
+            } else if(this.pseudoSelected.length > 0 && this.orbBasisSetSelected.length === 0)  {
                 apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`).then(data => {
                     this._updateOutputPseudo(
                         data.result.data,
@@ -387,9 +427,9 @@ export class Controller  {
                     this.pseudoVariants = data.result.variants;
                     this._updateOutputInput();
                 });
-            } else if (this.basisSetSelected.length > 0 && this.pseudoSelected.length > 0) {
+            } else if (this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length > 0) {
                 Promise.all([ // wait for the end of both requests
-                    apiCall(`/basis/${this.basisSetSelected}/data?elements=${this.elementsSelected}`),
+                    apiCall(`/basis/${this.orbBasisSetSelected}/data?elements=${this.elementsSelected}`),
                     apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`)
                 ]).then(([data_basis, data_pseudo]) => {
                     this._updateOutputBasisSet(
@@ -401,7 +441,7 @@ export class Controller  {
                         data_pseudo.result.data,
                         this._fetchMetadata(data_pseudo.query, data_pseudo.result.metadata)
                     );
-                    this.basisSetVariants = data_basis.result.variants;
+                    this.orbBasisSetVariants = data_basis.result.variants;
                     this.pseudoVariants = data_pseudo.result.variants;
                     this._updateOutputInput();
                 });

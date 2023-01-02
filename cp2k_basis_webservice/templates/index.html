@@ -33,17 +33,28 @@
                 <div class="col-sm-6">
                 <div class="blk">
                     <p class="search-group input-group">
-                        <input type="search" class="form-control" placeholder="Search basis sets" id="basisSetSearch">
-                        <select class="form-select form-select-sm" id="basisSetTagSelect">
+                        <input type="search" class="form-control" placeholder="Search basis sets" id="orbBasisSetSearch">
+                        <select class="form-select form-select-sm" id="orbBasisSetTagSelect">
                             <option value="">All tags</option>
                         </select>
-                        <span class="clear-button" data-clear="#basisSetSearch"></span>
+                        <span class="clear-button" data-clear="#orbBasisSetSearch"></span>
                     </p>
-                    <p>
-                    <select size="5" class="form-select form-select-sm" id="basisSetSelect">
-                    </select>
+                    <div class="row">
+                        <div class="container col-12" id="orbBasisSetContainer">
+                        <select size="5" class="form-select form-select-sm" id="orbBasisSetSelect">
+                        </select>
+                        </div>
+                        <div class="container col-12 d-none" id="auxBasisSetContainer">
+                        <select size="5" class="form-select form-select-sm" id="auxBasisSetSelect">
+                        </select>
+                        </div>
+                    </div>
+                    <p class="form-check form-switch my-2">
+                        <input class="form-check-input" type="checkbox" id="addAuxBasisSet">
+                        <label class="form-check-label" for="addAuxBasisSet">Add an auxiliary basis set</label>
                     </p>
-                </div></div>
+                </div>
+                </div>
 
                 <div class="col-sm-6">
                 <div class="blk">
@@ -55,7 +66,7 @@
                         <span class="clear-button" data-clear="#pseudoSearch"></span>
                     </p>
                     <p>
-                    <select size="5" class="form-select form-select-sm" id="pseudoSelect">
+                    <select size="6" class="form-select form-select-sm" id="pseudoSelect">
                     </select>
                     </p>
                 </div>
@@ -179,12 +190,16 @@
     <script type="module">
         import {
             Controller
-        } from "{{ url_for('static', filename='scripts.min.js') }}";
+        } from "{{ url_for('static', filename='scripts.js') }}";
 
         let controller = new Controller({
-            'basis_sets': {
-                'elements': {{ basis_sets['elements']|safe }},
-                'tags': {{ basis_sets['tags']|safe }},
+            'orb_basis_sets': {
+                'elements': {{ orb_basis_sets['elements']|safe }},
+                'tags': {{ orb_basis_sets['tags']|safe }},
+            },
+            'aux_basis_sets': {
+                'elements': {{ aux_basis_sets['elements']|safe }},
+                'tags': {{ aux_basis_sets['tags']|safe }},
             },
             'pseudopotentials': {
                 'elements':  {{ pseudopotentials['elements']|safe }},

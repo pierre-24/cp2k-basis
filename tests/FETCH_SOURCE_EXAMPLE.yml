@@ -39,7 +39,7 @@ metadata:
   cFIT3:
       description: ADMM basis set
       references: *refmolopt
-      tag: [ADMM]
+      tags: [ADMM]
       basis_type: AUX_FIT
   GTH-BLYP:
     description: GTH-BLYP is a set of GTH potentials for BLYP.
