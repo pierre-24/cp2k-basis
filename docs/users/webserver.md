@@ -55,7 +55,7 @@ You can use the search bar in the top of each list to quickly access the basis s
 
 ![](../images/webserver_search.jpg)
 
-It is also possible to sort the basis set per *tag*, with the dropdown on the right.
+It is also possible to sort the basis set and pseudopotentials per *tag*, with the dropdown on the right.
 The following tags are available:
 
 | Tag      | Description                                                    |
@@ -105,6 +105,23 @@ Finally, a last panel gives you the `&KIND` sections that you can just copy-past
 ![](../images/webserver_kind_panel.jpg)
 
 Don't forget to update the `&XC_FUNCTIONAL` section... *Et voilà*!
+
+
+### Auxiliary basis sets
+
+!!! info
+    Check out [10.1021/ct1002225](https://pubs.acs.org/doi/10.1021/ct1002225) for a description of the ADMM method, or [this presentation](https://www.cp2k.org/_media/events:2019_ghent:admm.pdf).
+
+If you need to use an `AUX_FIT` basis set, toggle the corresponding switch and select your basis:
+
+![](../images/webserver_aux.jpg)
+
+Both the "basis set" and "input file" panels update to reflect those changes:
+
+![](../images/webserver_aux_result.jpg)
+
+!!! note
+    The tag filter and search bar have no effect on the list of available auxiliary basis sets.
 
 ## Peculiarity
 
