@@ -4,7 +4,7 @@ repositories:
 - base: https://github.com/{repo}/raw/{commit}/tests/
   data:
     repo: pierre-24/cp2k-basis
-    commit: 1a388c95140c3091c96ba8d18b20c36c90ad64ac
+    commit: 58540c3b6ce6e6fccb51b82516846865c80f82ea
   files:
   - name: BASIS_EXAMPLE
     type: BASIS_SETS
