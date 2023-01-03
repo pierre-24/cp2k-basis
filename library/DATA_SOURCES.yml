@@ -472,12 +472,12 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT3) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cpFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence, contracted + polarization) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of pFIT3) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -492,12 +492,12 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^aug-cFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence, contracted + diffuse) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of aug-FIT3) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^aug-cpFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence, contracted + polarization + diffuse) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of aug-pFIT3) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -513,12 +513,12 @@ metadata:
     tags: *tagsadmmsr
     basis_type: AUX_FIT
   ^cFIT4$:
-    description: An auxiliary minimal basis set (4 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT4) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cFIT4-SR$:
-    description: An auxiliary minimal basis set (4 gaussian functions per valence, contracted) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set (contraction of FIT4-SR) basis set for solid (short-range) and ADMM
     references: *refadmm
     tags: *tagsadmmmoloptsr
     basis_type: AUX_FIT
@@ -532,12 +532,12 @@ metadata:
     tags: *tagsadmmsr
     basis_type: AUX_FIT
   ^cFIT5$:
-    description: An auxiliary minimal basis set (5 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT5) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cFIT5-SR$:
-    description: An auxiliary minimal basis set (5 gaussian functions per valence, contracted) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set (contraction of FIT5-SR) basis set for solid (short-range) and ADMM
     references: *refadmm
     tags: *tagsadmmmoloptsr
     basis_type: AUX_FIT
@@ -547,7 +547,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT6$:
-    description: An auxiliary minimal basis set (6 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT6) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -557,7 +557,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT7$:
-    description: An auxiliary minimal basis set (7 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT7) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -567,7 +567,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT8$:
-    description: An auxiliary minimal basis set (8 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT8) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -577,7 +577,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT9$:
-    description: An auxiliary minimal basis set (9 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT9) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -587,7 +587,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT10$:
-    description: An auxiliary minimal basis set (10 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT10) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -597,7 +597,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT11$:
-    description: An auxiliary minimal basis set (11 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT11) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -607,7 +607,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT12$:
-    description: An auxiliary minimal basis set (12 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT12) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
@@ -617,7 +617,7 @@ metadata:
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT13$:
-    description: An auxiliary minimal basis set (13 gaussian functions per valence, contracted) basis set for ADMM
+    description: An auxiliary minimal basis set (contraction of FIT13) basis set for ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT

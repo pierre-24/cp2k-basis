@@ -1,102 +1,312 @@
 @@ -72 +72 @@
 -H cFIT3
 +H cFIT3 cFIT3-q1
+@@ -81 +81 @@
+-H cpFIT3
++H cpFIT3 cpFIT3-q1
+@@ -92 +92 @@
+-H aug-cFIT3
++H aug-cFIT3 aug-cFIT3-q1
+@@ -103 +103 @@
+-H aug-cpFIT3
++H aug-cpFIT3 aug-cpFIT3-q1
 @@ -116 +116 @@
 -H FIT3
 +H FIT3 FIT3-q1
+@@ -126 +126 @@
+-H pFIT3
++H pFIT3 pFIT3-q1
+@@ -138 +138 @@
+-H aug-FIT3
++H aug-FIT3 aug-FIT3-q1
+@@ -150 +150 @@
+-H aug-pFIT3
++H aug-pFIT3 aug-pFIT3-q1
 @@ -193 +193 @@
 -He cFIT3
 +He cFIT3 cFIT3-q2
+@@ -202 +202 @@
+-He cpFIT3
++He cpFIT3 cpFIT3-q2
 @@ -213 +213 @@
 -He FIT3
 +He FIT3 FIT3-q2
+@@ -223 +223 @@
+-He pFIT3
++He pFIT3 pFIT3-q2
 @@ -273 +273 @@
 -Li cFIT3
 +Li cFIT3 cFIT3-q3
+@@ -283 +283 @@
+-Li cpFIT3
++Li cpFIT3 cpFIT3-q3
 @@ -295 +295 @@
 -Li FIT3
 +Li FIT3 FIT3-q3
+@@ -307 +307 @@
+-Li pFIT3
++Li pFIT3 pFIT3-q3
 @@ -361 +361 @@
 -Be cFIT3
 +Be cFIT3 cFIT3-q4
+@@ -371 +371 @@
+-Be cpFIT3
++Be cpFIT3 cpFIT3-q4
 @@ -383 +383 @@
 -Be FIT3
 +Be FIT3 FIT3-q4
+@@ -395 +395 @@
+-Be pFIT3
++Be pFIT3 pFIT3-q4
 @@ -450 +450 @@
 -B cFIT3
 +B cFIT3 cFIT3-q3
+@@ -464 +464 @@
+-B cpFIT3
++B cpFIT3 cpFIT3-q3
 @@ -480 +480 @@
 -B FIT3
 +B FIT3 FIT3-q3
+@@ -496 +496 @@
+-B pFIT3
++B pFIT3 pFIT3-q3
 @@ -606 +606 @@
 -C cFIT3
 +C cFIT3 cFIT3-q4
+@@ -620 +620 @@
+-C cpFIT3
++C cpFIT3 cpFIT3-q4
+@@ -636 +636 @@
+-C aug-cFIT3
++C aug-cFIT3 aug-cFIT3-q4
+@@ -654 +654 @@
+-C aug-cpFIT3
++C aug-cpFIT3 aug-cpFIT3-q4
 @@ -674 +674 @@
 -C FIT3
 +C FIT3 FIT3-q4
+@@ -690 +690 @@
+-C pFIT3
++C pFIT3 pFIT3-q4
+@@ -708 +708 @@
+-C aug-FIT3
++C aug-FIT3 aug-FIT3-q4
+@@ -728 +728 @@
+-C aug-pFIT3
++C aug-pFIT3 aug-pFIT3-q4
 @@ -842 +842 @@
 -N cFIT3
 +N cFIT3 cFIT3-q5
+@@ -856 +856 @@
+-N cpFIT3
++N cpFIT3 cpFIT3-q5
+@@ -872 +872 @@
+-N aug-cFIT3
++N aug-cFIT3 aug-cFIT3-q5
+@@ -890 +890 @@
+-N aug-cpFIT3
++N aug-cpFIT3 aug-cpFIT3-q5
 @@ -910 +910 @@
 -N FIT3
 +N FIT3 FIT3-q5
+@@ -926 +926 @@
+-N pFIT3
++N pFIT3 pFIT3-q5
+@@ -944 +944 @@
+-N aug-FIT3
++N aug-FIT3 aug-FIT3-q5
+@@ -964 +964 @@
+-N aug-pFIT3
++N aug-pFIT3 aug-pFIT3-q5
 @@ -1060 +1060 @@
 -O cFIT3
 +O cFIT3 cFIT3-q6
+@@ -1074 +1074 @@
+-O cpFIT3
++O cpFIT3 cpFIT3-q6
+@@ -1090 +1090 @@
+-O aug-cFIT3
++O aug-cFIT3 aug-cFIT3-q6
+@@ -1108 +1108 @@
+-O aug-cpFIT3
++O aug-cpFIT3 aug-cpFIT3-q6
 @@ -1128 +1128 @@
 -O FIT3
 +O FIT3 FIT3-q6
+@@ -1144 +1144 @@
+-O pFIT3
++O pFIT3 pFIT3-q6
+@@ -1162 +1162 @@
+-O aug-FIT3
++O aug-FIT3 aug-FIT3-q6
+@@ -1182 +1182 @@
+-O aug-pFIT3
++O aug-pFIT3 aug-pFIT3-q6
 @@ -1292 +1292 @@
 -F cFIT3
 +F cFIT3 cFIT3-q7
+@@ -1306 +1306 @@
+-F cpFIT3
++F cpFIT3 cpFIT3-q7
+@@ -1322 +1322 @@
+-F aug-cFIT3
++F aug-cFIT3 aug-cFIT3-q7
+@@ -1340 +1340 @@
+-F aug-cpFIT3
++F aug-cpFIT3 aug-cpFIT3-q7
 @@ -1360 +1360 @@
 -F FIT3
 +F FIT3 FIT3-q7
+@@ -1376 +1376 @@
+-F pFIT3
++F pFIT3 pFIT3-q7
+@@ -1394 +1394 @@
+-F aug-FIT3
++F aug-FIT3 aug-FIT3-q7
+@@ -1414 +1414 @@
+-F aug-pFIT3
++F aug-pFIT3 aug-pFIT3-q7
 @@ -1487 +1487 @@
 -Na cFIT3
 +Na cFIT3 cFIT3-q9
+@@ -1503 +1503 @@
+-Na cpFIT3
++Na cpFIT3 cpFIT3-q9
 @@ -1521 +1521 @@
 -Na FIT3
 +Na FIT3 FIT3-q9
+@@ -1541 +1541 @@
+-Na pFIT3
++Na pFIT3 pFIT3-q9
 @@ -1613 +1613 @@
 -Mg cFIT3
 +Mg cFIT3 cFIT3-q10
+@@ -1629 +1629 @@
+-Mg cpFIT3
++Mg cpFIT3 cpFIT3-q10
 @@ -1647 +1647 @@
 -Mg FIT3
 +Mg FIT3 FIT3-q10
+@@ -1667 +1667 @@
+-Mg pFIT3
++Mg pFIT3 pFIT3-q10
 @@ -1736 +1736 @@
 -Al cFIT3
 +Al cFIT3 cFIT3-q3
+@@ -1750 +1750 @@
+-Al cpFIT3
++Al cpFIT3 cpFIT3-q3
 @@ -1766 +1766 @@
 -Al FIT3
 +Al FIT3 FIT3-q3
+@@ -1782 +1782 @@
+-Al pFIT3
++Al pFIT3 pFIT3-q3
 @@ -1894 +1894 @@
 -Si cFIT3
 +Si cFIT3 cFIT3-q4
+@@ -1908 +1908 @@
+-Si cpFIT3
++Si cpFIT3 cpFIT3-q4
+@@ -1924 +1924 @@
+-Si aug-cFIT3
++Si aug-cFIT3 aug-cFIT3-q4
+@@ -1942 +1942 @@
+-Si aug-cpFIT3
++Si aug-cpFIT3 aug-cpFIT3-q4
 @@ -1962 +1962 @@
 -Si FIT3
 +Si FIT3 FIT3-q4
+@@ -1978 +1978 @@
+-Si pFIT3
++Si pFIT3 pFIT3-q4
+@@ -1996 +1996 @@
+-Si aug-FIT3
++Si aug-FIT3 aug-FIT3-q4
+@@ -2016 +2016 @@
+-Si aug-pFIT3
++Si aug-pFIT3 aug-pFIT3-q4
 @@ -2140 +2140 @@
 -P cFIT3
 +P cFIT3 cFIT3-q5
+@@ -2154 +2154 @@
+-P cpFIT3
++P cpFIT3 cpFIT3-q5
+@@ -2170 +2170 @@
+-P aug-cFIT3
++P aug-cFIT3 aug-cFIT3-q5
+@@ -2188 +2188 @@
+-P aug-cpFIT3
++P aug-cpFIT3 aug-cpFIT3-q5
 @@ -2208 +2208 @@
 -P FIT3
 +P FIT3 FIT3-q5
+@@ -2224 +2224 @@
+-P pFIT3
++P pFIT3 pFIT3-q5
+@@ -2242 +2242 @@
+-P aug-FIT3
++P aug-FIT3 aug-FIT3-q5
+@@ -2262 +2262 @@
+-P aug-pFIT3
++P aug-pFIT3 aug-pFIT3-q5
 @@ -2378 +2378 @@
 -S cFIT3
 +S cFIT3 cFIT3-q6
+@@ -2392 +2392 @@
+-S cpFIT3
++S cpFIT3 cpFIT3-q6
+@@ -2408 +2408 @@
+-S aug-cFIT3
++S aug-cFIT3 aug-cFIT3-q6
+@@ -2426 +2426 @@
+-S aug-cpFIT3
++S aug-cpFIT3 aug-cpFIT3-q6
 @@ -2446 +2446 @@
 -S FIT3
 +S FIT3 FIT3-q6
+@@ -2462 +2462 @@
+-S pFIT3
++S pFIT3 pFIT3-q6
+@@ -2480 +2480 @@
+-S aug-FIT3
++S aug-FIT3 aug-FIT3-q6
+@@ -2500 +2500 @@
+-S aug-pFIT3
++S aug-pFIT3 aug-pFIT3-q6
 @@ -2620 +2620 @@
 -Cl cFIT3
 +Cl cFIT3 cFIT3-q7
+@@ -2634 +2634 @@
+-Cl cpFIT3
++Cl cpFIT3 cpFIT3-q7
+@@ -2650 +2650 @@
+-Cl aug-cFIT3
++Cl aug-cFIT3 aug-cFIT3-q7
+@@ -2668 +2668 @@
+-Cl aug-cpFIT3
++Cl aug-cpFIT3 aug-cpFIT3-q7
 @@ -2688 +2688 @@
 -Cl FIT3
 +Cl FIT3 FIT3-q7
+@@ -2704 +2704 @@
+-Cl pFIT3
++Cl pFIT3 pFIT3-q7
+@@ -2722 +2722 @@
+-Cl aug-FIT3
++Cl aug-FIT3 aug-FIT3-q7
+@@ -2742 +2742 @@
+-Cl aug-pFIT3
++Cl aug-pFIT3 aug-pFIT3-q7
 @@ -2800 +2800 @@
 -Br cFIT3
 +Br cFIT3 cFIT3-q7
+@@ -2814 +2814 @@
+-Br cpFIT3
++Br cpFIT3 cpFIT3-q7
 @@ -2830 +2830 @@
 -Br FIT3
 +Br FIT3 FIT3-q7
+@@ -2846 +2846 @@
+-Br pFIT3
++Br pFIT3 pFIT3-q7
