@@ -46,11 +46,12 @@ class IndexView(RenderTemplateView):
 
         # separate orb and aux basis sets
         self.orb_basis = {'elements': {}, 'tags': {}}
-        self.aux_basis = {'elements': {}, 'tags': {}}
+        self.aux_basis = {'elements': {}, 'tags': {}, 'type': {}}
 
         for name in self.bs_storage:
             if self.bs_storage[name].metadata.get('basis_type', 'ORB') != 'ORB':
                 b = self.aux_basis
+                b['type'][name] = self.bs_storage[name].metadata.get('basis_type', 'ORB')
             else:
                 b = self.orb_basis
 

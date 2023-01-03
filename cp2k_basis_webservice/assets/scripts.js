@@ -10,6 +10,10 @@ function apiCall(url) {
     });
 }
 
+async function dummy() {
+    return null;
+}
+
 // template tag, found in https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
 function template(strings, ...keys) {
   return (...values) => {
@@ -31,11 +35,8 @@ export class Controller  {
 
         this.elementsSelected = [];
         this.orbBasisSetSelected = null;
-        this.orbBasisSetVariants = {};
         this.auxBasisSetSelected = null;
-        this.auxBasisSetVariants = {};
         this.pseudoSelected = null;
-        this.pseudoVariants = {};
 
         this.infoTpl = template`
             <ul>
@@ -213,6 +214,7 @@ export class Controller  {
             this.futureSelectedElements = [];
 
             this.$orbBasisSetSelect.value = null;
+            this.$auxBasisSetSelect.value = null;
             this.$pseudoSelect.value = null;
 
             this.update();
@@ -316,7 +318,7 @@ export class Controller  {
     _updateOutputBasisSet(data, metadata) {
         this.$basisSetResult.value = data;
         if(metadata.length > 0)
-            this.$basisSetMetadata.innerHTML = this.infoTpl(...metadata);
+            this.$basisSetMetadata.innerHTML = metadata;
         else
             this.$basisSetMetadata.innerText = 'Select a basis set to get info.';
     }
@@ -324,128 +326,182 @@ export class Controller  {
     _updateOutputPseudo(data, metadata) {
         this.$pseudoResult.value = data;
         if(metadata.length > 0)
-            this.$pseudoMetadata.innerHTML = this.infoTpl(...metadata);
+            this.$pseudoMetadata.innerHTML = metadata;
         else
             this.$pseudoMetadata.innerText = 'Select a pseudopotential to get info.';
     }
 
-    _updateOutputInput() {
+    _updateOutputInput(orb_basis_variants, aux_basis_variants, pseudo_variants) {
         let kinds = '';
-        this.elementsSelected.forEach(e => {
 
-            let variants = {};
-            if(this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length === 0)
-                variants = Object.keys(this.orbBasisSetVariants[e]);
-            else if(this.orbBasisSetSelected.length === 0 && this.pseudoSelected.length > 0)
-                variants = Object.keys(this.pseudoVariants[e]);
-            else if(this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length > 0)
-                variants = Object.keys(this.orbBasisSetVariants[e]).filter(v => v in this.pseudoVariants[e]);
+        if(orb_basis_variants != null || aux_basis_variants != null || pseudo_variants != null)  {
+            let available_variants = [orb_basis_variants, aux_basis_variants, pseudo_variants].filter(vx => vx != null);
 
-            let kind = `&KIND ${e}\n`;
-            if(variants.length === 0) {
-                kind += `! No compatible variant for ${e}: [basis set=${Object.keys(this.orbBasisSetVariants[e])}] and [pseudo=${Object.keys(this.pseudoVariants[e])}].\n`;
-            } else {
-                /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
-                * */
-                let variant = `q` + Math.max(...variants.map(e => parseInt(e.substring(1))));
+            this.elementsSelected.forEach(e => {
+                let variants_for_elements = available_variants.map(vx => Object.keys(vx[e]));
 
-                if(this.orbBasisSetSelected.length > 0) {
-                    kind += `  BASIS_SET ${this.orbBasisSetVariants[e][variant]}`;
-                    if(variants.length > 1)
-                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.orbBasisSetVariants[e][v])}`;
-                    kind += '\n';
+                let variants = variants_for_elements[0];
+                variants_for_elements.slice(1).forEach(vx => variants = variants.filter(v => vx.indexOf(v) >= 0));
+
+                let kind = `&KIND ${e}\n`;
+                if(variants.length === 0) {
+                    kind += `  ! Incompatible number of valence electron\n`;
+                    if(orb_basis_variants != null)
+                        kind += `  ! BASIS_SET ORB ${Object.values(orb_basis_variants[e])}\n`;
+                    if(aux_basis_variants != null)
+                        kind += `  ! BASIS_SET ${this.data.aux_basis_sets.type[this.auxBasisSetSelected]} ${Object.values(aux_basis_variants[e])}\n`;
+                    if(pseudo_variants != null)
+                        kind += `  ! POTENTIAL ${Object.values(pseudo_variants[e])}\n`;
+                } else {
+                    /* by default, select the variant with the largest q (least core electrons), since it is the mostly available
+                    * */
+                    let variant = `q` + Math.max(...variants.map(e => parseInt(e.substring(1))));
+
+                    if(this.orbBasisSetSelected.length > 0) {
+                        kind += `  BASIS_SET ORB ${orb_basis_variants[e][variant]}`;
+                        if(variants.length > 1)
+                            kind += ` ! or ${variants.filter(v => v !== variant).map(v => orb_basis_variants[e][v])}`;
+                        kind += '\n';
+                    }
+
+                    if(this.auxBasisSetSelected.length > 0) {
+                        kind += `  BASIS_SET ${this.data.aux_basis_sets.type[this.auxBasisSetSelected]} ${aux_basis_variants[e][variant]}`;
+                        if(variants.length > 1)
+                            kind += ` ! or ${variants.filter(v => v !== variant).map(v => aux_basis_variants[e][v])}`;
+                        kind += '\n';
+                    }
+
+                    if(this.pseudoSelected.length > 0) {
+                        kind += `  POTENTIAL ${pseudo_variants[e][variant]}`;
+                        if(variants.length > 1)
+                            kind += ` ! or ${variants.filter(v => v !== variant).map(v => pseudo_variants[e][v])}`;
+                        kind += '\n';
+                    }
                 }
 
-                if(this.pseudoSelected.length > 0) {
-                    kind += `  POTENTIAL ${this.pseudoVariants[e][variant]}`;
-                    if(variants.length > 1)
-                        kind += ` ! or ${variants.filter(v => v !== variant).map(v => this.pseudoVariants[e][v])}`;
-                    kind += '\n';
-                }
-            }
+                kind += '&END KIND';
 
-            kind += '&END KIND';
+                if(kinds.length > 0)
+                    kinds += '\n';
 
-            if(kinds.length > 0)
-                kinds += '\n';
-
-            kinds += kind;
-        });
+                kinds += kind;
+            });
+        }
 
         this.$inputResult.value = kinds;
     }
 
-    _fetchMetadata(query, mt) {
-        return [
+    _makeMetadata(query, mt) {
+        return this.infoTpl(...[
             query.name,
             mt.description,
             mt.references.map(e => `<li><a href="${e}">${e}</a></li>`).join('\n')
-        ];
+        ]);
     }
 
     _updateOutputs() {
         this.$inputResult.value = 'Select element(s).';
+        let promises = [];
 
-        if(this.orbBasisSetSelected.length === 0)
-            this._updateOutputBasisSet('Select a basis set.', []);
-        else if(this.elementsSelected.length === 0) {
-            apiCall(`/basis/${this.orbBasisSetSelected}/metadata`).then(data => {
-                this._updateOutputBasisSet(
-                    'Select element(s)',
-                    this._fetchMetadata(data.query, data.result)
-                );
-            });
-        }
+        if(this.elementsSelected.length === 0) {
+            // prepare all promises
+            if(this.orbBasisSetSelected.length !== 0)
+                promises.push(apiCall(`/basis/${this.orbBasisSetSelected}/metadata`));
+            else
+                promises.push(dummy());
 
-        if(this.pseudoSelected.length === 0)
-            this._updateOutputPseudo('Select a pseudopotential.', []);
-        else if(this.elementsSelected.length === 0) {
-            apiCall(`/pseudopotentials/${this.pseudoSelected}/metadata`).then(data => {
-                this._updateOutputPseudo(
-                    'Select element(s)',
-                    this._fetchMetadata(data.query, data.result)
-                );
-            });
-        }
+            if(this.auxBasisSetSelected.length !== 0)
+                promises.push(apiCall(`/basis/${this.auxBasisSetSelected}/metadata`));
+            else
+                promises.push(dummy());
 
-        if(this.elementsSelected.length > 0)  {
-            if (this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length === 0) {
-                apiCall(`/basis/${this.orbBasisSetSelected}/data?elements=${this.elementsSelected}`).then(data => {
+            if(this.pseudoSelected.length !== 0)
+                promises.push(apiCall(`/pseudopotentials/${this.pseudoSelected}/metadata`));
+            else
+                promises.push(dummy());
+
+            // fire all!
+            Promise.all(promises).then(([orb_basis_mt, aux_basis_mt, pseudo_mt]) => {
+                if(orb_basis_mt == null && aux_basis_mt == null)
+                    this._updateOutputBasisSet('Select a basis set.', '');
+                else {
+                    let metadata = '';
+                    if(orb_basis_mt != null)
+                        metadata += this._makeMetadata(orb_basis_mt.query, orb_basis_mt.result);
+                    if(aux_basis_mt != null)
+                        metadata += this._makeMetadata(aux_basis_mt.query, aux_basis_mt.result);
+
                     this._updateOutputBasisSet(
-                        data.result.data,
-                        this._fetchMetadata(data.query, data.result.metadata)
+                        'Select element(s)',
+                        metadata
                     );
-                    this.orbBasisSetVariants = data.result.variants;
-                    this._updateOutputInput();
-                });
-            } else if(this.pseudoSelected.length > 0 && this.orbBasisSetSelected.length === 0)  {
-                apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`).then(data => {
-                    this._updateOutputPseudo(
-                        data.result.data,
-                        this._fetchMetadata(data.query, data.result.metadata)
-                    );
-                    this.pseudoVariants = data.result.variants;
-                    this._updateOutputInput();
-                });
-            } else if (this.orbBasisSetSelected.length > 0 && this.pseudoSelected.length > 0) {
-                Promise.all([ // wait for the end of both requests
-                    apiCall(`/basis/${this.orbBasisSetSelected}/data?elements=${this.elementsSelected}`),
-                    apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`)
-                ]).then(([data_basis, data_pseudo]) => {
-                    this._updateOutputBasisSet(
-                        data_basis.result.data,
-                        this._fetchMetadata(data_basis.query, data_basis.result.metadata)
-                    );
+                }
 
+                if(pseudo_mt != null) {
                     this._updateOutputPseudo(
-                        data_pseudo.result.data,
-                        this._fetchMetadata(data_pseudo.query, data_pseudo.result.metadata)
+                        'Select element(s)',
+                        this._makeMetadata(pseudo_mt.query, pseudo_mt.result)
                     );
-                    this.orbBasisSetVariants = data_basis.result.variants;
-                    this.pseudoVariants = data_pseudo.result.variants;
-                    this._updateOutputInput();
-                });
-            }
+                } else {
+                    this._updateOutputPseudo('Select a pseudopotential.', '');
+                }
+            });
+        } else {
+            // prepare all promises
+            if(this.orbBasisSetSelected.length !== 0)
+                promises.push(apiCall(`/basis/${this.orbBasisSetSelected}/data?elements=${this.elementsSelected}`));
+            else
+                promises.push(dummy());
+
+            if(this.auxBasisSetSelected.length !== 0)
+                promises.push(apiCall(`/basis/${this.auxBasisSetSelected}/data?elements=${this.elementsSelected}`));
+            else
+                promises.push(dummy());
+
+            if(this.pseudoSelected.length !== 0)
+                promises.push(apiCall(`/pseudopotentials/${this.pseudoSelected}/data?elements=${this.elementsSelected}`));
+            else
+                promises.push(dummy());
+
+            // fire all!
+            Promise.all(promises).then(([orb_basis_data, aux_basis_data, pseudo_data]) => {
+                let orb_basis_variants = null;
+                let aux_basis_variants = null;
+                let pseudo_variants = null;
+
+                if(orb_basis_data == null && aux_basis_data == null)
+                    this._updateOutputBasisSet('Select a basis set.', '');
+                else {
+                    let data = '';
+                    let metadata = '';
+
+                    if(orb_basis_data != null) {
+                        data += orb_basis_data.result.data;
+                        metadata += this._makeMetadata(orb_basis_data.query, orb_basis_data.result.metadata);
+                        orb_basis_variants = orb_basis_data.result.variants;
+                    }
+
+                    if(aux_basis_data != null) {
+                        data += aux_basis_data.result.data;
+                        metadata += this._makeMetadata(aux_basis_data.query, aux_basis_data.result.metadata);
+                        aux_basis_variants = aux_basis_data.result.variants;
+                    }
+
+                    this._updateOutputBasisSet(data, metadata);
+                }
+
+                if(pseudo_data != null) {
+                    this._updateOutputPseudo(
+                        pseudo_data.result.data,
+                        this._makeMetadata(pseudo_data.query, pseudo_data.result.metadata)
+                    );
+                    pseudo_variants = pseudo_data.result.variants;
+                } else {
+                    this._updateOutputPseudo('Select a pseudopotential.', '');
+                }
+
+                this._updateOutputInput(orb_basis_variants, aux_basis_variants, pseudo_variants);
+            });
         }
     }
 

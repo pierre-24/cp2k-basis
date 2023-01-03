@@ -190,7 +190,7 @@
     <script type="module">
         import {
             Controller
-        } from "{{ url_for('static', filename='scripts.js') }}";
+        } from "{{ url_for('static', filename='scripts.min.js') }}";
 
         let controller = new Controller({
             'orb_basis_sets': {
@@ -200,6 +200,7 @@
             'aux_basis_sets': {
                 'elements': {{ aux_basis_sets['elements']|safe }},
                 'tags': {{ aux_basis_sets['tags']|safe }},
+                'type':  {{ aux_basis_sets['type']|safe }},
             },
             'pseudopotentials': {
                 'elements':  {{ pseudopotentials['elements']|safe }},
