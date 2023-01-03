@@ -347,6 +347,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#auxiliary-basis-sets" class="md-nav__link">
+    Auxiliary basis sets
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -554,6 +561,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#auxiliary-basis-sets" class="md-nav__link">
+    Auxiliary basis sets
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -640,12 +654,12 @@ In particular, your input looks like:</p>
 <p><img alt="" src="../../images/webserver_pick_bs_pseudo.jpg" /></p>
 <p>You can use the search bar in the top of each list to quickly access the basis set or pseudopotential you are looking for:</p>
 <p><img alt="" src="../../images/webserver_search.jpg" /></p>
-<p>It is also possible to sort the basis set per <em>kind</em>, with the dropdown on the right.
-The following kinds are available:</p>
+<p>It is also possible to sort the basis set and pseudopotentials per <em>tag</em>, with the dropdown on the right.
+The following tags are available:</p>
 <table>
 <thead>
 <tr>
-<th>Kind</th>
+<th>Tag</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -693,6 +707,19 @@ It also gives the address to the <a href="../api/">API call that generates this 
 <p>Finally, a last panel gives you the <code>&amp;KIND</code> sections that you can just copy-paste in your input:</p>
 <p><img alt="" src="../../images/webserver_kind_panel.jpg" /></p>
 <p>Don't forget to update the <code>&amp;XC_FUNCTIONAL</code> section... <em>Et voilà</em>!</p>
+<h3 id="auxiliary-basis-sets">Auxiliary basis sets<a class="headerlink" href="#auxiliary-basis-sets" title="Permanent link">¤</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Check out <a href="https://pubs.acs.org/doi/10.1021/ct1002225">10.1021/ct1002225</a> for a description of the ADMM method, or <a href="https://www.cp2k.org/_media/events:2019_ghent:admm.pdf">this presentation</a>.</p>
+</div>
+<p>If you need to use an <code>AUX_FIT</code> basis set, toggle the corresponding switch and select your basis:</p>
+<p><img alt="" src="../../images/webserver_aux.jpg" /></p>
+<p>Both the "basis set" and "input file" panels update to reflect those changes:</p>
+<p><img alt="" src="../../images/webserver_aux_result.jpg" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The tag filter and search bar have no effect on the list of available auxiliary basis sets.</p>
+</div>
 <h2 id="peculiarity">Peculiarity<a class="headerlink" href="#peculiarity" title="Permanent link">¤</a></h2>
 <p>The web interface tries to ensure that the same number of core electron is used for the basis set and pseudopotential, thanks to the <code>-q&lt;N&gt;</code> nickname <a href="../basis_sets_and_pseudos/#pairing-gth-pseudopotentials-with-basis-sets">that is given for each atom</a>.
 This has two (interesting!) side effects:</p>

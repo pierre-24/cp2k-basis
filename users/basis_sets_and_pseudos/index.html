@@ -554,11 +554,6 @@
 
 
 <h1 id="on-basis-sets-and-gth-pseudopotentials-in-cp2k">On basis sets and GTH pseudopotentials in CP2K<a class="headerlink" href="#on-basis-sets-and-gth-pseudopotentials-in-cp2k" title="Permanent link">¤</a></h1>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>For the latest CP2K review, see <a href="https://dx.doi.org/10.1063/5.0007045">10.1063/5.0007045</a> (May 2020).
-The GPW method is described, e.g., <a href="https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf">here</a>.</p>
-</div>
 <h2 id="basis-sets">Basis sets<a class="headerlink" href="#basis-sets" title="Permanent link">¤</a></h2>
 <p>Solving the Schrödinger equation generally resort to the use of the LCAO (<em>linear combination of atomic orbitals</em>) approximation.
 For computational reasons, while STO (slater-type orbitals, <span class="arithmatex">\(\propto e^{r}\)</span>) should be used, GTO (gaussian type orbitals, <span class="arithmatex">\(\propto e^{r^2}\)</span>) are preferred.</p>
@@ -594,6 +589,11 @@ The form <code>[12s6p|3s2p]</code>, combining the two is also found.</p>
 </div>
 <p>However, for reasons that will become clear in the next section, CP2K does not only use all-electron basis sets.</p>
 <h2 id="gth-pseudopotentials">GTH pseudopotentials<a class="headerlink" href="#gth-pseudopotentials" title="Permanent link">¤</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>For the latest CP2K review, see <a href="https://dx.doi.org/10.1063/5.0007045">10.1063/5.0007045</a> (May 2020).
+The GPW method is described, e.g., <a href="https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf">here</a>.</p>
+</div>
 <p>Indeed, CP2K is able use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW (and GAPW) method.
 To perform a such calculation, one needs to include all possible PW below a given threshold. 
 In fact, increasing this threshold will monotonously improve the quality of the result (and the length of the calculation!).

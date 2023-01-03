@@ -829,10 +829,10 @@ The if there is a match, then all the values are attributed as metadata.</p>
 <p>For the basis set <code>SZV-MOLOPT-GTH</code>, the metadata will contain two fields: <code>references</code> and <code>description</code> (which will contain "A double zeta basis set")
 For the basis set <code>DZVP-MOLOPT-GTH</code> (or any other basis, thanks to the use of <code>.*</code>), the fields in the metadata will be the same, but the value of <code>description</code> is different ("MOLOPT basis set.").</p>
 </details>
-<p>For the moment, <code>references</code>, <code>description</code> and <code>kind</code> are the three metadata that should be reported for every basis set and pseudopotential.</p>
+<p>For the moment, <code>references</code>, <code>description</code> and <code>tags</code> are the three metadata that should be reported for every basis set and pseudopotential.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In practice, the YAML format defines <a href="https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases">anchors and aliases</a>, which allow to define references and kinds once and use them multiple time.</p>
+<p>In practice, the YAML format defines <a href="https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases">anchors and aliases</a>, which allow to define references and tags once and use them multiple time.</p>
 </div>
 <h2 id="using-the-library">Using the library<a class="headerlink" href="#using-the-library" title="Permanent link">¤</a></h2>
 <div class="admonition info">
@@ -941,7 +941,7 @@ Hopefully, the solution in this case is pretty straightforward: the name can be 
 <span class="w">  </span><span class="s">&#39;^TZVP-MOLOPT-SR-GTH$&#39;</span><span class="p p-Indicator">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">references</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">https</span><span class="p p-Indicator">:</span><span class="nv">//github.com/cp2k/cp2k-data</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Short-range triple zeta (+ polarization) basis set.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">MOLOPT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">SR</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">GTH</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">MOLOPT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">SR</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">GTH</span><span class="p p-Indicator">]</span><span class="w"></span>
 </code></pre></div></p>
 <p>Metadata were added to the basis sets:</p>
 <div class="highlight"><pre><span></span><code>$ cb_explore_file source.yml 
@@ -950,7 +950,7 @@ Hopefully, the solution in this case is pretty straightforward: the name can be 
 +- basis_sets
    |
    +- TZVP-MOLOPT-SR-GTH
-   |  metadata={&#39;references&#39;: [&#39;https://github.com/cp2k/cp2k-data&#39;], &#39;description&#39;: &#39;Short-range triple zeta (+ polarization) basis set.&#39;, &#39;kind&#39;: [&#39;MOLOPT&#39;, &#39;SR&#39;, &#39;GTH&#39;]}
+   |  metadata={&#39;references&#39;: [&#39;https://github.com/cp2k/cp2k-data&#39;], &#39;description&#39;: &#39;Short-range triple zeta (+ polarization) basis set.&#39;,  &#39;tags&#39;: [&#39;MOLOPT&#39;, &#39;SR&#39;, &#39;GTH&#39;]}
    |  |
    |  +- Li: q3
    |  +- Be: q4

@@ -703,12 +703,12 @@ There is no option.</p>
 <tr>
 <td><code>result.basis_sets</code></td>
 <td>dictionary</td>
-<td>Contains three fields: <code>build_date</code>, which give the date at which the library was built, <code>elements</code>, which lists elements available for a given basis set, and <code>kinds</code>, which lists the kind for each basis set.</td>
+<td>Contains three fields: <code>build_date</code>, which give the date at which the library was built, <code>elements</code>, which lists elements available for a given basis set, and <code>tags</code>, which lists the tags for each basis set.</td>
 </tr>
 <tr>
 <td><code>result.pseudopotentials</code></td>
 <td>dictionary</td>
-<td>Contains three fields: <code>build_date</code>, which give the date at which the library was built, <code>elements</code>, which lists elements available for a given pseudopotential, and <code>kinds</code>, which lists the kind for each pseudopotential.</td>
+<td>Contains three fields: <code>build_date</code>, which give the date at which the library was built, <code>elements</code>, which lists elements available for a given pseudopotential, and <code>tags</code>, which lists the tags for each pseudopotential.</td>
 </tr>
 </tbody>
 </table>
@@ -730,7 +730,7 @@ There is no option.</p>
 <span class="w">        </span><span class="p">],</span><span class="w"></span>
 <span class="w">        </span><span class="err">(...)</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;DZVP-MOLOPT-GTH&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">          </span><span class="s2">&quot;molopt&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">          </span><span class="s2">&quot;gth&quot;</span><span class="w"></span>
@@ -747,7 +747,7 @@ There is no option.</p>
 <span class="w">          </span><span class="err">(...)</span><span class="w"></span>
 <span class="w">        </span><span class="p">]</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">          </span><span class="err">(...)</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
@@ -777,9 +777,9 @@ There is no option.</p>
 <td>Restrict the output to a subset of basis sets containing the given name (case insensitive).</td>
 </tr>
 <tr>
-<td><code>bs_kind</code></td>
+<td><code>bs_tag</code></td>
 <td>String</td>
-<td>Restrict the output to a subset of basis sets having the given kind.</td>
+<td>Restrict the output to a subset of basis sets having the given tag.</td>
 </tr>
 <tr>
 <td><code>pp_name</code></td>
@@ -787,13 +787,13 @@ There is no option.</p>
 <td>Restrict the output to a subset of pseudopotentials containing the given name (case insensitive).</td>
 </tr>
 <tr>
-<td><code>pp_kind</code></td>
+<td><code>pp_tag</code></td>
 <td>String</td>
-<td>Restrict the output to a subset of pseudopotentials having the given kind.</td>
+<td>Restrict the output to a subset of pseudopotentials having the given tag.</td>
 </tr>
 </tbody>
 </table>
-<p>Available kinds are listed <a href="../webserver/#if-you-already-know-the-method">there</a>.</p>
+<p>Available tags are listed <a href="../webserver/#if-you-already-know-the-method">there</a>.</p>
 <p>Output:</p>
 <table>
 <thead>
@@ -826,8 +826,8 @@ There is no option.</p>
 </tr>
 </tbody>
 </table>
-<p><a href="https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti">Example</a>:</p>
-<div class="highlight"><pre><span></span><code>curl <span class="s1">&#39;https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&amp;pp_name=PBE&amp;bs_kind=SR&#39;</span>
+<p><a href="https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&amp;pp_name=PBE&amp;bs_tag=SR">Example</a>:</p>
+<div class="highlight"><pre><span></span><code>curl <span class="s1">&#39;https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&amp;pp_name=PBE&amp;bs_tag=SR&#39;</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -939,7 +939,7 @@ There is no option.</p>
 <span class="w">    </span><span class="p">],</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">        </span><span class="s2">&quot;MOLOPT&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="s2">&quot;SR&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="s2">&quot;GTH&quot;</span><span class="w"></span>
@@ -997,7 +997,7 @@ There is no option.</p>
 <td>List of URL to articles or repositories</td>
 </tr>
 <tr>
-<td><code>result.kind</code></td>
+<td><code>result.tags</code></td>
 <td>list of string</td>
 <td>Kind of the basis set/pseudopotential</td>
 </tr>
@@ -1018,7 +1018,7 @@ There is no option.</p>
 <span class="w">      </span><span class="s2">&quot;Al&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="err">(...)</span><span class="w"></span>
 <span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">      </span><span class="s2">&quot;GTH&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="p">],</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;references&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
