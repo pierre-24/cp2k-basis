@@ -144,7 +144,7 @@ Each `basis set` and `pp familly` group might also have the following attributes
 |---------------|---------|---------------------------------------------------------------------|
 | `description` | `str`   | Description of the data                                             |
 | `references`  | `array` | One-dimensional array of URLs to reference papers (DOI) or sources. |
-| `kind`        | `array` | One-dimensional array of kinds                                      |
+| `tags`        | `array` | One-dimensional array of tags                                       |
 
 Each `atomic bs variant` and `atomic pp variant` may present a `source` attribute which indicate the URL to the source of this variant.
 

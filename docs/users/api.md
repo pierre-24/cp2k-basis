@@ -54,11 +54,11 @@ There is no option.
 
 Output:
 
-| Field                     | Type       | Description                                                                                                                                                                                                                  |
-|---------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `query.type`              | string     | Always `ALL`                                                                                                                                                                                                                 |
-| `result.basis_sets`       | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given basis set, and `kinds`, which lists the kind for each basis set.             |
-| `result.pseudopotentials` | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given pseudopotential, and `kinds`, which lists the kind for each pseudopotential. |
+| Field                     | Type       | Description                                                                                                                                                                                                                 |
+|---------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `query.type`              | string     | Always `ALL`                                                                                                                                                                                                                |
+| `result.basis_sets`       | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given basis set, and `tags`, which lists the tags for each basis set.             |
+| `result.pseudopotentials` | dictionary | Contains three fields: `build_date`, which give the date at which the library was built, `elements`, which lists elements available for a given pseudopotential, and `tags`, which lists the tags for each pseudopotential. |
 
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/data):
@@ -83,7 +83,7 @@ curl https://cp2k-basis.pierrebeaujean.net/api/data
         ],
         (...)
       },
-      "kinds": {
+      "tags": {
         "DZVP-MOLOPT-GTH": [
           "molopt",
           "gth"
@@ -100,7 +100,7 @@ curl https://cp2k-basis.pierrebeaujean.net/api/data
           (...)
         ]
       },
-      "kinds": {
+      "tags": {
           (...)
       }
     }
@@ -118,11 +118,11 @@ Options:
 |------------|----------|---------------------------------------------------------------------------------------------------|
 | `elements` | String   | Restrict the output to a subset of elements.                                                      |
 | `bs_name`  | String   | Restrict the output to a subset of basis sets containing the given name (case insensitive).       |
-| `bs_kind`  | String   | Restrict the output to a subset of basis sets having the given kind.                              |
+| `bs_tag`  | String   | Restrict the output to a subset of basis sets having the given tag.                              |
 | `pp_name`  | String   | Restrict the output to a subset of pseudopotentials containing the given name (case insensitive). |
-| `pp_kind`  | String   | Restrict the output to a subset of pseudopotentials having the given kind.                        |
+| `pp_tag`  | String   | Restrict the output to a subset of pseudopotentials having the given tag.                        |
 
-Available kinds are listed [there](webserver.md#if-you-already-know-the-method).
+Available tags are listed [there](webserver.md#if-you-already-know-the-method).
 
 Output:
 
@@ -133,10 +133,10 @@ Output:
 | `result.basis_sets`       | list of string | List of basis set names available           |
 | `result.pseudopotentials` | list of string | List of pseudopotential names available     |
 
-[Example](https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti):
+[Example](https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&pp_name=PBE&bs_tag=SR):
 
 ```bash
-curl 'https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&pp_name=PBE&bs_kind=SR'
+curl 'https://cp2k-basis.pierrebeaujean.net/api/names?elements=Ti&pp_name=PBE&bs_tag=SR'
 ```
 
 ```json
@@ -208,7 +208,7 @@ curl https://cp2k-basis.pierrebeaujean.net/api/basis/SZV-MOLOPT-SR-GTH/data?elem
     ],
     "metadata": {
       "description": "A single zeta valence MOLOPT basis set, for solids (short-range) and GTH pseudopotentials",
-      "kind": [
+      "tags": [
         "MOLOPT",
         "SR",
         "GTH"
@@ -242,7 +242,7 @@ Output:
 | `result.elements`    | list of string | Elements for which the basis set/pseudopotential are defined |
 | `result.description` | string         | Small description.                                           |
 | `result.references`  | list of string | List of URL to articles or repositories                      |
-| `result.kind`        | list of string | Kind of the basis set/pseudopotential                        |
+| `result.tags`        | list of string | Kind of the basis set/pseudopotential                        |
 
 [Example](https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadata):
 
@@ -263,7 +263,7 @@ curl https://cp2k-basis.pierrebeaujean.net/api/pseudopotentials/GTH-BLYP/metadat
       "Al",
       (...)
     ],
-    "kind": [
+    "tags": [
       "GTH"
     ],
     "references": [

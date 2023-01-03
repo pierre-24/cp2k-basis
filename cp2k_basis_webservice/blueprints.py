@@ -9,7 +9,6 @@ from werkzeug.exceptions import NotFound
 from webargs import fields
 from webargs.flaskparser import FlaskParser
 
-import cp2k_basis
 from cp2k_basis.elements import ElementSetField, Z_TO_SYMB
 from cp2k_basis.base_objects import Storage
 from cp2k_basis_webservice import limiter, Config
@@ -39,26 +38,44 @@ visitor_blueprint = Blueprint('visitor', __name__)
 class IndexView(RenderTemplateView):
     template_name = 'index.html'
 
+    def __init__(self):
+        super().__init__()
+
+        self.bs_storage = flask.current_app.config['BASIS_SETS_STORAGE']
+        self.pp_storage = flask.current_app.config['PSEUDOPOTENTIALS_STORAGE']
+
+        # separate orb and aux basis sets
+        self.orb_basis = {'elements': {}, 'tags': {}}
+        self.aux_basis = {'elements': {}, 'tags': {}, 'type': {}}
+
+        for name in self.bs_storage:
+            if self.bs_storage[name].metadata.get('basis_type', 'ORB') != 'ORB':
+                b = self.aux_basis
+                b['type'][name] = self.bs_storage[name].metadata.get('basis_type', 'ORB')
+            else:
+                b = self.orb_basis
+
+            b['elements'][name] = self.bs_storage.elements_per_family[name]
+            b['tags'][name] = self.bs_storage.tags_per_family[name]
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
-        from cp2k_basis_webservice import __doc__ as description
+        from cp2k_basis_webservice import COMMON_CONTEXT
+        ctx.update(**COMMON_CONTEXT)
+
+        aux_basis = []
+        for name in flask.current_app.config['BASIS_SETS_STORAGE']:
+            if self.bs_storage[name].metadata.get('basis_type', 'ORB') != 'ORB':
+                aux_basis.append(name)
 
         ctx.update(
-            site_name='cp2k-basis',
-            site_version=cp2k_basis.__version__,
-            author=cp2k_basis.__author__,
-            code_repo='https://github.com/pierre-24/cp2k-basis',
-            documentation='https://pierre-24.github.io/cp2k-basis',
-            description=description,
             z_to_symb=Z_TO_SYMB,
-            basis_sets=dict(
-                elements=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].elements_per_family),
-                kinds=json.dumps(flask.current_app.config['BASIS_SETS_STORAGE'].kinds_per_family),
-            ),
+            orb_basis_sets=self.orb_basis,
+            aux_basis_sets=self.aux_basis,
             pseudopotentials=dict(
-                elements=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].elements_per_family),
-                kinds=json.dumps(flask.current_app.config['PSEUDOPOTENTIALS_STORAGE'].kinds_per_family),
+                elements=json.dumps(self.pp_storage.elements_per_family),
+                tags=json.dumps(self.pp_storage.tags_per_family),
             )
         )
 
@@ -107,12 +124,12 @@ class AllDataAPI(MethodView):
             result=dict(
                 basis_sets=dict(
                     elements=bs_storage.elements_per_family,
-                    kinds=bs_storage.kinds_per_family,
+                    tags=bs_storage.tags_per_family,
                     build_date=bs_storage.date_build
                 ),
                 pseudopotentials=dict(
                     elements=pp_storage.elements_per_family,
-                    kinds=pp_storage.kinds_per_family,
+                    tags=pp_storage.tags_per_family,
                     build_date=pp_storage.date_build
                 )
             )
@@ -126,9 +143,9 @@ class NamesAPI(MethodView):
     @parser.use_kwargs({
         'elements': field_elements,
         'bs_name': fields.Str(),
-        'bs_kind': fields.Str(),
+        'bs_tag': fields.Str(),
         'pp_name': fields.Str(),
-        'pp_kind': fields.Str()
+        'pp_tag': fields.Str()
     }, location='query')
     def get(self, **kwargs):
         bs_storage: Storage = flask.current_app.config['BASIS_SETS_STORAGE']
@@ -137,8 +154,8 @@ class NamesAPI(MethodView):
         elements = kwargs.get('elements', None)
         bs_name = kwargs.get('bs_name', None)
         pp_name = kwargs.get('pp_name', None)
-        bs_kind = kwargs.get('bs_kind', None)
-        pp_kind = kwargs.get('pp_kind', None)
+        bs_tag = kwargs.get('bs_tag', None)
+        pp_tag = kwargs.get('pp_tag', None)
 
         query = dict(type='ALL')
 
@@ -148,8 +165,8 @@ class NamesAPI(MethodView):
         return flask.jsonify(
             query=query,
             result=dict(
-                basis_sets=bs_storage.get_names(elements, bs_name, bs_kind),
-                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_kind)
+                basis_sets=bs_storage.get_names(elements, bs_name, bs_tag),
+                pseudopotentials=pp_storage.get_names(elements, pp_name, pp_tag)
             )
         )
 

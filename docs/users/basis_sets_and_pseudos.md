@@ -1,9 +1,5 @@
 # On basis sets and GTH pseudopotentials in CP2K
 
-!!! info
-    For the latest CP2K review, see [10.1063/5.0007045](https://dx.doi.org/10.1063/5.0007045) (May 2020).
-    The GPW method is described, e.g., [here](https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf).
-
 ## Basis sets
 
 Solving the Schrödinger equation generally resort to the use of the LCAO (*linear combination of atomic orbitals*) approximation.
@@ -51,6 +47,10 @@ Thus, the number of basis function for a given atom is very different from one b
 However, for reasons that will become clear in the next section, CP2K does not only use all-electron basis sets.
 
 ## GTH pseudopotentials
+
+!!! info
+    For the latest CP2K review, see [10.1063/5.0007045](https://dx.doi.org/10.1063/5.0007045) (May 2020).
+    The GPW method is described, e.g., [here](https://www.cp2k.org/_media/events:2019_ghent:gpw.pdf).
 
 Indeed, CP2K is able use an auxiliary plane wave (PW) basis set to perform its calculation with the GPW (and GAPW) method.
 To perform a such calculation, one needs to include all possible PW below a given threshold. 

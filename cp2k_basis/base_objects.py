@@ -233,7 +233,7 @@ class Storage:
 
     def __init__(self):
         self.families: Dict[str, BaseFamilyStorage] = {}
-        self.kinds_per_family: Dict[str, List[str]] = {}
+        self.tags_per_family: Dict[str, List[str]] = {}
         self.elements_per_family: Dict[str, List[str]] = {}
         self.date_build = None
 
@@ -291,8 +291,8 @@ class Storage:
                 l_logger.info('add metadata to {}'.format(name))
                 add_metadata(self.families[name])
 
-                if 'kind' in self.families[name].metadata:
-                    self.kinds_per_family[name] = self.families[name].metadata['kind']
+                if 'tags' in self.families[name].metadata:
+                    self.tags_per_family[name] = self.families[name].metadata['tags']
 
     def _update(self, obj: BaseAtomicVariantDataObject, name: str, variant: str):
 
@@ -327,7 +327,7 @@ class Storage:
         for family in self.families.values():
             family.tree(out)
 
-    def get_names(self, elements: ElementSet, search_name: str = '', search_kind: str = '') -> List[str]:
+    def get_names(self, elements: ElementSet, search_name: str = '', search_tags: str = '') -> List[str]:
         """Get all defined names, eventually restricted to a subset of elements
         """
 
@@ -336,7 +336,7 @@ class Storage:
 
         names_list = []
         for name in self:
-            if not search_kind or (name in self.kinds_per_family and search_kind in self.kinds_per_family[name]):
+            if not search_tags or (name in self.tags_per_family and search_tags in self.tags_per_family[name]):
                 if not search_name or search_name in name.lower():
                     if not elements or elements <= ElementSet(SYMB_TO_Z[i] for i in self.elements_per_family[name]):
                         names_list.append(name)
@@ -363,8 +363,8 @@ class Storage:
             # add metadata
             obj.families[key].metadata = BaseFamilyStorage._read_metadata_hdf5(group)
 
-            if 'kind' in obj.families[key].metadata:
-                obj.kinds_per_family[key] = obj.families[key].metadata['kind']
+            if 'tags' in obj.families[key].metadata:
+                obj.tags_per_family[key] = obj.families[key].metadata['tags']
 
         return obj
 
@@ -445,12 +445,13 @@ class AddMetadata:
 
     def __call__(self, family_storage: BaseFamilyStorage):
         name = family_storage.name
-        metadata_value = None
-        for rule in self.rules:
-            rule_pattern, values = rule
-            if rule_pattern.match(name):
-                metadata_value = values
-                break
+        if self.rules:
+            metadata_value = None
+            for rule in self.rules:
+                rule_pattern, values = rule
+                if rule_pattern.match(name):
+                    metadata_value = values
+                    break
 
-        if metadata_value:
-            family_storage.metadata = metadata_value
+            if metadata_value:
+                family_storage.metadata = metadata_value
