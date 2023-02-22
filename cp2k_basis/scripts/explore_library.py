@@ -3,7 +3,6 @@
 
 import argparse
 import pathlib
-
 import h5py
 
 from cp2k_basis.basis_set import BasisSetsStorage
