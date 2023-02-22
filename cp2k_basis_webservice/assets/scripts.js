@@ -91,6 +91,8 @@ export class Controller  {
         });
 
         this.$addAuxBasisSet = document.querySelector('#addAuxBasisSet');
+        this.$addAuxBasisSet.checked = false;
+
         this.$orbBasisSetContainer = document.querySelector('#orbBasisSetContainer');
         this.$auxBasisSetContainer = document.querySelector('#auxBasisSetContainer');
 
@@ -288,7 +290,7 @@ export class Controller  {
         let tags = data.tags;
 
         $select.innerHTML = '';
-        Object.keys(elements).forEach((name) => {
+        Object.keys(elements).sort().forEach((name) => {
             if((searchValue.length > 0 && name.toLowerCase().includes(searchValue.toLowerCase())) || searchValue.length === 0) {
                 if(tagValue.length === 0 || (tagValue.length > 0 && tags[name].indexOf(tagValue) >= 0)) {
                     if(!this.elementsSelected.some(e => elements[name].indexOf(e) < 0)) {

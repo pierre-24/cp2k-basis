@@ -462,162 +462,162 @@ metadata:
     basis_type: AUX_FIT
   # -- BASIS_ADMM
   ^FIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p|3s3p] for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^pFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence + polarization) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p1d|3s3p1d] (with polarization) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT3$:
-    description: An auxiliary minimal basis set (contraction of FIT3) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p|2s2p] (contracted) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cpFIT3$:
-    description: An auxiliary minimal basis set (contraction of pFIT3) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p1d|2s2p1d] (with polarization and contracted) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^aug-FIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence + diffuse) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p|4s4p] (with extra diffuses) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^aug-pFIT3$:
-    description: An auxiliary minimal basis set (3 gaussian functions per valence + polarization + diffuse) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p1d|4s4p1d] (with extra diffuses and polarization) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^aug-cFIT3$:
-    description: An auxiliary minimal basis set (contraction of aug-FIT3) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p|3s3p] (with extra diffuse and contracted) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^aug-cpFIT3$:
-    description: An auxiliary minimal basis set (contraction of aug-pFIT3) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p1d|3s3p1d] (with extra diffuses and polarization, contracted) for H-F, Na-Cl and Br with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   # -- BASIS_ADMM_MOLOPT
   ^FIT4$:
-    description: An auxiliary minimal basis set (4 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [4s|4s] for lithium with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^FIT4-SR$:
-    description: An auxiliary minimal basis set (4 gaussian functions per valence) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set [4s|4s] for lithium with ADMMf for solid (short-range)
     references: *refadmm
     tags: *tagsadmmsr
     basis_type: AUX_FIT
   ^cFIT4$:
-    description: An auxiliary minimal basis set (contraction of FIT4) basis set for ADMM
+    description: An auxiliary minimal basis set [7s|3s] for lithium with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cFIT4-SR$:
-    description: An auxiliary minimal basis set (contraction of FIT4-SR) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set [7s|3s] for lithium with ADMM for solid (short-range)
     references: *refadmm
     tags: *tagsadmmmoloptsr
     basis_type: AUX_FIT
   ^FIT5$:
-    description: An auxiliary minimal basis set (5 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set basis set for ADMM
     references: *refadmm
     tags: *tagsadmm
   ^FIT5-SR$:
-    description: An auxiliary minimal basis set (5 gaussian functions per valence) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set [4s1p|4s1p] (FIT4 with polarization) for lithium with ADMM for solid (short-range)
     references: *refadmm
     tags: *tagsadmmsr
     basis_type: AUX_FIT
   ^cFIT5$:
-    description: An auxiliary minimal basis set (contraction of FIT5) basis set for ADMM
+    description: An auxiliary minimal basis set [7s1p|3s1p] (cFIT4 with polarization) for lithium int ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^cFIT5-SR$:
-    description: An auxiliary minimal basis set (contraction of FIT5-SR) basis set for solid (short-range) and ADMM
+    description: An auxiliary minimal basis set [7s1p|3s1p] (cFIT4 with polarization) for lithium with ADMM for solid (short-range)
     references: *refadmm
     tags: *tagsadmmmoloptsr
     basis_type: AUX_FIT
   ^FIT6$:
-    description: An auxiliary minimal basis set (6 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p|3s3p] for Ge-Br, Sn-I and Pb-At (plus Ca) with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT6$:
-    description: An auxiliary minimal basis set (contraction of FIT6) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p|2s2p] (contraction of FIT6) for Ge-Br, Sn-I and Pb-At (plus Ca) with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT7$:
-    description: An auxiliary minimal basis set (7 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set  [3s3p1d|3s3p1d] (FIT6 with polarization) for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Rb, Cs) with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT7$:
-    description: An auxiliary minimal basis set (contraction of FIT7) basis set for ADMM
+    description: An auxiliary minimal basis set [3s3p1d|2s2p1d] (cFIT6 with polarization) for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Rb, Cs) with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT8$:
-    description: An auxiliary minimal basis set (8 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [4s3p1d|4s3p1d] (FIT7 with polarization) for K, Ca, Rb, Sr, Cs, Ba (plus Ca) with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT8$:
-    description: An auxiliary minimal basis set (contraction of FIT8) basis set for ADMM
+    description: An auxiliary minimal basis set [7s3p1d|3s2p1d] (cFIT7 with polarization) for K, Ca, Rb, Sr, Cs, Ba (plus Ca) with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT9$:
-    description: An auxiliary minimal basis set (9 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p1d|4s4p1d] for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Cu, Zn, Ag, Cd, Au, Hg, Rb, Cs, Ba) with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT9$:
-    description: An auxiliary minimal basis set (contraction of FIT9) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p1d|2s2p1d] for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Cu, Zn, Ag, Cd, Au, Hg, Rb, Cs, Ba) with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT10$:
-    description: An auxiliary minimal basis set (10 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [5s4p1d|5s4p1d] for K-Ga, Rb-In, Cs-Ba and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT10$:
-    description: An auxiliary minimal basis set (contraction of FIT10) basis set for ADMM
+    description: An auxiliary minimal basis set [9s4p1d|3s2p1d] for K-Ga, Rb-In, Cs-Ba and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT11$:
-    description: An auxiliary minimal basis set (11 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [5s5p1d|5s5p1d] for K-Ga, Rb-In, Cs-Ba and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT11$:
-    description: An auxiliary minimal basis set (contraction of FIT11) basis set for ADMM
+    description: An auxiliary minimal basis set [9s5p1d|3s2p1d] for K-Ga, Rb-In, Cs-Ba and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT12$:
-    description: An auxiliary minimal basis set (12 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [4s3p4d1f|4s3p4d1f] for Sc-Ga, Y-In and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT12$:
-    description: An auxiliary minimal basis set (contraction of FIT12) basis set for ADMM
+    description: An auxiliary minimal basis set [4s3p4d1f|2s2p2d1f] for Sc-Ga, Y-In and Hf-Tl with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
   ^FIT13$:
-    description: An auxiliary minimal basis set (13 gaussian functions per valence) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p4d1f|4s4p4d1f] for some transition metals with ADMM
     references: *refadmm
     tags: *tagsadmm
     basis_type: AUX_FIT
   ^cFIT13$:
-    description: An auxiliary minimal basis set (contraction of FIT13) basis set for ADMM
+    description: An auxiliary minimal basis set [4s4p4d1f|2s2p2d1f] for some transition metals with ADMM
     references: *refadmm
     tags: *tagsadmmmolopt
     basis_type: AUX_FIT
