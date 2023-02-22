@@ -91,6 +91,8 @@ export class Controller  {
         });
 
         this.$addAuxBasisSet = document.querySelector('#addAuxBasisSet');
+        this.$addAuxBasisSet.checked = false;
+
         this.$orbBasisSetContainer = document.querySelector('#orbBasisSetContainer');
         this.$auxBasisSetContainer = document.querySelector('#auxBasisSetContainer');
 
