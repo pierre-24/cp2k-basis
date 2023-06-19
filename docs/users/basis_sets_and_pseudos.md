@@ -125,7 +125,7 @@ Names of pseudopotentials and basis sets help to achieve this association:
   The `<XCF>` may not be present in the name: for example, `TZVP-MOLOPT-GTH` should work with all XCF, while `TZVP-MOLOPT-PBE-GTH` was specifically designed with PBE. 
   The latter probably gives better results and should (probably) be preferred.
   
-    Again, for each atom, a suffix `-q<N>` is added, indicated how much valence electrons were not considered while building this basis set.
+    Again, for each atom, a suffix `-q<N>` is added, indicated how much valence electrons were considered while building this basis set.
     For example, for carbon, the nickname `DZVP-MOLOPT-GTH-q4` indicates that this is a double-zeta basis set (plus polarization functions) of the `MOLOPT` family, designed to work with GTH pseudopotentials embedding 2 core electrons.
 
 !!! note "Where are the basis sets and GTH pseudopotentials?"
