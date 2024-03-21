@@ -96,6 +96,14 @@ repositories:
       ^(.*)(-q\d{1,2})$: \1-LnPP2
     variant:
       ^.*-(q\d{1,2})$: \1
+  # Zijlstra
+  - name: BASIS_ZIJLSTRA
+    patch: BASIS_ZIJLSTRA.patch
+    type: BASIS_SETS
+    family_name:
+      '^(.*)(-q\d{1,2})$': '\1'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
   # all-electron
   - name: ALL_BASIS_SETS
     type: BASIS_SETS
@@ -162,6 +170,9 @@ references:
   - https://github.com/cp2k/cp2k-data
 - &reflnpp2
   - https://doi.org/10.1021/acs.jctc.2c00922
+- &refzijlstra
+  - https://doi.org/10.1088/0965-0393/17/1/015009
+
 tags:
 - &tagsgth
   - GTH
@@ -192,6 +203,8 @@ tags:
   - ADMM
   - MOLOPT
   - SR
+- &tagszijlstra
+  - MINIMAL
 #
 # metadata definitions for all basis sets and pseudos:
 metadata:
@@ -391,6 +404,20 @@ metadata:
     description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
     references: *refmolopt
     tags: *tagsmoloptsr
+
+  # Zijlstra:
+  '^Zijlstra-2SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations
+  '^Zijlstra-3SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations. Author recommendation for this series.
+  '^Zijlstra-4SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations
 
   # small-core basis sets for GAPW (UZH)
   ^SVP-MOLOPT-(PBE|GGA)-GTH$:
