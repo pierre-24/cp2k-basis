@@ -4,7 +4,7 @@
 
 First, install node. **It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) to do so.**
 
-Then:
+Then, install the project and its dependencies:
 
 ```bash
 # clone 
@@ -21,33 +21,29 @@ make install-front
 
 # build front
 make front
-
-# run the webservice:
-# either:
-make run
-# or,
-flask --app cp2k_basis_webservice run
 ```
+ 
 
-If you want to use your own library of basis and pseudopotentials, check out [this page](library_build.md), and then:
+Finally, build the library, as described on [this page](library_build.md):
 
 ```bash
 # create an instance folder
 # see https://flask.palletsprojects.com/en/latest/config/#instance-folders
 mkdir instance
 
-# copy source
-cp library/DATA_SOURCES.yml instance/
-
-# after editing the DATA_SOURCES.yml file to fit your needs, 
 # run the `cb_fetch_data` command to create a new library:
-cb_fetch_data instance/DATA_SOURCES.yml -o instance/library.h5 
-
-# setup a custom config
-echo "LIBRARY='instance/library.h5'" > instance/settings.py
+cb_fetch_data library/DATA_SOURCES.yml -o instance/library.h5 
 ```
 
-And then you can restart the webservice.
+And then you can start the webservice:
+
+
+```bash
+# either:
+make run
+# or,
+flask --app cp2k_basis_webservice run
+```
 
 ## Contribute
 

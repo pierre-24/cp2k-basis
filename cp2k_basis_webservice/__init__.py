@@ -40,7 +40,7 @@ class Config:
     API_LIMIT = '10/second'
 
     # library
-    LIBRARY = 'library/library.h5'
+    LIBRARY = 'instance/library.h5'
 
     # to be filled by `load_library()`
     BASIS_SETS_STORAGE = None

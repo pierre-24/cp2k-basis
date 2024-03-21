@@ -1,6 +1,6 @@
 # Library of basis sets and pseudopotentials
 
-Created from [`DATA_SOURCES.yml`](./DATA_SOURCES.yml), using:
+Retrieve data from [`DATA_SOURCES.yml`](./DATA_SOURCES.yml) using:
 
 ```bash
 # put LOGLEVEL=INFO in front of the command to follow its advance
