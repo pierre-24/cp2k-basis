@@ -1,9 +1,0 @@
--e file:.#egg=cp2k-basis
-flake8
-flake8-quotes
-autopep8
-mkdocs
-mkdocs-material
-mkdocstrings
-pymdown-extensions
-bump2version
