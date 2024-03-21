@@ -8,7 +8,7 @@
 repositories:
 - base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # main CP2K repository
   data:
-    commit: 786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1
+    commit: ac0226eb549c7ef1ea50d0597d545f29d4c8fc87
   files:
   # GTH (older)
   - name: GTH_BASIS_SETS
@@ -57,6 +57,14 @@ repositories:
       ^(.*)-ae$: \1-ae
     variant:
       ^.*-(q\d{1,2})$: \1
+  - name: BASIS_ccGRB_UZH
+    patch: BASIS_ccGRB_UZH.patch
+    type: BASIS_SETS
+    family_name:
+      '^aug-cc-(.*)(-q\d{1,2})$': 'aug-ccGRB-\1'
+      '^cc(.*)(-q\d{1,2})$': 'cc\1'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
   # MOLOPT (Actinides and Lantanides)
   - name: LnPP1_POTENTIALS
     type: POTENTIALS
@@ -84,6 +92,26 @@ repositories:
       ^(.*)(-q\d{1,2})$: \1-AcLnPP1
     variant:
       ^.*-(q\d{1,2})$: \1
+  - name: BASIS_MOLOPT_LnPP2
+    type: BASIS_SETS
+    family_name:
+      '^(.*)(-q\d{1,2})$': '\1-LnPP2'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
+  - name: LnPP2_POTENTIALS
+    type: POTENTIALS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-LnPP2
+    variant:
+      ^.*-(q\d{1,2})$: \1
+  # Zijlstra
+  - name: BASIS_ZIJLSTRA
+    patch: BASIS_ZIJLSTRA.patch
+    type: BASIS_SETS
+    family_name:
+      '^(.*)(-q\d{1,2})$': '\1'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
   # all-electron
   - name: ALL_BASIS_SETS
     type: BASIS_SETS
@@ -148,6 +176,13 @@ references:
 - &refadmmuzh
   - https://pubs.acs.org/doi/10.1021/ct1002225
   - https://github.com/cp2k/cp2k-data
+- &reflnpp2
+  - https://doi.org/10.1021/acs.jctc.2c00922
+- &refzijlstra
+  - https://doi.org/10.1088/0965-0393/17/1/015009
+- &refccGRB
+  - https://doi.org/10.1021/jp9527766
+
 tags:
 - &tagsgth
   - GTH
@@ -178,6 +213,8 @@ tags:
   - ADMM
   - MOLOPT
   - SR
+- &tagszijlstra
+  - MINIMAL
 #
 # metadata definitions for all basis sets and pseudos:
 metadata:
@@ -286,6 +323,18 @@ metadata:
     description: MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
     references: *refacln
     tags: *tagsmolopt
+  '^DZVP-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (double zeta + 1 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
+    tags: *tagsmolopt
+  '^TZVP-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (triple zeta + 1 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
+    tags: *tagsmolopt
+  '^TZV2P-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (triple zeta + 2 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
+    tags: *tagsmolopt
   ^TZVP-MOLOPT-GTH$:
     description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
     references: *refmolopt
@@ -313,6 +362,14 @@ metadata:
     description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
     references: *refdefault
     tags: *tagsmolopt
+  '^ccGRB-.*$':
+    references: *refccGRB
+    tags: *tagsmolopt
+    description: Geometrical Response Basis Valence Set (with polarization Functions from correlation consistent sets)
+  '^aug-cc.*$':
+    references: *refccGRB
+    tags: *tagsmolopt
+    description: Geometrical Response Basis Valence Set (with augmentation Functions from correlation consistent sets)
   # -- SCAN:
   ^DZVP-MOLOPT-(SCAN|MGGA)-GTH$:
     description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
@@ -365,6 +422,20 @@ metadata:
     description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, for solids (short-range) and GTH pseudopotentials
     references: *refmolopt
     tags: *tagsmoloptsr
+
+  # Zijlstra:
+  '^Zijlstra-2SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations
+  '^Zijlstra-3SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations. Author recommendation for this series.
+  '^Zijlstra-4SP$':
+      tags: *tagszijlstra
+      references: *refzijlstra
+      description: 3SP basis set, targeted at very fast calculations
 
   # small-core basis sets for GAPW (UZH)
   ^SVP-MOLOPT-(PBE|GGA)-GTH$:
@@ -661,6 +732,10 @@ metadata:
   ^GTH-PBE-AcLnPP1$:
     description: GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
     references: *refacln
+    tags: *tagsgth
+  '^GTH-PBE-LnPP2$':
+    references: *reflnpp2
+    description:  Norm-Conserving pseudopotential 4f-in-Core Optimized for Trivalent Lanthanides
     tags: *tagsgth
   # ALL:
   ALL:

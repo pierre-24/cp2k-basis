@@ -1,0 +1,117 @@
+@@ -9 +9 @@
+-H 2SP-GTH
++H 2SP-GTH Zijlstra-2SP-q1
+@@ -15 +15 @@
+-Li 2SP-GTH
++Li 2SP-GTH Zijlstra-2SP-q3
+@@ -21 +21 @@
+-Be 2SP-GTH
++Be 2SP-GTH Zijlstra-2SP-q4
+@@ -27 +27 @@
+-B 2SP-GTH
++B 2SP-GTH Zijlstra-2SP-q3
+@@ -33 +33 @@
+-C 2SP-GTH
++C 2SP-GTH  Zijlstra-2SP-q4
+@@ -39 +39 @@
+-N 2SP-GTH
++N 2SP-GTH  Zijlstra-2SP-q5
+@@ -45 +45 @@
+-O 2SP-GTH
++O 2SP-GTH  Zijlstra-2SP-q6
+@@ -51 +51 @@
+-F 2SP-GTH
++F 2SP-GTH  Zijlstra-2SP-q7
+@@ -57 +57 @@
+-Al 2SP-GTH
++Al 2SP-GTH  Zijlstra-2SP-q3
+@@ -63 +63 @@
+-Si 2SP-GTH
++Si 2SP-GTH  Zijlstra-2SP-q4
+@@ -69 +69 @@
+-P 2SP-GTH
++P 2SP-GTH  Zijlstra-2SP-q5
+@@ -75 +75 @@
+-S 2SP-GTH
++S 2SP-GTH  Zijlstra-2SP-q6
+@@ -81 +81 @@
+-Cl 2SP-GTH
++Cl 2SP-GTH  Zijlstra-2SP-q7
+@@ -87 +87 @@
+-H 4SP-GTH
++H 4SP-GTH  Zijlstra-4SP-q1
+@@ -97 +97 @@
+-Li 4SP-GTH
++Li 4SP-GTH  Zijlstra-4SP-q3
+@@ -107 +107 @@
+-Be 4SP-GTH
++Be 4SP-GTH  Zijlstra-4SP-q4
+@@ -117 +117 @@
+-B 4SP-GTH
++B 4SP-GTH  Zijlstra-4SP-q3
+@@ -127 +127 @@
+-C 4SP-GTH
++C 4SP-GTH  Zijlstra-4SP-q4
+@@ -137 +137 @@
+-N 4SP-GTH
++N 4SP-GTH  Zijlstra-4SP-q5
+@@ -147 +147 @@
+-O 4SP-GTH
++O 4SP-GTH  Zijlstra-4SP-q6
+@@ -157 +157 @@
+-F 4SP-GTH
++F 4SP-GTH  Zijlstra-4SP-q7
+@@ -167 +167 @@
+-Al 4SP-GTH
++Al 4SP-GTH  Zijlstra-4SP-q3
+@@ -177 +177 @@
+-Si 4SP-GTH
++Si 4SP-GTH  Zijlstra-4SP-q4
+@@ -187 +187 @@
+-P 4SP-GTH
++P 4SP-GTH  Zijlstra-4SP-q5
+@@ -197 +197 @@
+-S 4SP-GTH
++S 4SP-GTH  Zijlstra-4SP-q6
+@@ -207 +207 @@
+-Cl 4SP-GTH
++Cl 4SP-GTH  Zijlstra-4SP-q7
+@@ -217 +217 @@
+-H 3SP-GTH
++H 3SP-GTH  Zijlstra-3SP-q1
+@@ -225 +225 @@
+-Li 3SP-GTH
++Li 3SP-GTH Zijlstra-3SP-q3
+@@ -233 +233 @@
+-Be 3SP-GTH
++Be 3SP-GTH Zijlstra-3SP-q4
+@@ -241 +241 @@
+-B 3SP-GTH
++B 3SP-GTH Zijlstra-3SP-q3
+@@ -249 +249 @@
+-C 3SP-GTH
++C 3SP-GTH Zijlstra-3SP-q4
+@@ -257 +257 @@
+-N 3SP-GTH
++N 3SP-GTH Zijlstra-3SP-q5
+@@ -265 +265 @@
+-O 3SP-GTH
++O 3SP-GTH Zijlstra-3SP-q6
+@@ -273 +273 @@
+-F 3SP-GTH
++F 3SP-GTH Zijlstra-3SP-q7
+@@ -281 +281 @@
+-Al 3SP-GTH
++Al 3SP-GTH Zijlstra-3SP-q3
+@@ -289 +289 @@
+-Si 3SP-GTH
++Si 3SP-GTH Zijlstra-3SP-q4
+@@ -297 +297 @@
+-P 3SP-GTH
++P 3SP-GTH Zijlstra-3SP-q5
+@@ -305 +305 @@
+-S 3SP-GTH
++S 3SP-GTH Zijlstra-3SP-q6
+@@ -313 +313 @@
+-Cl 3SP-GTH
++Cl 3SP-GTH Zijlstra-3SP-q7

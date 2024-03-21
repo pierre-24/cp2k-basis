@@ -16,7 +16,7 @@ From an existing YAML source file `DATA_SOURCE.yml` with the format described be
 cb_fetch_data DATA_SOURCES.yml -o library.h5
 ```
 
-This will create a [`library.h5` file](library_file_format.md), which might be exploited [latter on](#using-the-library).
+This will create a [`library.h5` file](library_file_format.md), which might be exploited [later on](#using-the-library).
 
 If you want to have insight on what is happening, you might want to use:
 
@@ -54,7 +54,7 @@ Keyword inside curly braces will be replaced by their value given in the `keywor
     
     the base URL will be `https://github.com/cp2k/cp2k/raw/786bc82ff9ded3e1f761cba6d8e25c3c9fe19bb1/data/`.
 
-Then, ach repository has different files (listed `files`).
+Then, each repository has different files (listed `files`).
 
 #### Files
 
@@ -166,7 +166,7 @@ The rules are the same as with `family_name`, but only the **first** result will
 Finaly, `cb_fetch_data`, it will add metadata to those families.
 
 To do so, the `metdata` dictionary will be used, in which the key is a REGEX matched against the name of the family.
-The if there is a match, then all the values are attributed as metadata.
+If there is a match, then all the values are attributed as metadata.
 
 ??? example
     With:
@@ -247,9 +247,6 @@ This file will follow the same syntax as the one described above [for files](#fi
 files:
 - name: BASIS_MOLOPT_UCL
   type: BASIS_SETS
-  family_name:
-  variant:
-metadata:
 ```
 
 You can now run `cb_explore_file` ... But nothing much happens:
@@ -281,7 +278,6 @@ Hopefully, the solution in this case is pretty straightforward: the name can be 
         '^(.*)(-q\d{1,2})$': '\1'
       variant:
         '^.*-(q\d{1,2})$': '\1'
-    metadata:    
     ```
     
     The result is better:

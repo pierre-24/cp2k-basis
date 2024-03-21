@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python package
+name: Run tests
 
 on:
   push:
@@ -15,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.9, '3.10']
+        python-version: [3.9, '3.10', '3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v2
@@ -28,7 +25,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip3 install pip-tools
         make install-dev
         make install-front
     - name: Lint
@@ -37,3 +33,6 @@ jobs:
     - name: Test
       run: |
         TEST_FETCH_DATA=1 make test
+    - name: Test make library
+      run: |
+        cb_fetch_data library/DATA_SOURCES.yml

@@ -256,3 +256,5 @@ cython_debug/
 node_modules/
 cp2k_basis_webservice/static
 tmp/
+library.h5
+latest_library.h5

@@ -205,7 +205,7 @@ class BaseFamilyStorage:
         metadata = {}
 
         for key, values in group.attrs.items():
-            if type(values) == numpy.ndarray:
+            if type(values) is numpy.ndarray:
                 metadata[key] = list(values)
             else:
                 metadata[key] = values

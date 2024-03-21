@@ -140,7 +140,7 @@ class BaseParser:
         try:
             number = int(self.current_token.value)
         except ValueError:
-            raise ParserSyntaxError('expected integer, got {}'.format(self.current_token.value))
+            raise ParserSyntaxError('expected integer, got {}'.format(self.current_token))
 
         self.next()
         return number
@@ -153,7 +153,7 @@ class BaseParser:
         try:
             number = float(self.current_token.value)
         except ValueError:
-            raise ParserSyntaxError('expected number, got {}'.format(self.current_token.value))
+            raise ParserSyntaxError('expected number, got {}'.format(self.current_token))
 
         self.next()
         return number

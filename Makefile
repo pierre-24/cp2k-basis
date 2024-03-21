@@ -2,7 +2,7 @@ install:
 	pip install -e .
 
 install-dev:
-	pip-sync
+	pip install -e .[dev]
 
 install-front:
 	npm i
