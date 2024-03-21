@@ -31,7 +31,7 @@ done
 
 # go to $DEV_BRANCH and ensure latest version
 if [[ $CURRENT_BRANCH != "$DEV_BRANCH" ]]; then
-  git checkout $DEV_BRANCH
+  git checkout "$DEV_BRANCH"
 fi
 
 git pull
@@ -44,7 +44,7 @@ git push --follow-tags origin $DEV_BRANCH
 git checkout $MAIN_BRANCH
 git pull
 
-git merge origin/dev
+git merge $DEV_BRANCH
 git push origin $MAIN_BRANCH
 
 # switch back to current branch
