@@ -22,21 +22,22 @@ make install-front
 # build front
 make front
 ```
- 
 
-Finally, build the library, as described on [this page](library_build.md):
+Then, you can either build the library of basis sets and pseudopotentials, as described on [this page](library_build.md), or download its latest version (from the `dev` branch):
 
 ```bash
 # create an instance folder
 # see https://flask.palletsprojects.com/en/latest/config/#instance-folders
 mkdir instance
 
-# run the `cb_fetch_data` command to create a new library:
+# To download the library, use:
+wget https://github.com/pierre-24/cp2k-basis/releases/download/latest/latest_library.h5 -o instance/libary.h5
+
+# Alternatively, to build the library from scratch, use the `cb_fetch_data` command:
 cb_fetch_data library/DATA_SOURCES.yml -o instance/library.h5 
 ```
 
-And then you can start the webservice:
-
+And finally, you can start the webservice:
 
 ```bash
 # either:
@@ -71,10 +72,9 @@ make install-front
 
 ### Tips to contribute
 
-+ A useful setting is to setup the webservice to use the (smaller) test library for development:
++ A useful setting is to set up the webservice to use a (smaller) test library for development:
 
     ```bash
-    mkdir instance
     echo "LIBRARY='tests/LIBRARY_EXAMPLE.h5'" > instance/settings.py
     ```
     

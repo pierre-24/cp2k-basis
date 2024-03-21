@@ -39,8 +39,8 @@ TABLE_TEMPLATE = """
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('data_source', type=argparse.FileType('r'))
-    parser.add_argument('library', type=pathlib.Path)
+    parser.add_argument('data_source', type=argparse.FileType('r'), required=True)
+    parser.add_argument('library', type=pathlib.Path, required=True)
 
     args = parser.parse_args()
 
