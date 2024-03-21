@@ -1,0 +1,33 @@
+name: Publish library in release
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    name: Make library
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          make install-dev
+      - name: Build
+        run: |
+           cb_fetch_data library/DATA_SOURCES.yml -o library.h5
+      - name: Upload library to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: library.h5
+          asset_name: latest_library.h5
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Latest library"
