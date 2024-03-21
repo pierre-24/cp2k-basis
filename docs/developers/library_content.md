@@ -17,6 +17,7 @@ The following files are used to build [the current library](https://github.com/p
     + [BASIS_MOLOPT_UCL](https://github.com/cp2k/cp2k/raw/ac0226eb549c7ef1ea50d0597d545f29d4c8fc87/data/BASIS_MOLOPT_UCL)
     + [BASIS_MOLOPT_UZH](https://github.com/cp2k/cp2k/raw/ac0226eb549c7ef1ea50d0597d545f29d4c8fc87/data/BASIS_MOLOPT_UZH)
     + [BASIS_ZIJLSTRA](https://github.com/cp2k/cp2k/raw/ac0226eb549c7ef1ea50d0597d545f29d4c8fc87/data/BASIS_ZIJLSTRA)
+    + [BASIS_ccGRB_UZH](https://github.com/cp2k/cp2k/raw/ac0226eb549c7ef1ea50d0597d545f29d4c8fc87/data/BASIS_ccGRB_UZH)
     + [GTH_BASIS_SETS](https://github.com/cp2k/cp2k/raw/ac0226eb549c7ef1ea50d0597d545f29d4c8fc87/data/GTH_BASIS_SETS)
 
 + Pseudopotentials:
@@ -139,6 +140,9 @@ The following files are used to build [the current library](https://github.com/p
 | aug-TZV2P-GTH | An augmented triple zeta valence (+ 2 sets of polarization) basis set for GTH pseudopotentials | H, C, N, O, F, Si, P, S, Cl |
 | aug-TZVP-GTH | An augmented triple zeta valence (+ 1 set of polarization) basis set for GTH pseudopotentials | H, C, N, O, F, Si, P, S, Cl |
 | aug-cFIT3 | An auxiliary minimal basis set [4s4p\|3s3p] (with extra diffuse and contracted) for H-F, Na-Cl and Br with ADMM | H, C, N, O, F, Si, P, S, Cl |
+| aug-ccGRB-D | Geometrical Response Basis Valence Set (with augmentation Functions from correlation consistent sets) | Rb, Sr, Cs, Ba |
+| aug-ccGRB-Q | Geometrical Response Basis Valence Set (with augmentation Functions from correlation consistent sets) | Rb, Sr, Cs, Ba |
+| aug-ccGRB-T | Geometrical Response Basis Valence Set (with augmentation Functions from correlation consistent sets) | Rb, Sr, Cs, Ba |
 | aug-cpFIT3 | An auxiliary minimal basis set [4s4p1d\|3s3p1d] (with extra diffuses and polarization, contracted) for H-F, Na-Cl and Br with ADMM | H, C, N, O, F, Si, P, S, Cl |
 | aug-pFIT3 | An auxiliary minimal basis set [4s4p1d\|4s4p1d] (with extra diffuses and polarization) for H-F, Na-Cl and Br with ADMM | H, C, N, O, F, Si, P, S, Cl |
 | cFIT10 | An auxiliary minimal basis set [9s4p1d\|3s2p1d] for K-Ga, Rb-In, Cs-Ba and Hf-Tl with ADMM | K, Ca, Sc, Ti, V, Cr, Mn, Fe, Co, Ni, Cu, Zn, Ga, Rb, Sr, Y, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, In, Cs, Ba, Hf, Ta, W, Re, Os, Ir, Pt, Au, Hg, Tl |
@@ -154,6 +158,9 @@ The following files are used to build [the current library](https://github.com/p
 | cFIT7 | An auxiliary minimal basis set [3s3p1d\|2s2p1d] (cFIT6 with polarization) for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Rb, Cs) with ADMM | Al, K, Ca, Ge, As, Se, Br, Rb, Sn, Sb, Te, I, Cs, Pb, Bi, Po, At |
 | cFIT8 | An auxiliary minimal basis set [7s3p1d\|3s2p1d] (cFIT7 with polarization) for K, Ca, Rb, Sr, Cs, Ba (plus Ca) with ADMM | Al, K, Ca, Rb, Sr, Cs, Ba |
 | cFIT9 | An auxiliary minimal basis set [4s4p1d\|2s2p1d] for Ge-Br, Sn-I and Pb-At (plus Al, K, Ca, Cu, Zn, Ag, Cd, Au, Hg, Rb, Cs, Ba) with ADMM | Al, K, Ca, Cu, Zn, Ga, Ge, As, Se, Br, Rb, Sr, Ag, Cd, In, Sn, Sb, Te, I, Cs, Ba, Au, Hg, Tl, Pb, Bi, Po, At |
+| ccGRB-D | Geometrical Response Basis Valence Set (with polarization Functions from correlation consistent sets) | H, He, Li, Be, B, C, N, O, F, Ne, Na, Mg, Al, Si, P, S, Cl, Ar, K, Ca, Sc, Ti, V, Cr, Mn, Fe, Co, Ni, Cu, Zn, Ga, Ge, As, Se, Br, Kr, Rb, Sr, Y, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, In, Sn, Sb, Te, I, Xe, Cs, Ba, Hf, Ta, W, Re, Os, Ir, Pt, Au, Hg, Tl, Pb, Bi, Po, At, Rn |
+| ccGRB-Q | Geometrical Response Basis Valence Set (with polarization Functions from correlation consistent sets) | H, He, Li, Be, B, C, N, O, F, Ne, Na, Mg, Al, Si, P, S, Cl, Ar, K, Ca, Sc, Ti, V, Mn, Fe, Co, Ni, Cu, Zn, Ga, Ge, As, Se, Br, Kr, Rb, Sr, Y, Zr, Nb, Tc, Ru, Rh, Pd, Ag, Cd, In, Sn, Sb, Te, I, Xe, Cs, Hf, Ta, W, Re, Os, Ir, Pt, Au, Hg, Tl, Pb, Bi, At, Rn |
+| ccGRB-T | Geometrical Response Basis Valence Set (with polarization Functions from correlation consistent sets) | H, He, Li, Be, B, C, N, O, F, Ne, Na, Mg, Al, Si, P, S, Cl, Ar, K, Ca, Sc, Ti, V, Cr, Mn, Fe, Co, Ni, Cu, Zn, Ga, Ge, As, Se, Br, Kr, Rb, Sr, Y, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, In, Sn, Sb, Te, I, Xe, Cs, Ba, Hf, Ta, W, Re, Os, Ir, Pt, Au, Hg, Tl, Pb, Bi, Po, At, Rn |
 | cpFIT3 | An auxiliary minimal basis set [3s3p1d\|2s2p1d] (with polarization and contracted) for H-F, Na-Cl and Br with ADMM | H, He, Li, Be, B, C, N, O, F, Na, Mg, Al, Si, P, S, Cl, Br |
 | pFIT3 | An auxiliary minimal basis set [3s3p1d\|3s3p1d] (with polarization) for H-F, Na-Cl and Br with ADMM | H, He, Li, Be, B, C, N, O, F, Na, Mg, Al, Si, P, S, Cl, Br |
 

@@ -57,6 +57,14 @@ repositories:
       ^(.*)-ae$: \1-ae
     variant:
       ^.*-(q\d{1,2})$: \1
+  - name: BASIS_ccGRB_UZH
+    patch: BASIS_ccGRB_UZH.patch
+    type: BASIS_SETS
+    family_name:
+      '^aug-cc-(.*)(-q\d{1,2})$': 'aug-ccGRB-\1'
+      '^cc(.*)(-q\d{1,2})$': 'cc\1'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
   # MOLOPT (Actinides and Lantanides)
   - name: LnPP1_POTENTIALS
     type: POTENTIALS
@@ -172,6 +180,8 @@ references:
   - https://doi.org/10.1021/acs.jctc.2c00922
 - &refzijlstra
   - https://doi.org/10.1088/0965-0393/17/1/015009
+- &refccGRB
+  - https://doi.org/10.1021/jp9527766
 
 tags:
 - &tagsgth
@@ -352,6 +362,14 @@ metadata:
     description: A triple zeta valence (+ 2 sets polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the PBE functional (UZH).
     references: *refdefault
     tags: *tagsmolopt
+  '^ccGRB-.*$':
+    references: *refccGRB
+    tags: *tagsmolopt
+    description: Geometrical Response Basis Valence Set (with polarization Functions from correlation consistent sets)
+  '^aug-cc.*$':
+    references: *refccGRB
+    tags: *tagsmolopt
+    description: Geometrical Response Basis Valence Set (with augmentation Functions from correlation consistent sets)
   # -- SCAN:
   ^DZVP-MOLOPT-(SCAN|MGGA)-GTH$:
     description: A double zeta valence (+ 1 set polarization) MOLOPT basis set, optimized for the GTH pseudopotentials and the SCAN functional (UZH).
