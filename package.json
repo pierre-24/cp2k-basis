@@ -1,6 +1,6 @@
 {
   "name": "cp2k-basis",
-  "version": "0.1.0",
+  "version": "0.4.1",
   "description": "Overview of the content of CP2K basis sets and potentials.",
   "author": "Pierre Beaujean",
   "license": "MIT",
@@ -8,12 +8,12 @@
     "grunt": "node ./node_modules/grunt/bin/grunt"
   },
   "devDependencies": {
-    "grunt": ">=1.5",
-    "grunt-cli": ">=1.4",
-    "grunt-contrib-imagemin": ">=2.0",
-    "grunt-contrib-jshint": ">=3.2",
-    "grunt-contrib-less": ">=3.0",
-    "grunt-contrib-uglify": ">=5.2",
-    "grunt-contrib-watch": ">=1.1"
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-imagemin": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-less": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*"
   }
 }
