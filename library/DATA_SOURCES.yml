@@ -84,6 +84,18 @@ repositories:
       ^(.*)(-q\d{1,2})$: \1-AcLnPP1
     variant:
       ^.*-(q\d{1,2})$: \1
+  - name: BASIS_MOLOPT_LnPP2
+    type: BASIS_SETS
+    family_name:
+      '^(.*)(-q\d{1,2})$': '\1-LnPP2'
+    variant:
+      '^.*-(q\d{1,2})$': '\1'
+  - name: LnPP2_POTENTIALS
+    type: POTENTIALS
+    family_name:
+      ^(.*)(-q\d{1,2})$: \1-LnPP2
+    variant:
+      ^.*-(q\d{1,2})$: \1
   # all-electron
   - name: ALL_BASIS_SETS
     type: BASIS_SETS
@@ -148,6 +160,8 @@ references:
 - &refadmmuzh
   - https://pubs.acs.org/doi/10.1021/ct1002225
   - https://github.com/cp2k/cp2k-data
+- &reflnpp2
+  - https://doi.org/10.1021/acs.jctc.2c00922
 tags:
 - &tagsgth
   - GTH
@@ -285,6 +299,18 @@ metadata:
   ^DZVP-MOLOPT-GTH-AcLnPP1$:
     description: MOLOPT basis set (double zeta+polarization) to explore Actinide chemistry in complex environments, optimized for PBE.
     references: *refacln
+    tags: *tagsmolopt
+  '^DZVP-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (double zeta + 1 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
+    tags: *tagsmolopt
+  '^TZVP-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (triple zeta + 1 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
+    tags: *tagsmolopt
+  '^TZV2P-MOLOPT-GTH-LnPP2$':
+    references: *reflnpp2
+    description:  MOLOPT basis set (triple zeta + 2 set polarization), norm-Conserving 4f-in-Core Optimized for Trivalent Lanthanides
     tags: *tagsmolopt
   ^TZVP-MOLOPT-GTH$:
     description: A triple zeta valence (+ 1 set polarization) MOLOPT basis set, for gas and condensed phase and GTH pseudopotentials
@@ -661,6 +687,10 @@ metadata:
   ^GTH-PBE-AcLnPP1$:
     description: GTH pseudopotentials to explore Lanthanide and Actinide chemistry in complex environments, optimized for PBE.
     references: *refacln
+    tags: *tagsgth
+  '^GTH-PBE-LnPP2$':
+    references: *reflnpp2
+    description:  Norm-Conserving pseudopotential 4f-in-Core Optimized for Trivalent Lanthanides
     tags: *tagsgth
   # ALL:
   ALL:
