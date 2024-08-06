@@ -6,7 +6,7 @@ import logging
 import os
 
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 __author__ = 'Pierre Beaujean'
 __maintainer__ = 'Pierre Beaujean'
 __email__ = 'pierre.beaujean@unamur.be'
