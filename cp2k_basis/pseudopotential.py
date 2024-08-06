@@ -178,6 +178,14 @@ class AtomicPseudopotentialVariant(BaseAtomicVariantDataObject):
 
         return obj
 
+    def preferred_name(self, family_name: str, variant: str) -> str:
+        """Even though they can have multiple name, 'ALL' pseudo should be referred to as `ALL`.
+        """
+        if family_name == 'ALL':
+            return 'ALL'
+        else:
+            return super().preferred_name(family_name, variant)
+
 
 class AtomicPseudopotential(BaseAtomicDataObject):
     object_type = AtomicPseudopotentialVariant
