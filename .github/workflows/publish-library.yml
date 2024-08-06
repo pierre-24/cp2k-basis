@@ -3,6 +3,7 @@ name: Publish library in (pre-)release
 on:
   push:
     branches: [ master, dev ]
+    tags: [ 'v*' ]
 
 jobs:
   build:
@@ -36,6 +37,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: library.h5
           asset_name: latest_library.h5
-          tag: ${{ github.ref }}
+          tag: ${{ github.ref_name }}
           overwrite: true
           body: "Stable release"
