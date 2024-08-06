@@ -1,7 +1,7 @@
 install:
-	pip install -e .
+	pip install -r requirements.txt
 
-install-dev:
+install-dev: install
 	pip install -e .[dev]
 
 install-front:
