@@ -1,5 +1,6 @@
 {
   "esversion": 8,
   "globalstrict": true,
-  "browser" : true
+  "browser": true,
+  "node": true
 }

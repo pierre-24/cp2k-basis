@@ -113,3 +113,26 @@ class PseudoTestCase(unittest.TestCase, BaseDataObjectMixin):
                             'q{}'.format(sum(storage[pp_name][symbol][variant].nelec)),
                             variant
                         )
+
+    def test_preferred_name_ok(self):
+        app1 = self.storage['GTH-BLYP']['Ne']['q8']
+        self.assertEqual(app1.preferred_name('GTH-BLYP', 'q8'), 'GTH-BLYP-q8')
+
+    def test_preferred_name_all_ok(self):
+        name = 'ALL'
+        storage = PseudopotentialsStorage()
+
+        filter_name = FilterUnique([(re.compile(r'^({})$'.format(name)), '\\1')])  # ALL!
+
+        with (pathlib.Path(__file__).parent / 'POTENTIAL_ALL_EXAMPLE').open() as f:
+            storage.update(
+                AtomicPseudopotentialsParser(f.read()).iter_atomic_pseudopotential_variants(),
+                filter_name,
+                self.filter_variant
+            )
+
+        app1 = storage['ALL']['H']['q1']
+        self.assertEqual(app1.names, ['ALLELECTRON', 'ALL'])
+
+        # although "ALLELECTRON" would be choosen, "ALL" is actually selected
+        self.assertEqual(app1.preferred_name('ALL', 'q1'), 'ALL')
