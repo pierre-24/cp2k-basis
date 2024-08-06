@@ -1,6 +1,6 @@
 {
   "name": "cp2k-basis",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Overview of the content of CP2K basis sets and potentials.",
   "author": "Pierre Beaujean",
   "license": "MIT",
