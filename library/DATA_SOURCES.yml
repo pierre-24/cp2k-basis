@@ -8,7 +8,7 @@
 repositories:
 - base: https://github.com/cp2k/cp2k/raw/{commit}/data/  # main CP2K repository
   data:
-    commit: ac0226eb549c7ef1ea50d0597d545f29d4c8fc87
+    commit: 4e96ea1a003ec3cd53f7ede84b94999600d7b010
   files:
   # GTH (older)
   - name: GTH_BASIS_SETS
